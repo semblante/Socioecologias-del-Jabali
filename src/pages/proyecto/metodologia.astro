@@ -1,0 +1,91 @@
+---
+import Base from '../layouts/Base.astro';
+import StatBlock from '../components/ui/StatBlock.astro';
+import { localizedPath } from '../i18n/routing';
+
+const locale = 'es' as const;
+---
+
+<Base
+  title="Metodología"
+  description="Modelo de intra-acción: ecología de campo, etnografía y métodos participativos"
+  locale={locale}
+>
+  <div class="section">
+    <div class="container container--reading">
+      <header class="page-header">
+        <p class="kicker">Proyecto · Metodología</p>
+        <h1 class="page-header__title">Intra-acción</h1>
+        <p class="page-header__lead">
+          Cada objetivo combina ecología, etnografía y participación.
+          No hay un método por disciplina: las fronteras se difuminan a propósito.
+        </p>
+      </header>
+
+      <div class="prose">
+        <p>
+          El proyecto sigue un modelo de <strong>intra-acción</strong>: las perspectivas
+          biológicas, antropológicas, ecológicas, sociológicas y mapuches se integran
+          dentro de cada objetivo, evitando la asignación habitual de un objetivo por método.
+        </p>
+      </div>
+
+      <StatBlock
+        title="Ecología de campo"
+        lead="Técnicas no invasivas dadas la actividad nocturna del jabalí y hábitats de baja visibilidad."
+        stats={[
+          { value: '60+', label: 'Cámaras trampa' },
+          { value: 'REM', label: 'Modelos de densidad' },
+          { value: 'UAV', label: 'Drones térmicos' },
+        ]}
+      />
+
+      <div class="prose">
+        <p>
+          Estimaciones estacionales de abundancia y densidad (modelos REM / N-mixture),
+          movilidad con drones de cámara térmica, análisis de dieta a partir de muestras
+          fecales y de individuos cazados, y análisis de paisaje a gran escala.
+        </p>
+      </div>
+
+      <StatBlock
+        title="Etnografía"
+        lead="Atención a las formas de vida: encuentros prolongados donde el interlocutor determina el curso del pensamiento."
+        stats={[
+          { value: '60', label: 'Entrevistas en profundidad' },
+          { value: '40', label: 'Observaciones participantes' },
+          { value: '30', label: 'Visitas a comunidades' },
+        ]}
+      />
+
+      <div class="prose">
+        <p>
+          Salidas de caza, veranadas, piñoneo y otras situaciones de encuentro
+          humano–chancho. Una etnografía multiespecie que toma en serio la teorización
+          local como marco conceptual irreducible.
+        </p>
+      </div>
+
+      <StatBlock
+        title="Métodos participativos"
+        lead="Los interlocutores negocian el proceso: coaprendizaje, no extracción."
+        stats={[
+          { value: '4', label: 'Cartografías comunitarias' },
+          { value: '2', label: 'Talleres de co-diseño' },
+          { value: '2', label: 'Trawun (asambleas)' },
+        ]}
+      />
+
+      <div class="prose" style="margin-top: var(--s-8);">
+        <p>
+          El caso principal es <a href={localizedPath('/territorio', locale)}>Puesco-Lanín</a>,
+          con el Acuerdo de Gobernanza de Winkulmapu; los casos secundarios aportan
+          continuidad socioecológica al corredor.
+        </p>
+        <p>
+          <a href={localizedPath('/proyecto', locale)}>← Volver al proyecto</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</Base>

@@ -1,0 +1,76 @@
+---
+interface Stat {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  title: string;
+  lead?: string;
+  stats: Stat[];
+}
+
+const { title, lead, stats } = Astro.props;
+---
+
+<section class="method-block">
+  <h3 class="method-block__title">{title}</h3>
+  {lead && <p class="method-block__lead">{lead}</p>}
+  <dl class="method-block__stats">
+    {stats.map((s) => (
+      <div class="method-block__stat">
+        <dt>{s.value}</dt>
+        <dd>{s.label}</dd>
+      </div>
+    ))}
+  </dl>
+</section>
+
+<style>
+  .method-block {
+    padding: var(--s-8) 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .method-block__title {
+    margin: 0 0 var(--s-3);
+    font-family: var(--font-serif);
+    font-size: clamp(1.25rem, 2.5vw, 1.6rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .method-block__lead {
+    margin: 0 0 var(--s-6);
+    max-width: 52ch;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+  }
+
+  .method-block__stats {
+    display: grid;
+    gap: var(--s-4);
+    margin: 0;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  }
+
+  .method-block__stat dt {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--color-accent);
+  }
+
+  .method-block__stat dd {
+    margin: 0.4rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    line-height: 1.4;
+  }
+</style>

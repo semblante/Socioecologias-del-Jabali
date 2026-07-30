@@ -1,0 +1,90 @@
+---
+import Base from '../../layouts/Base.astro';
+import StatBlock from '../../components/ui/StatBlock.astro';
+import { localizedPath } from '../../i18n/routing';
+
+const locale = 'en' as const;
+---
+
+<Base
+  title="Methodology"
+  description="Intra-action model: field ecology, ethnography, and participatory methods"
+  locale={locale}
+>
+  <div class="section">
+    <div class="container container--reading">
+      <header class="page-header">
+        <p class="kicker">Project · Methodology</p>
+        <h1 class="page-header__title">Intra-action</h1>
+        <p class="page-header__lead">
+          Each objective combines ecology, ethnography, and participation.
+          There is no one method per discipline: borders are deliberately blurred.
+        </p>
+      </header>
+
+      <div class="prose">
+        <p>
+          The project follows an <strong>intra-action</strong> model: biological,
+          anthropological, ecological, sociological, and Mapuche insights are integrated
+          within each objective, avoiding the usual assignation of one objective per method.
+        </p>
+      </div>
+
+      <StatBlock
+        title="Field ecology"
+        lead="Non-invasive techniques given nocturnal activity and low-visibility habitats."
+        stats={[
+          { value: '60+', label: 'Camera traps' },
+          { value: 'REM', label: 'Density models' },
+          { value: 'UAV', label: 'Thermal drones' },
+        ]}
+      />
+
+      <div class="prose">
+        <p>
+          Seasonal abundance and density estimates (REM / N-mixture), mobility with thermal
+          drones, dietary analysis from faecal samples and hunted individuals, and
+          landscape-scale analyses.
+        </p>
+      </div>
+
+      <StatBlock
+        title="Ethnography"
+        lead="Attention to forms of life: prolonged encounters where interlocutors set the course of thought."
+        stats={[
+          { value: '60', label: 'In-depth interviews' },
+          { value: '40', label: 'Participant observations' },
+          { value: '30', label: 'Community visits' },
+        ]}
+      />
+
+      <div class="prose">
+        <p>
+          Hunting trips, summer pastures, <em>piñoneo</em>, and other human–boar encounters.
+          A multispecies ethnography that treats local theorizing as an irreducible conceptual frame.
+        </p>
+      </div>
+
+      <StatBlock
+        title="Participatory methods"
+        lead="Interlocutors negotiate the process: co-learning, not extraction."
+        stats={[
+          { value: '4', label: 'Community mapping exercises' },
+          { value: '2', label: 'Co-design workshops' },
+          { value: '2', label: 'Trawun (assemblies)' },
+        ]}
+      />
+
+      <div class="prose" style="margin-top: var(--s-8);">
+        <p>
+          The core case is <a href={localizedPath('/territorio', locale)}>Puesco-Lanín</a>,
+          under the Winkulmapu Governance Agreement; secondary cases add socioecological
+          continuity along the corridor.
+        </p>
+        <p>
+          <a href={localizedPath('/proyecto', locale)}>← Back to the project</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</Base>
