@@ -1,0 +1,30 @@
+---
+import Base from '../../layouts/Base.astro';
+
+const locale = 'en' as const;
+---
+
+<Base
+  title="Outputs"
+  description="Community book, policy briefs, and art exhibition"
+  locale={locale}
+>
+  <div class="section">
+    <div class="container container--reading">
+      <header class="page-header">
+        <h1 class="page-header__title">Outputs</h1>
+        <p class="page-header__lead">
+          Public deliverables beyond the academic paper.
+        </p>
+      </header>
+      <div class="prose">
+        <ul>
+          <li><strong>Community book</strong> — co-written with territorial interlocutors.</li>
+          <li><strong>Policy briefs</strong> — guidelines for multi-actor management and SBAP.</li>
+          <li><strong>Art exhibition</strong> — collaboration with local artists on territorial challenges of wild boar.</li>
+        </ul>
+        <p>Outputs will appear here as they are produced.</p>
+      </div>
+    </div>
+  </div>
+</Base>

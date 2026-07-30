@@ -14,24 +14,57 @@ const { locale, entries } = Astro.props;
 const ui = getUi(locale);
 ---
 
-<section class="section section--soft">
+<section class="notes">
   <div class="container">
-    <div class="section-header-row">
-      <h2 class="section__title" style="margin: 0;">{ui.latestFieldNotes}</h2>
-      <a href={localizedPath('/bitacora', locale)} style="font-size: var(--t-sm);">{ui.viewAll} →</a>
+    <div class="notes__head">
+      <h2 class="notes__title">{ui.latestFieldNotes}</h2>
+      <a class="notes__all" href={localizedPath('/bitacora', locale)}>{ui.viewAll} →</a>
     </div>
-    <div class="grid-cards grid-cards--3" style="margin-top: var(--s-8);">
-      {entries.slice(0, 3).map((entry, i) => (
-        <div>
-          <Card
-            href={localizedPath(`/bitacora/${getEntrySlug(entry)}`, locale)}
-            title={entry.data.title}
-            excerpt={entry.data.description}
-            dateLabel={formatDate(entry.data.pubDate, locale)}
-            tag={entry.data.tags[0]}
-          />
-        </div>
+    <div class="grid-cards grid-cards--3">
+      {entries.slice(0, 3).map((entry) => (
+        <Card
+          href={localizedPath(`/bitacora/${getEntrySlug(entry)}`, locale)}
+          title={entry.data.title}
+          excerpt={entry.data.description}
+          dateLabel={formatDate(entry.data.pubDate, locale)}
+          tag={entry.data.tags[0]}
+        />
       ))}
     </div>
   </div>
 </section>
+
+<style>
+  .notes {
+    padding-block: clamp(3rem, 8vw, 5.5rem);
+    background: var(--color-bg);
+  }
+
+  .notes__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--s-4);
+    flex-wrap: wrap;
+    margin-bottom: var(--s-8);
+  }
+
+  .notes__title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .notes__all {
+    font-size: var(--t-sm);
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--color-text-muted);
+  }
+
+  .notes__all:hover {
+    color: var(--color-accent);
+  }
+</style>

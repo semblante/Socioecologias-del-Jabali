@@ -11,20 +11,97 @@ interface Props {
 const { locale, summary } = Astro.props;
 const ui = getUi(locale);
 
-const frameworks = locale === 'es'
-  ? ['STS', 'Humanidades ambientales', 'Etnografía']
-  : ['STS', 'Environmental humanities', 'Ethnography'];
+const frameworks =
+  locale === 'es'
+    ? ['Ecología de conservación', 'Antropología', 'STS', 'Kimün mapuche']
+    : ['Conservation ecology', 'Anthropology', 'STS', 'Mapuche kimün'];
 ---
 
-<section class="section">
-  <div class="container">
-    <h2 class="section__title">{ui.aboutProject}</h2>
-    <p class="section-lead">{summary}</p>
-    <div class="framework-tags">
+<section class="about">
+  <div class="about__inner container">
+    <p class="about__label">{ui.aboutProject}</p>
+    <p class="about__statement">{summary}</p>
+    <ul class="about__lenses">
       {frameworks.map((fw) => (
-        <span class="tag">{fw}</span>
+        <li>{fw}</li>
       ))}
-    </div>
-    <a class="btn" href={localizedPath('/proyecto', locale)} style="margin-top: var(--s-6);">{ui.readMore}</a>
+    </ul>
+    <a class="about__link" href={localizedPath('/proyecto', locale)}>{ui.readMore} →</a>
   </div>
 </section>
+
+<style>
+  .about {
+    position: relative;
+    padding-block: clamp(3.5rem, 10vw, 6.5rem);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg-alt);
+  }
+
+  .about__inner {
+    display: grid;
+    gap: var(--s-6);
+    max-width: 52rem;
+  }
+
+  .about__label {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .about__statement {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(1.35rem, 3vw, 2rem);
+    font-weight: 500;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+  }
+
+  .about__lenses {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .about__lenses li {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .about__lenses li::before {
+    content: "·";
+    margin-right: 0.65rem;
+    color: var(--color-accent);
+  }
+
+  .about__lenses li:first-child::before {
+    content: none;
+    margin: 0;
+  }
+
+  .about__link {
+    justify-self: start;
+    font-size: var(--t-sm);
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-accent);
+    padding-bottom: 0.15em;
+  }
+
+  .about__link:hover {
+    color: var(--color-accent);
+  }
+</style>

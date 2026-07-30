@@ -5,10 +5,13 @@ const ui = {
     skipToContent: 'Saltar al contenido',
     menu: 'Menú',
     nav: {
-      proyecto: 'El proyecto',
+      proyecto: 'Proyecto',
+      territorio: 'Territorio',
       equipo: 'Equipo',
-      bitacora: 'Cuaderno de campo',
+      bitacora: 'Cuaderno',
+      archivo: 'Archivo',
       publicaciones: 'Publicaciones',
+      productos: 'Productos',
       contacto: 'Contacto',
     },
     translationInProgress: 'Traducción en proceso. Mostrando versión en español.',
@@ -19,7 +22,7 @@ const ui = {
     projectCta: 'Conoce la investigación',
     fieldNotesCta: 'Cuaderno de campo',
     homeSummary:
-      'Proyecto Fondecyt que estudia al jabalí como especie invasora y zona de contacto en el Peweñantu, cruzando etnografía, STS y humanidades ambientales.',
+      'Las especies invasoras no son entidades discretas: son zonas de contacto. Este Fondecyt analiza al jabalí en la Araucanía andina desde la ecología, la etnografía y el kimün mapuche, en colaboración con la Asociación Indígena Winkulmapu.',
     bitacora: {
       lead: 'Registro de trabajo de campo, encuentros y avances del proyecto en el Peweñantu.',
     },
@@ -55,10 +58,13 @@ const ui = {
     skipToContent: 'Skip to content',
     menu: 'Menu',
     nav: {
-      proyecto: 'The project',
+      proyecto: 'Project',
+      territorio: 'Territory',
       equipo: 'Team',
-      bitacora: 'Field journal',
+      bitacora: 'Field notes',
+      archivo: 'Archive',
       publicaciones: 'Publications',
+      productos: 'Outputs',
       contacto: 'Contact',
     },
     translationInProgress: 'Translation in progress. Showing the Spanish version.',
@@ -69,7 +75,7 @@ const ui = {
     projectCta: 'About the research',
     fieldNotesCta: 'Field journal',
     homeSummary:
-      'Fondecyt project studying wild boar as an invasive species and contact zone in Peweñantu, crossing ethnography, STS, and environmental humanities.',
+      'Invasive species are not discrete entities: they are contact zones. This Fondecyt studies wild boar in the Andean Araucanía through ecology, ethnography, and Mapuche kimün, in collaboration with the Winkulmapu Indigenous Association.',
     bitacora: {
       lead: 'Fieldwork records, meetings, and project updates from Peweñantu.',
     },

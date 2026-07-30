@@ -70,7 +70,7 @@
   --d-medium: 420ms;
   --d-slow: 900ms;
 
-  --header-h: 4.25rem;
+  --header-h: 4.75rem;
 }
 
 @media (prefers-reduced-motion: reduce) {

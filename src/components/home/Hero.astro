@@ -1,9 +1,9 @@
 ---
-import SiteLogo from '../identity/SiteLogo.astro';
 import type { Locale } from '../../config/site';
 import { siteConfig } from '../../config/site';
 import { getUi } from '../../i18n/ui';
 import { localizedPath } from '../../i18n/routing';
+import SiteLogo from '../identity/SiteLogo.astro';
 
 interface Props {
   locale: Locale;
@@ -13,22 +13,215 @@ interface Props {
 
 const { locale, tagline, intro } = Astro.props;
 const ui = getUi(locale);
+const brand = siteConfig.nameShort[locale];
+const place = siteConfig.tagline[locale];
 ---
 
-<section class="hero container">
-  <div class="hero__grid">
-    <div class="hero__mark" aria-hidden="true">
-      <SiteLogo locale={locale} size="hero" />
+<section class="hero" aria-label={brand}>
+  <div class="hero__atmosphere" aria-hidden="true"></div>
+  <div class="hero__inner container">
+    <div class="hero__brand">
+      <SiteLogo locale={locale} size="hero" class="hero__seal" />
+      <p class="hero__brand-name">{brand}</p>
+      <p class="hero__brand-place">{place}</p>
     </div>
-    <div class="hero__content">
-      <p class="kicker">{siteConfig.fondecyt} · PUC Chile</p>
+
+    <div class="hero__copy">
+      <p class="hero__kicker">{siteConfig.fondecyt} · {siteConfig.fondecytYear}</p>
       <h1 class="hero__title">{tagline}</h1>
-      <p class="hero__tagline">{intro}</p>
+      <p class="hero__intro">{intro}</p>
       <div class="hero__actions">
-        <a class="btn btn--accent" href={localizedPath('/proyecto', locale)}>{ui.projectCta}</a>
-        <a class="btn" href={localizedPath('/bitacora', locale)}>{ui.fieldNotesCta}</a>
-        <a class="btn btn--text" href={localizedPath('/publicaciones', locale)}>{ui.nav.publicaciones} →</a>
+        <a class="btn btn--light" href={localizedPath('/proyecto', locale)}>{ui.projectCta}</a>
+        <a class="btn btn--ghost" href={localizedPath('/bitacora', locale)}>{ui.fieldNotesCta}</a>
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    min-height: min(92vh, 52rem);
+    display: flex;
+    align-items: flex-end;
+    color: var(--color-bg-alt);
+    background: var(--color-text);
+    overflow: hidden;
+  }
+
+  .hero__atmosphere {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse 90% 70% at 15% 85%, color-mix(in srgb, var(--color-accent) 28%, transparent), transparent 55%),
+      radial-gradient(ellipse 70% 50% at 90% 10%, color-mix(in srgb, var(--color-bg-alt) 8%, transparent), transparent 50%),
+      linear-gradient(165deg, #0c0c0e 0%, #1a1816 45%, #24201c 100%);
+  }
+
+  .hero__atmosphere::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: var(--texture-grain);
+    background-size: 180px 180px;
+    opacity: 0.18;
+    mix-blend-mode: soft-light;
+  }
+
+  .hero__inner {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    display: grid;
+    gap: var(--s-12);
+    padding-block: clamp(4rem, 12vh, 7rem) clamp(3rem, 8vh, 5rem);
+  }
+
+  @media (min-width: 900px) {
+    .hero__inner {
+      grid-template-columns: minmax(14rem, 0.9fr) minmax(0, 1.4fr);
+      align-items: end;
+      gap: clamp(2rem, 6vw, 5rem);
+    }
+  }
+
+  .hero__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s-4);
+    animation: hero-rise 900ms var(--ease-organic) both;
+  }
+
+  .hero__seal {
+    color: var(--color-bg-alt);
+    width: min(220px, 58vw);
+  }
+
+  .hero__brand-name {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(1.4rem, 2.8vw, 2rem);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    max-width: 14ch;
+  }
+
+  .hero__brand-place {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-bg-alt) 70%, transparent);
+  }
+
+  .hero__copy {
+    animation: hero-rise 900ms var(--ease-organic) 120ms both;
+  }
+
+  .hero__kicker {
+    margin: 0 0 var(--s-4);
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .hero__title {
+    margin: 0 0 var(--s-6);
+    font-family: var(--font-serif);
+    font-size: clamp(1.65rem, 4.2vw, 2.75rem);
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    max-width: 18ch;
+    color: var(--color-bg-alt);
+  }
+
+  .hero__intro {
+    margin: 0 0 var(--s-8);
+    max-width: 42ch;
+    font-size: clamp(1rem, 1.5vw, 1.15rem);
+    line-height: 1.65;
+    color: color-mix(in srgb, var(--color-bg-alt) 78%, transparent);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    align-items: center;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.85rem 1.35rem;
+    font-family: var(--font-sans);
+    font-size: var(--t-sm);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition:
+      background var(--d-fast) var(--ease-organic),
+      color var(--d-fast) var(--ease-organic),
+      border-color var(--d-fast) var(--ease-organic);
+  }
+
+  .btn--light {
+    background: var(--color-bg-alt);
+    color: var(--color-text);
+  }
+
+  .btn--light:hover {
+    background: color-mix(in srgb, var(--color-bg-alt) 88%, var(--color-accent));
+    color: var(--color-text);
+  }
+
+  .btn--ghost {
+    background: transparent;
+    color: var(--color-bg-alt);
+    border-color: color-mix(in srgb, var(--color-bg-alt) 35%, transparent);
+  }
+
+  .btn--ghost:hover {
+    border-color: var(--color-bg-alt);
+    color: var(--color-bg-alt);
+    background: color-mix(in srgb, var(--color-bg-alt) 8%, transparent);
+  }
+
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      transform: translateY(1.25rem);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__brand,
+    .hero__copy {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .hero {
+      min-height: auto;
+      align-items: stretch;
+    }
+
+    .hero__seal {
+      width: min(160px, 48vw);
+    }
+  }
+</style>

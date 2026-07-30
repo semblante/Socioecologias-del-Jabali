@@ -14,13 +14,16 @@ interface Props {
 const { locale, currentPath } = Astro.props;
 const ui = getUi(locale);
 const menuLabel = locale === 'es' ? 'Abrir menú de navegación' : 'Open navigation menu';
+const brand = siteConfig.nameShort[locale];
+const place = siteConfig.tagline[locale];
 
 const links = [
   { key: 'proyecto', href: localizedPath('/proyecto', locale), enabled: siteConfig.sections.proyecto },
+  { key: 'territorio', href: localizedPath('/territorio', locale), enabled: siteConfig.sections.territorio },
   { key: 'equipo', href: localizedPath('/equipo', locale), enabled: siteConfig.sections.equipo },
   { key: 'bitacora', href: localizedPath('/bitacora', locale), enabled: siteConfig.sections.bitacora },
+  { key: 'archivo', href: localizedPath('/archivo', locale), enabled: siteConfig.sections.archivo },
   { key: 'publicaciones', href: localizedPath('/publicaciones', locale), enabled: siteConfig.sections.publicaciones },
-  { key: 'contacto', href: localizedPath('/contacto', locale), enabled: siteConfig.sections.contacto },
 ].filter((l) => l.enabled);
 
 function isCurrent(href: string) {
@@ -31,8 +34,12 @@ function isCurrent(href: string) {
 
 <header class="site-header" transition:persist="site-header">
   <div class="site-header__inner">
-    <a href={localizedPath('/', locale)} class="site-brand" aria-label={siteConfig.name}>
+    <a href={localizedPath('/', locale)} class="site-brand">
       <SiteLogo locale={locale} size="nav" />
+      <span class="site-brand__text">
+        <span class="site-brand__name">{brand}</span>
+        <span class="site-brand__place">{place}</span>
+      </span>
     </a>
 
     <nav class="site-header__nav" aria-label={locale === 'es' ? 'Navegación principal' : 'Main navigation'}>
@@ -64,3 +71,50 @@ function isCurrent(href: string) {
     </div>
   </div>
 </header>
+
+<style>
+  .site-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: inherit;
+    min-width: 0;
+  }
+
+  .site-brand:hover {
+    color: inherit;
+    opacity: 0.85;
+  }
+
+  .site-brand__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+    line-height: 1.15;
+  }
+
+  .site-brand__name {
+    font-family: var(--font-serif);
+    font-size: 0.92rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    max-width: 11.5rem;
+    line-height: 1.2;
+  }
+
+  .site-brand__place {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  @media (max-width: 520px) {
+    .site-brand__text {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+
+const locale = 'es' as const;
+---
+
+<Base
+  title="Archivo"
+  description="Archivo visual del proyecto: terreno, cámaras trampa y cartografías"
+  locale={locale}
+>
+  <div class="section">
+    <div class="container container--reading">
+      <header class="page-header">
+        <h1 class="page-header__title">Archivo</h1>
+        <p class="page-header__lead">
+          Imágenes de terreno, registros de cámaras trampa y cartografías comunitarias.
+          Esta sección se activará cuando el equipo suba material desde el panel de edición.
+        </p>
+      </header>
+      <div class="prose">
+        <p>
+          El archivo reunirá el rastro visual del trabajo: salidas de campo, indicios de jabalí,
+          talleres, trawun y el paisaje del corredor Puesco–Quiñenahuin–Panqui–Palguín.
+        </p>
+      </div>
+    </div>
+  </div>
+</Base>

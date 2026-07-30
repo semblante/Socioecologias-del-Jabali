@@ -12,23 +12,27 @@ interface Props {
 const { locale } = Astro.props;
 const ui = getUi(locale);
 const showCmsLink = import.meta.env.DEV;
+const brand = siteConfig.nameShort[locale];
 
 const navLinks = [
-  { key: 'proyecto', href: localizedPath('/proyecto', locale) },
-  { key: 'equipo', href: localizedPath('/equipo', locale) },
-  { key: 'bitacora', href: localizedPath('/bitacora', locale) },
-  { key: 'publicaciones', href: localizedPath('/publicaciones', locale) },
-  { key: 'contacto', href: localizedPath('/contacto', locale) },
-] as const;
+  { key: 'proyecto' as const, href: localizedPath('/proyecto', locale) },
+  { key: 'territorio' as const, href: localizedPath('/territorio', locale) },
+  { key: 'equipo' as const, href: localizedPath('/equipo', locale) },
+  { key: 'bitacora' as const, href: localizedPath('/bitacora', locale) },
+  { key: 'archivo' as const, href: localizedPath('/archivo', locale) },
+  { key: 'publicaciones' as const, href: localizedPath('/publicaciones', locale) },
+  { key: 'productos' as const, href: localizedPath('/productos', locale) },
+  { key: 'contacto' as const, href: localizedPath('/contacto', locale) },
+];
 ---
 
 <footer class="site-footer" transition:persist="site-footer">
   <div class="container site-footer__grid">
     <div class="site-footer__brand">
       <SiteLogo locale={locale} size="footer" />
-      <p class="site-footer__title">{siteConfig.name}</p>
+      <p class="site-footer__title">{brand}</p>
       <p class="site-footer__desc">{siteConfig.projectTitle}</p>
-      <p class="kicker site-footer__grant">{siteConfig.fondecyt}</p>
+      <p class="kicker site-footer__grant">{siteConfig.fondecyt} · {siteConfig.fondecytYear}</p>
     </div>
 
     <div>
