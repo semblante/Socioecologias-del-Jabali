@@ -1,0 +1,232 @@
+@import "@fontsource/newsreader/400.css";
+@import "@fontsource/newsreader/500.css";
+@import "@fontsource/newsreader/400-italic.css";
+@import "@fontsource/instrument-sans/400.css";
+@import "@fontsource/instrument-sans/500.css";
+@import "@fontsource/instrument-sans/600.css";
+@import "@fontsource-variable/geist-mono";
+@import "./tokens.css";
+@import "./typography.css";
+@import "./components.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  position: relative;
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--c-bg);
+  color: var(--c-ink);
+  font-family: var(--f-body);
+  font-size: var(--t-base);
+  font-weight: 400;
+  line-height: 1.65;
+  font-feature-settings: "kern" 1, "liga" 1;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background-image: var(--texture-grain);
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  opacity: var(--texture-opacity);
+  mix-blend-mode: multiply;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 130% 90% at 50% -10%,
+    transparent 35%,
+    color-mix(in srgb, var(--c-ink) 3%, transparent) 100%
+  );
+}
+
+main {
+  position: relative;
+  z-index: 1;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: var(--c-accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+  text-decoration-color: color-mix(in srgb, var(--c-accent) 40%, transparent);
+  transition: color var(--d-fast) var(--ease-organic);
+}
+
+a:hover {
+  color: var(--c-accent-hi);
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: 3px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--s-4);
+  top: -100%;
+  z-index: 10000;
+  padding: var(--s-2) var(--s-4);
+  background: var(--c-ink);
+  color: var(--c-bg);
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: var(--s-4);
+}
+
+.container {
+  width: min(100% - var(--s-8), var(--w-wide));
+  margin-inline: auto;
+}
+
+.container--narrow {
+  width: min(100% - var(--s-8), var(--w-narrow));
+}
+
+.container--reading {
+  width: min(100% - var(--s-8), var(--w-reading));
+}
+
+@media (max-width: 639px) {
+  .container,
+  .container--narrow,
+  .container--reading {
+    width: min(100% - var(--s-4), var(--w-wide));
+  }
+}
+
+.section {
+  position: relative;
+  padding-block: var(--space-section-inner);
+}
+
+.section:has(.page-header) {
+  padding-top: 0;
+}
+
+@media (max-width: 639px) {
+  .section {
+    padding-block: var(--s-8);
+  }
+}
+
+.section--soft {
+  background: var(--c-bg-soft);
+}
+
+.section--soft::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--texture-grain);
+  background-size: 200px 200px;
+  opacity: var(--texture-opacity-soft);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.section--soft > .container,
+.section--soft > .container--reading {
+  position: relative;
+  z-index: 1;
+}
+
+.section__title {
+  font-family: var(--f-display);
+  font-size: var(--t-2xl);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--s-8);
+}
+
+.section-lead {
+  max-width: var(--w-text);
+  font-size: var(--t-md);
+  color: var(--c-ink-soft);
+  margin: 0 0 var(--s-6);
+  line-height: 1.65;
+}
+
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+}
+
+.page-header {
+  padding-top: 3.5rem;
+  padding-bottom: 2rem;
+  margin-bottom: var(--s-6);
+}
+
+.page-header__title {
+  font-family: var(--font-serif);
+  font-size: clamp(var(--t-xl), 4vw, var(--t-3xl));
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--s-4);
+  max-width: var(--max-prose);
+}
+
+.page-header__title:last-child {
+  margin-bottom: 0;
+}
+
+.page-header__lead {
+  font-size: var(--t-md);
+  color: var(--c-ink-soft);
+  max-width: var(--w-text);
+  margin: 0;
+  line-height: 1.65;
+}

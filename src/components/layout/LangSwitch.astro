@@ -1,0 +1,26 @@
+---
+import type { Locale } from '../../config/site';
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+}
+
+const { locale, currentPath } = Astro.props;
+
+function pathFor(target: 'es' | 'en') {
+  const without = currentPath.replace(/^\/en(?=\/|$)/, '') || '/';
+  if (target === 'es') return without === '/' ? '/' : without;
+  if (without === '/') return '/en/';
+  return `/en${without}`;
+}
+
+const esPath = pathFor('es');
+const enPath = pathFor('en');
+---
+
+<div class="lang-switch" role="navigation" aria-label={locale === 'es' ? 'Idioma' : 'Language'}>
+  <a href={esPath} hreflang="es" title="Español" aria-current={locale === 'es' ? 'page' : undefined}>ES</a>
+  <span aria-hidden="true">/</span>
+  <a href={enPath} hreflang="en" title="English" aria-current={locale === 'en' ? 'page' : undefined}>EN</a>
+</div>

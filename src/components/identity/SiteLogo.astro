@@ -1,0 +1,20 @@
+---
+interface Props {
+  size?: 'nav' | 'hero' | 'footer';
+  class?: string;
+}
+
+const { size = 'nav', class: className } = Astro.props;
+const heights = { nav: 36, hero: 140, footer: 40 };
+const h = heights[size];
+---
+
+<img
+  src="/jabali_icon.png"
+  alt=""
+  width={h * 2.2}
+  height={h}
+  class:list={['site-logo', `site-logo--${size}`, className]}
+  loading={size === 'nav' ? 'eager' : 'lazy'}
+  decoding="async"
+/>

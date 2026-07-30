@@ -1,0 +1,30 @@
+---
+import type { Locale } from '../../config/site';
+import { localizedPath } from '../../i18n/routing';
+
+interface Crumb {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  locale: Locale;
+  crumbs: Crumb[];
+}
+
+const { locale, crumbs } = Astro.props;
+---
+
+<nav class="breadcrumbs" aria-label={locale === 'es' ? 'Ruta de navegación' : 'Breadcrumb'}>
+  <ol class="breadcrumbs__list">
+    {crumbs.map((crumb, i) => (
+      <li class="breadcrumbs__item">
+        {crumb.href && i < crumbs.length - 1 ? (
+          <a href={crumb.href}>{crumb.label}</a>
+        ) : (
+          <span aria-current="page">{crumb.label}</span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>

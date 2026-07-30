@@ -1,0 +1,30 @@
+---
+import type { Locale } from '../../config/site';
+import { getUi } from '../../i18n/ui';
+import { localizedPath } from '../../i18n/routing';
+
+interface Props {
+  locale: Locale;
+  summary: string;
+}
+
+const { locale, summary } = Astro.props;
+const ui = getUi(locale);
+
+const frameworks = locale === 'es'
+  ? ['STS', 'Humanidades ambientales', 'Etnografía']
+  : ['STS', 'Environmental humanities', 'Ethnography'];
+---
+
+<section class="section">
+  <div class="container">
+    <h2 class="section__title">{ui.aboutProject}</h2>
+    <p class="section-lead">{summary}</p>
+    <div class="framework-tags">
+      {frameworks.map((fw) => (
+        <span class="tag">{fw}</span>
+      ))}
+    </div>
+    <a class="btn" href={localizedPath('/proyecto', locale)} style="margin-top: var(--s-6);">{ui.readMore}</a>
+  </div>
+</section>

@@ -1,0 +1,34 @@
+---
+import SiteLogo from '../identity/SiteLogo.astro';
+import type { Locale } from '../../config/site';
+import { siteConfig } from '../../config/site';
+import { getUi } from '../../i18n/ui';
+import { localizedPath } from '../../i18n/routing';
+
+interface Props {
+  locale: Locale;
+  tagline: string;
+  intro: string;
+}
+
+const { locale, tagline, intro } = Astro.props;
+const ui = getUi(locale);
+---
+
+<section class="hero container">
+  <div class="hero__grid">
+    <div class="hero__mark" aria-hidden="true">
+      <SiteLogo size="hero" />
+    </div>
+    <div class="hero__content">
+      <p class="kicker">{siteConfig.fondecyt} · PUC Chile</p>
+      <h1 class="hero__title">{tagline}</h1>
+      <p class="hero__tagline">{intro}</p>
+      <div class="hero__actions">
+        <a class="btn btn--accent" href={localizedPath('/proyecto', locale)}>{ui.projectCta}</a>
+        <a class="btn" href={localizedPath('/bitacora', locale)}>{ui.fieldNotesCta}</a>
+        <a class="btn btn--text" href={localizedPath('/publicaciones', locale)}>{ui.nav.publicaciones} →</a>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,66 @@
+---
+import Base from './Base.astro';
+import Breadcrumbs from '../components/ui/Breadcrumbs.astro';
+import TranslationBanner from '../components/ui/TranslationBanner.astro';
+import type { Locale } from '../config/site';
+import { getUi } from '../i18n/ui';
+import { localizedPath } from '../i18n/routing';
+
+interface Props {
+  title: string;
+  description?: string;
+  locale: Locale;
+  pubDate?: Date;
+  tags?: string[];
+  isFallback?: boolean;
+  slug?: string;
+}
+
+const { title, description, locale, pubDate, tags = [], isFallback = false, slug } = Astro.props;
+const ui = getUi(locale);
+const homeLabel = locale === 'es' ? 'Inicio' : 'Home';
+---
+
+<Base title={title} description={description} locale={locale}>
+  <article class="section">
+    <div class="container container--narrow">
+      <Breadcrumbs
+        locale={locale}
+        crumbs={[
+          { label: homeLabel, href: localizedPath('/', locale) },
+          { label: ui.nav.bitacora, href: localizedPath('/bitacora', locale) },
+          { label: title },
+        ]}
+      />
+      {isFallback && slug && (
+        <TranslationBanner locale={locale} backHref={localizedPath(`/bitacora/${slug}`, 'es')} />
+      )}
+      <header class="page-header" style="border: none; padding-bottom: 0; margin-bottom: var(--s-6);">
+        {pubDate && (
+          <time class="meta" datetime={pubDate.toISOString()}>
+            {pubDate.toLocaleDateString(locale === 'es' ? 'es-CL' : 'en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </time>
+        )}
+        <h1 class="page-header__title">{title}</h1>
+        {description && <p class="page-header__lead">{description}</p>}
+        {tags.length > 0 && (
+          <div class="tag-list">
+            {tags.map((tag) => (
+              <span class="tag">{tag}</span>
+            ))}
+          </div>
+        )}
+      </header>
+      <div class="prose prose--article">
+        <slot />
+      </div>
+      <a class="article-back" href={localizedPath('/bitacora', locale)}>
+        {locale === 'es' ? '← Volver al cuaderno' : '← Back to field notes'}
+      </a>
+    </div>
+  </article>
+</Base>

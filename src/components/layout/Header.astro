@@ -1,0 +1,66 @@
+---
+import type { Locale } from '../../config/site';
+import { siteConfig } from '../../config/site';
+import { getUi } from '../../i18n/ui';
+import { localizedPath } from '../../i18n/routing';
+import SiteLogo from '../identity/SiteLogo.astro';
+import LangSwitch from './LangSwitch.astro';
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+}
+
+const { locale, currentPath } = Astro.props;
+const ui = getUi(locale);
+const menuLabel = locale === 'es' ? 'Abrir menú de navegación' : 'Open navigation menu';
+
+const links = [
+  { key: 'proyecto', href: localizedPath('/proyecto', locale), enabled: siteConfig.sections.proyecto },
+  { key: 'equipo', href: localizedPath('/equipo', locale), enabled: siteConfig.sections.equipo },
+  { key: 'bitacora', href: localizedPath('/bitacora', locale), enabled: siteConfig.sections.bitacora },
+  { key: 'publicaciones', href: localizedPath('/publicaciones', locale), enabled: siteConfig.sections.publicaciones },
+  { key: 'contacto', href: localizedPath('/contacto', locale), enabled: siteConfig.sections.contacto },
+].filter((l) => l.enabled);
+
+function isCurrent(href: string) {
+  if (href === '/' || href === '/en/') return currentPath === href || currentPath === href.replace(/\/$/, '');
+  return currentPath === href || currentPath.startsWith(`${href}/`);
+}
+---
+
+<header class="site-header" transition:persist="site-header">
+  <div class="site-header__inner">
+    <a href={localizedPath('/', locale)} class="site-brand" aria-label={siteConfig.name}>
+      <SiteLogo size="nav" />
+    </a>
+
+    <nav class="site-header__nav" aria-label={locale === 'es' ? 'Navegación principal' : 'Main navigation'}>
+      <ul class="site-nav" id="site-nav">
+        {links.map((link) => (
+          <li>
+            <a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined}>
+              {ui.nav[link.key as keyof typeof ui.nav]}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="site-header__end">
+      <LangSwitch locale={locale} currentPath={currentPath} />
+      <button
+        type="button"
+        class="menu-toggle"
+        aria-expanded="false"
+        aria-controls="site-nav"
+        aria-label={menuLabel}
+        id="menu-toggle"
+      >
+        <span class="menu-toggle__bar" aria-hidden="true"></span>
+        <span class="menu-toggle__bar" aria-hidden="true"></span>
+        <span class="menu-toggle__bar" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+</header>

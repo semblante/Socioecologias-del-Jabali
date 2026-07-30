@@ -1,0 +1,62 @@
+---
+import '../styles/base.css';
+import { ClientRouter } from 'astro:transitions';
+import type { Locale } from '../config/site';
+import { siteConfig } from '../config/site';
+import { getUi } from '../i18n/ui';
+import { localizedPath, getLocaleFromUrl } from '../i18n/routing';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  locale?: Locale;
+}
+
+const { title, description, locale: propLocale } = Astro.props;
+const locale = propLocale ?? getLocaleFromUrl(Astro.url);
+const ui = getUi(locale);
+const pageTitle = title ? `${title} · ${siteConfig.name}` : siteConfig.name;
+const pageDescription =
+  description ??
+  (locale === 'es'
+    ? 'Investigación Fondecyt sobre socioecologías del jabalí en la Araucanía Andina como zona de contacto entre mundos humanos y no humanos.'
+    : 'Fondecyt research on wild boar socioecologies in the Andean Araucanía as a contact zone between human and nonhuman worlds.');
+const canonical = new URL(Astro.url.pathname, siteConfig.url).href;
+---
+
+<!doctype html>
+<html lang={locale} transition:animate="none">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={pageDescription} />
+    <link rel="icon" type="image/png" href="/jabali_icon.png" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="es" href={new URL(localizedPath(Astro.url.pathname.replace(/^\/en/, '') || '/', 'es'), siteConfig.url).href} />
+    <link rel="alternate" hreflang="en" href={new URL(localizedPath(Astro.url.pathname.replace(/^\/en/, '') || '/', 'en'), siteConfig.url).href} />
+    <link rel="alternate" hreflang="x-default" href={new URL(localizedPath(Astro.url.pathname.replace(/^\/en/, '') || '/', 'es'), siteConfig.url).href} />
+    <link rel="apple-touch-icon" href="/jabali_icon.png" />
+    <meta property="og:locale" content={locale === 'es' ? 'es_CL' : 'en_US'} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:site_name" content={siteConfig.name} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta name="generator" content={Astro.generator} />
+    <ClientRouter />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{ui.skipToContent}</a>
+    <Header locale={locale} currentPath={Astro.url.pathname} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+    <script src="../scripts/client-nav.ts"></script>
+    <script src="../scripts/site-nav.ts"></script>
+    <script src="../scripts/pub-filters.ts"></script>
+  </body>
+</html>

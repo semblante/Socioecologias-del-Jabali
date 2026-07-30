@@ -1,0 +1,81 @@
+:root {
+  /* Semantic tokens (design spec) */
+  --color-bg: #f0ede6;
+  --color-bg-card: #eae7df;
+  --color-text: #1c1a17;
+  --color-text-muted: #6b6560;
+  --color-accent: #7b3b2a;
+  --color-accent-subtle: rgba(123, 59, 42, 0.1);
+  --color-border: rgba(28, 26, 23, 0.12);
+
+  --font-serif: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Instrument Sans", system-ui, sans-serif;
+  --font-mono: "Geist Mono", "Courier New", monospace;
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+
+  --space-section: 5rem;
+  --space-section-inner: 3rem;
+  --max-prose: 68ch;
+
+  /* Legacy aliases */
+  --c-bg: var(--color-bg);
+  --c-bg-soft: var(--color-bg-card);
+  --c-ink: var(--color-text);
+  --c-ink-soft: var(--color-text-muted);
+  --c-rule: var(--color-border);
+  --c-accent: var(--color-accent);
+  --c-accent-hi: #8f4a35;
+  --c-accent-muted: var(--color-accent-subtle);
+  --c-bosque: #4a463e;
+
+  --texture-grain: url("/textures/paper-grain.svg");
+  --texture-opacity: 0.04;
+  --texture-opacity-soft: 0.06;
+
+  --f-display: var(--font-serif);
+  --f-body: var(--font-sans);
+  --f-mono: var(--font-mono);
+
+  --t-xs: 0.8rem;
+  --t-sm: 0.9rem;
+  --t-base: 1rem;
+  --t-md: 1.25rem;
+  --t-lg: 1.563rem;
+  --t-xl: 1.953rem;
+  --t-2xl: 2.441rem;
+  --t-3xl: 3.052rem;
+
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-6: 1.5rem;
+  --s-8: 2rem;
+  --s-12: 3rem;
+  --s-16: 4rem;
+  --s-20: 5rem;
+  --s-24: 6rem;
+  --s-32: 8rem;
+
+  --w-text: var(--max-prose);
+  --w-wide: 1200px;
+  --w-narrow: 720px;
+  --w-reading: 960px;
+
+  --ease-organic: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --d-fast: 180ms;
+  --d-medium: 420ms;
+  --d-slow: 900ms;
+
+  --header-h: 4.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --d-fast: 0ms;
+    --d-medium: 0ms;
+    --d-slow: 0ms;
+  }
+}

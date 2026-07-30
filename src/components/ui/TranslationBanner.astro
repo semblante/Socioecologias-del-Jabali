@@ -1,0 +1,22 @@
+---
+import type { Locale } from '../../config/site';
+import { getUi } from '../../i18n/ui';
+import { localizedPath } from '../../i18n/routing';
+
+interface Props {
+  locale: Locale;
+  backHref: string;
+}
+
+const { locale, backHref } = Astro.props;
+const ui = getUi(locale);
+---
+
+<div class="translation-banner" role="status" aria-live="polite">
+  <p style="margin: 0;">
+    {ui.translationInProgress}
+    <a href={backHref} style="margin-left: 0.5em;">
+      {locale === 'es' ? 'Ver versión en español' : 'View Spanish version'}
+    </a>
+  </p>
+</div>

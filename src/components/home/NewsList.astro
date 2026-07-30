@@ -1,0 +1,37 @@
+---
+import Card from '../ui/Card.astro';
+import type { Locale } from '../../config/site';
+import { getUi } from '../../i18n/ui';
+import { localizedPath, formatDate } from '../../i18n/routing';
+import { getEntrySlug, type BitacoraEntry } from '../../lib/content';
+
+interface Props {
+  locale: Locale;
+  entries: BitacoraEntry[];
+}
+
+const { locale, entries } = Astro.props;
+const ui = getUi(locale);
+---
+
+<section class="section section--soft">
+  <div class="container">
+    <div class="section-header-row">
+      <h2 class="section__title" style="margin: 0;">{ui.latestFieldNotes}</h2>
+      <a href={localizedPath('/bitacora', locale)} style="font-size: var(--t-sm);">{ui.viewAll} →</a>
+    </div>
+    <div class="grid-cards grid-cards--3" style="margin-top: var(--s-8);">
+      {entries.slice(0, 3).map((entry, i) => (
+        <div>
+          <Card
+            href={localizedPath(`/bitacora/${getEntrySlug(entry)}`, locale)}
+            title={entry.data.title}
+            excerpt={entry.data.description}
+            dateLabel={formatDate(entry.data.pubDate, locale)}
+            tag={entry.data.tags[0]}
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

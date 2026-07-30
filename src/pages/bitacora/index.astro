@@ -1,0 +1,35 @@
+---
+import Base from '../../layouts/Base.astro';
+import Card from '../../components/ui/Card.astro';
+import { getBitacora, getEntrySlug } from '../../lib/content';
+import { getUi } from '../../i18n/ui';
+import { localizedPath, formatDate } from '../../i18n/routing';
+
+const locale = 'es';
+const ui = getUi(locale);
+const entries = await getBitacora(locale);
+---
+
+<Base title={ui.nav.bitacora} locale={locale}>
+  <div class="section">
+    <div class="container container--reading">
+      <header class="page-header">
+        <h1 class="page-header__title">{ui.nav.bitacora}</h1>
+        <p class="page-header__lead">{ui.bitacora.lead}</p>
+      </header>
+      <div class="grid-cards">
+        {entries.map((entry, i) => (
+          <div style={`--reveal-i: ${i % 3}`}>
+            <Card
+              href={localizedPath(`/bitacora/${getEntrySlug(entry)}`, locale)}
+              title={entry.data.title}
+              excerpt={entry.data.description}
+              dateLabel={formatDate(entry.data.pubDate, locale)}
+              tag={entry.data.tags[0]}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</Base>

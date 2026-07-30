@@ -1,0 +1,22 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/home/Hero.astro';
+import AboutBlurb from '../../components/home/AboutBlurb.astro';
+import NewsList from '../../components/home/NewsList.astro';
+import { getPage, getBitacora } from '../../lib/content';
+import { getUi } from '../../i18n/ui';
+
+const locale = 'en';
+const ui = getUi(locale);
+const home = await getPage('home', locale);
+const bitacora = await getBitacora(locale);
+
+const tagline = home?.data.tagline ?? 'A research project on wild boar in the Andean Araucanía as a contact zone between worlds';
+const intro = home?.data.intro ?? '';
+---
+
+<Base locale={locale}>
+  <Hero locale={locale} tagline={tagline} intro={intro} />
+  <AboutBlurb locale={locale} summary={ui.homeSummary} />
+  <NewsList locale={locale} entries={bitacora} />
+</Base>

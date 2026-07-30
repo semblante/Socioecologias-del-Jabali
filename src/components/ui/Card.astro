@@ -1,0 +1,22 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  excerpt: string;
+  dateLabel: string;
+  tag?: string;
+}
+
+const { href, title, excerpt, dateLabel, tag } = Astro.props;
+---
+
+<a class="card card-cuaderno" href={href} aria-label={`${title}, ${dateLabel}`}>
+  <span class="date">{dateLabel}</span>
+  <h3 class="card__title">{title}</h3>
+  <p class="card__excerpt">{excerpt}</p>
+  {tag && (
+    <div class="card__tags">
+      <span class="tag">{tag}</span>
+    </div>
+  )}
+</a>
