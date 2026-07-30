@@ -1,0 +1,171 @@
+---
+import Base from '../layouts/Base.astro';
+import type { Locale } from '../config/site';
+import { getBitacora, getEntrySlug } from '../lib/content';
+import { getUi } from '../i18n/ui';
+import { localizedPath, formatDate } from '../i18n/routing';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const ui = getUi(locale);
+const entries = await getBitacora(locale);
+---
+
+<Base title={ui.nav.bitacora} description={ui.bitacora.lead} locale={locale}>
+  <div class="section">
+    <div class="container container--reading">
+      <header class="page-header">
+        <h1 class="page-header__title">{ui.nav.bitacora}</h1>
+        <p class="page-header__lead">{ui.bitacora.lead}</p>
+      </header>
+
+      {entries.length === 0 ? (
+        <p class="empty">{locale === 'es' ? 'Aún no hay entradas publicadas.' : 'No entries published yet.'}</p>
+      ) : (
+        <ol class="journal">
+          {entries.map((entry, i) => (
+            <li class="journal__item">
+              <a class="journal__link" href={localizedPath(`/cuaderno/${getEntrySlug(entry)}`, locale)}>
+                <span class="journal__index" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <span class="journal__body">
+                  <time datetime={entry.data.pubDate.toISOString()}>
+                    {formatDate(entry.data.pubDate, locale)}
+                  </time>
+                  <span class="journal__title">{entry.data.title}</span>
+                  <span class="journal__excerpt">{entry.data.description}</span>
+                  {entry.data.tags[0] && <span class="journal__tag">{entry.data.tags[0]}</span>}
+                </span>
+                <span class="journal__arrow" aria-hidden="true">→</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      )}
+    </div>
+  </div>
+</Base>
+
+<style>
+  .journal {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: none;
+  }
+
+  .journal__item {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .journal__item:last-child {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .journal__link {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--s-4);
+    align-items: start;
+    padding-block: var(--s-6);
+    text-decoration: none;
+    color: var(--color-text);
+    transition: background var(--d-fast) var(--ease-organic);
+  }
+
+  .journal__link:hover,
+  .journal__link:focus-visible {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .journal__link:hover .journal__title,
+  .journal__link:focus-visible .journal__title {
+    color: var(--color-accent);
+  }
+
+  .journal__link:hover .journal__arrow {
+    transform: translateX(3px);
+    color: var(--color-accent);
+  }
+
+  .journal__index {
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.08em;
+    color: var(--color-accent);
+    padding-top: 0.35rem;
+    min-width: 1.75rem;
+  }
+
+  .journal__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    min-width: 0;
+  }
+
+  time {
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .journal__title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.2rem, 2.4vw, 1.55rem);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    color: var(--color-text);
+    transition: color var(--d-fast) var(--ease-organic);
+  }
+
+  .journal__excerpt {
+    font-size: var(--t-sm);
+    line-height: 1.55;
+    color: var(--color-text-muted);
+    max-width: 52ch;
+  }
+
+  .journal__tag {
+    align-self: start;
+    margin-top: var(--s-1);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    padding: 0.2rem 0.45rem;
+    background: var(--color-accent-subtle);
+  }
+
+  .journal__arrow {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    color: var(--color-text-muted);
+    padding-top: 0.2rem;
+    transition:
+      transform var(--d-fast) var(--ease-organic),
+      color var(--d-fast) var(--ease-organic);
+  }
+
+  @media (max-width: 639px) {
+    .journal__link {
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: var(--s-3) var(--s-4);
+      padding-block: var(--s-5);
+    }
+
+    .journal__arrow {
+      display: none;
+    }
+  }
+
+  .empty {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--color-text-muted);
+  }
+</style>

@@ -204,9 +204,16 @@ a:hover {
 }
 
 .page-header {
-  padding-top: 3.5rem;
+  padding-top: clamp(2rem, 5vw, 3.5rem);
   padding-bottom: 2rem;
   margin-bottom: var(--s-6);
+}
+
+@media (max-width: 767px) {
+  .page-header {
+    padding-top: var(--s-6);
+    padding-bottom: var(--s-6);
+  }
 }
 
 .page-header__title {
@@ -224,9 +231,10 @@ a:hover {
 }
 
 .page-header__lead {
-  font-size: var(--t-md);
+  font-family: var(--font-serif);
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
   color: var(--c-ink-soft);
   max-width: var(--w-text);
   margin: 0;
-  line-height: 1.65;
+  line-height: 1.55;
 }

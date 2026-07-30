@@ -1,0 +1,185 @@
+---
+import Base from '../layouts/Base.astro';
+import MarkdownBody from '../components/MarkdownBody.astro';
+import SiteMap from '../components/territorio/SiteMap.astro';
+import type { Locale } from '../config/site';
+import { getSitios, getEntrySlug } from '../lib/content';
+import { localizedPath } from '../i18n/routing';
+import { parseCoords } from '../lib/geo';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const sitios = await getSitios(locale);
+const principal = sitios.find((s) => s.data.tipo === 'principal');
+const secundarios = sitios.filter((s) => s.data.tipo === 'secundario');
+const title = locale === 'es' ? 'Territorio' : 'Territory';
+const lead =
+  locale === 'es'
+    ? 'El peweñantu como (co)laboratorio: un corredor volcánico donde el jabalí encuentra bosque, comunidad y política de conservación.'
+    : 'The peweñantu as a (co)laboratory: a volcanic corridor where wild boar meet forest, community, and conservation policy.';
+
+const markers = sitios
+  .map((s) => {
+    const coords = parseCoords(s.data.coordenadas);
+    if (!coords) return null;
+    return {
+      id: getEntrySlug(s),
+      nombre: s.data.nombre,
+      lat: coords.lat,
+      lng: coords.lng,
+      tipo: s.data.tipo as 'principal' | 'secundario',
+      href: localizedPath(`/territorio/${getEntrySlug(s)}`, locale),
+      aporte: s.data.aporte,
+    };
+  })
+  .filter((m): m is NonNullable<typeof m> => m !== null);
+---
+
+<Base title={title} description={lead} locale={locale}>
+  <div class="territorio">
+    <div class="territorio__intro container container--reading">
+      <header class="page-header">
+        <p class="kicker">{locale === 'es' ? 'Araucanía andina' : 'Andean Araucanía'}</p>
+        <h1 class="page-header__title">{title}</h1>
+        <p class="page-header__lead">{lead}</p>
+      </header>
+    </div>
+
+    {markers.length > 0 && (
+      <div class="territorio__map container">
+        <SiteMap markers={markers} locale={locale} height="min(42vh, 24rem)" />
+      </div>
+    )}
+
+    <div class="territorio__body container container--reading">
+      {principal && (
+        <article class="sitio sitio--principal">
+          <p class="kicker">{locale === 'es' ? 'Caso principal' : 'Core case'}</p>
+          <h2>
+            <a href={localizedPath(`/territorio/${getEntrySlug(principal)}`, locale)}>{principal.data.nombre}</a>
+          </h2>
+          <p class="sitio__aporte">{principal.data.aporte}</p>
+          <MarkdownBody content={principal.content} />
+          <p class="sitio__cta">
+            <a href={localizedPath('/territorio/winkulmapu', locale)}>
+              {locale === 'es' ? 'Acuerdo de Gobernanza Winkulmapu →' : 'Winkulmapu Governance Agreement →'}
+            </a>
+          </p>
+        </article>
+      )}
+
+      <h2 class="territorio__sub">
+        {locale === 'es' ? 'Casos secundarios' : 'Secondary cases'}
+      </h2>
+      <ul class="sitio-list">
+        {secundarios.map((sitio) => (
+          <li class="sitio-list__item">
+            <h3>
+              <a href={localizedPath(`/territorio/${getEntrySlug(sitio)}`, locale)}>{sitio.data.nombre}</a>
+            </h3>
+            <p class="sitio__aporte">{sitio.data.aporte}</p>
+            <MarkdownBody content={sitio.content} class="sitio__prose" />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .territorio {
+    padding-bottom: var(--s-20);
+  }
+
+  .territorio__intro {
+    padding-top: var(--s-8);
+  }
+
+  @media (min-width: 768px) {
+    .territorio__intro {
+      padding-top: var(--s-12);
+    }
+  }
+
+  .territorio__map {
+    margin-block: var(--s-8) var(--s-12);
+  }
+
+  .territorio__body {
+    padding-bottom: var(--s-8);
+  }
+
+  .sitio--principal {
+    padding-bottom: var(--s-10);
+    margin-bottom: var(--s-10);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .sitio h2,
+  .sitio-list h3 {
+    margin: 0 0 var(--s-3);
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: var(--t-xl);
+    letter-spacing: -0.02em;
+  }
+
+  .sitio-list h3 {
+    font-size: var(--t-lg);
+  }
+
+  .sitio h2 a,
+  .sitio-list h3 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .sitio h2 a:hover,
+  .sitio-list h3 a:hover {
+    color: var(--color-accent);
+  }
+
+  .sitio__aporte {
+    margin: 0 0 var(--s-4);
+    color: var(--color-text-muted);
+    font-size: var(--t-sm);
+    font-family: var(--font-serif);
+    font-style: italic;
+  }
+
+  .sitio__cta a {
+    font-weight: 500;
+    color: var(--color-accent);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
+  }
+
+  .sitio__cta a:hover {
+    border-color: var(--color-accent);
+  }
+
+  .territorio__sub {
+    margin: 0 0 var(--s-6);
+    font-family: var(--font-serif);
+    font-size: var(--t-xl);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .sitio-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0;
+  }
+
+  .sitio-list__item {
+    padding-block: var(--s-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .sitio__prose {
+    font-size: var(--t-sm);
+  }
+</style>

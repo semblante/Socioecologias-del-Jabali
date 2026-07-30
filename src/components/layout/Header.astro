@@ -21,7 +21,7 @@ const links = [
   { key: 'proyecto', href: localizedPath('/proyecto', locale), enabled: siteConfig.sections.proyecto },
   { key: 'territorio', href: localizedPath('/territorio', locale), enabled: siteConfig.sections.territorio },
   { key: 'equipo', href: localizedPath('/equipo', locale), enabled: siteConfig.sections.equipo },
-  { key: 'bitacora', href: localizedPath('/bitacora', locale), enabled: siteConfig.sections.bitacora },
+  { key: 'bitacora', href: localizedPath('/cuaderno', locale), enabled: siteConfig.sections.bitacora },
   { key: 'archivo', href: localizedPath('/archivo', locale), enabled: siteConfig.sections.archivo },
   { key: 'publicaciones', href: localizedPath('/publicaciones', locale), enabled: siteConfig.sections.publicaciones },
 ].filter((l) => l.enabled);
@@ -35,7 +35,7 @@ function isCurrent(href: string) {
 <header class="site-header" transition:persist="site-header">
   <div class="site-header__inner">
     <a href={localizedPath('/', locale)} class="site-brand">
-      <SiteLogo locale={locale} size="nav" />
+      <SiteLogo locale={locale} size="nav" variant="mark" />
       <span class="site-brand__text">
         <span class="site-brand__name">{brand}</span>
         <span class="site-brand__place">{place}</span>
@@ -112,7 +112,16 @@ function isCurrent(href: string) {
     color: var(--color-text-muted);
   }
 
-  @media (max-width: 520px) {
+  @media (max-width: 767px) {
+    .site-brand {
+      gap: 0.55rem;
+    }
+
+    .site-brand :global(.site-logo--nav) {
+      width: 2.25rem;
+      flex-shrink: 0;
+    }
+
     .site-brand__text {
       display: none;
     }

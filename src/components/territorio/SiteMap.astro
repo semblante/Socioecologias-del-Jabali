@@ -1,0 +1,252 @@
+---
+/**
+ * Mapa OSM: sepia solo en tiles; marcadores con color de marca.
+ * En táctil, un dedo hace scroll de página; dos dedos mueven/zoomean el mapa.
+ */
+export interface MapMarker {
+  id: string;
+  nombre: string;
+  lat: number;
+  lng: number;
+  tipo: 'principal' | 'secundario';
+  href?: string;
+  aporte?: string;
+}
+
+interface Props {
+  markers: MapMarker[];
+  locale?: 'es' | 'en';
+  height?: string;
+  zoom?: number;
+}
+
+const { markers, locale = 'es', height = 'min(52vh, 28rem)', zoom } = Astro.props;
+const mapId = `osm-${markers.map((m) => m.id).join('-') || 'empty'}`;
+const payload = JSON.stringify({ markers, zoom: zoom ?? null, locale, mapId });
+const label = locale === 'es' ? 'Mapa de sitios de investigación' : 'Map of research sites';
+const hint =
+  locale === 'es' ? 'Usa dos dedos para mover el mapa' : 'Use two fingers to move the map';
+---
+
+<figure class="site-map" data-site-map data-payload={payload} aria-label={label}>
+  <div class="site-map__frame" id={mapId} style={`height: ${height}`} role="application" aria-label={label}></div>
+  <figcaption class="site-map__caption">
+    <span class="site-map__legend">
+      <span class="site-map__dot site-map__dot--principal"></span>
+      {locale === 'es' ? 'Caso principal' : 'Core case'}
+      <span class="site-map__dot site-map__dot--secundario"></span>
+      {locale === 'es' ? 'Casos secundarios' : 'Secondary cases'}
+    </span>
+    <span class="site-map__hint" hidden data-map-hint>{hint}</span>
+    <span class="site-map__credit">© OpenStreetMap</span>
+  </figcaption>
+</figure>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script is:inline>
+  (function () {
+    function initSiteMaps() {
+      var L = window.L;
+      if (!L) {
+        setTimeout(initSiteMaps, 40);
+        return;
+      }
+
+      document.querySelectorAll('[data-site-map]:not([data-ready])').forEach(function (el) {
+        el.setAttribute('data-ready', '1');
+        var raw = el.getAttribute('data-payload');
+        if (!raw) return;
+        var data;
+        try {
+          data = JSON.parse(raw);
+        } catch (e) {
+          return;
+        }
+        var frame = document.getElementById(data.mapId);
+        if (!frame) return;
+        var markers = data.markers || [];
+        if (!markers.length) return;
+
+        if (frame._leaflet_id) return;
+
+        var coarse = window.matchMedia('(pointer: coarse)').matches;
+        var map = L.map(frame, {
+          scrollWheelZoom: false,
+          attributionControl: false,
+          zoomControl: true,
+          dragging: !coarse,
+          tap: !coarse,
+          touchZoom: true,
+        });
+
+        if (coarse) {
+          var hint = el.querySelector('[data-map-hint]');
+          if (hint) hint.hidden = false;
+
+          // Un dedo = scroll de página; dos dedos = pan + pinch zoom
+          map.dragging.disable();
+          L.DomEvent.on(frame, 'touchstart', function (e) {
+            if (e.touches && e.touches.length >= 2) map.dragging.enable();
+          });
+          L.DomEvent.on(frame, 'touchend touchcancel', function (e) {
+            if (!e.touches || e.touches.length < 2) map.dragging.disable();
+          });
+        }
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 18,
+          className: 'site-map__tiles',
+        }).addTo(map);
+
+        var bounds = [];
+        markers.forEach(function (m) {
+          var isPrincipal = m.tipo === 'principal';
+          var fill = isPrincipal ? '#b6573e' : '#1a4034';
+          var marker = L.circleMarker([m.lat, m.lng], {
+            radius: isPrincipal ? 11 : 8,
+            color: '#f5f2e8',
+            weight: 2.5,
+            fillColor: fill,
+            fillOpacity: 1,
+            opacity: 1,
+          });
+          var link = m.href
+            ? '<p><a href="' + m.href + '">' + m.nombre + '</a></p>'
+            : '<p><strong>' + m.nombre + '</strong></p>';
+          var aporte = m.aporte ? '<p class="popup-aporte">' + m.aporte + '</p>' : '';
+          marker.bindPopup(link + aporte, { className: 'site-map-popup' });
+          marker.addTo(map);
+          bounds.push([m.lat, m.lng]);
+        });
+
+        if (data.zoom && markers.length === 1) {
+          map.setView([markers[0].lat, markers[0].lng], data.zoom);
+        } else if (bounds.length === 1) {
+          map.setView(bounds[0], 11);
+        } else {
+          map.fitBounds(bounds, { padding: [40, 40], maxZoom: 11 });
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initSiteMaps);
+    } else {
+      initSiteMaps();
+    }
+    document.addEventListener('astro:page-load', initSiteMaps);
+  })();
+</script>
+
+<style>
+  .site-map {
+    margin: 0;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-card);
+  }
+
+  .site-map__frame {
+    width: 100%;
+    min-height: 16rem;
+    background: #d8d2c4;
+    /* Un dedo hace scroll vertical de la página */
+    touch-action: pan-y;
+  }
+
+  /* Sepia solo en el basemap; marcadores/popups quedan fuera del filtro */
+  .site-map__frame :global(.leaflet-tile-pane) {
+    filter: sepia(0.7) contrast(0.94) brightness(0.98) saturate(0.58);
+  }
+
+  .site-map__frame :global(.leaflet-control-zoom a) {
+    border-radius: 0 !important;
+    color: var(--color-text) !important;
+    background: var(--color-bg-alt) !important;
+    border-color: var(--color-border) !important;
+  }
+
+  .site-map__caption {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--s-3);
+    align-items: center;
+    padding: var(--s-3) var(--s-4);
+    border-top: 1px solid var(--color-border);
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .site-map__legend {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2) var(--s-4);
+  }
+
+  .site-map__dot {
+    display: inline-block;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    margin-right: 0.35rem;
+    vertical-align: middle;
+    box-shadow: 0 0 0 1.5px #f5f2e8;
+  }
+
+  .site-map__dot--principal {
+    background: var(--color-accent);
+  }
+
+  .site-map__dot--secundario {
+    background: #1a4034;
+  }
+
+  .site-map__hint {
+    color: var(--color-text-muted);
+    letter-spacing: 0.04em;
+    text-transform: none;
+    font-size: 0.68rem;
+  }
+
+  .site-map__hint[hidden] {
+    display: none;
+  }
+
+  .site-map__credit {
+    opacity: 0.7;
+  }
+</style>
+
+<style is:global>
+  .site-map-popup .leaflet-popup-content-wrapper {
+    border-radius: 0;
+    background: #f5f2e8;
+    color: #131416;
+    box-shadow: none;
+    border: 1px solid rgba(19, 20, 22, 0.18);
+    font-family: "Instrument Sans", system-ui, sans-serif;
+  }
+  .site-map-popup .leaflet-popup-content {
+    margin: 0.75rem 0.9rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+  .site-map-popup .leaflet-popup-content a {
+    color: #b6573e;
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .site-map-popup .popup-aporte {
+    margin: 0.35em 0 0;
+    font-size: 0.8rem;
+    color: #5c5954;
+  }
+  .site-map-popup .leaflet-popup-tip {
+    background: #f5f2e8;
+  }
+</style>

@@ -38,6 +38,12 @@ export function syncShellState(path = window.location.pathname) {
   document.querySelector('.lang-switch a[hreflang="es"]')?.setAttribute('href', esPath);
   document.querySelector('.lang-switch a[hreflang="en"]')?.setAttribute('href', enPath);
 
+  // El swap solo reemplaza #main: hay que sincronizar is-home o el header
+  // queda fixed/claro y se monta sobre títulos / menú ilegible.
+  const isHome = without === '/' || without === '';
+  document.body.classList.toggle('is-home', isHome);
+  if (!isHome) document.body.classList.remove('is-scrolled');
+
   document.documentElement.lang = isEn ? 'en' : 'es';
 }
 
@@ -76,9 +82,9 @@ function swapMainOnly(newDoc: Document) {
   if (localeChanged) {
     swapRegion('.site-header', newDoc);
     swapRegion('.site-footer', newDoc);
-  } else {
-    syncShellState(nextPath);
   }
+
+  syncShellState(nextPath);
 }
 
 document.addEventListener('astro:before-swap', (event) => {
