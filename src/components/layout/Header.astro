@@ -32,7 +32,7 @@ function isCurrent(href: string) {
 <header class="site-header" transition:persist="site-header">
   <div class="site-header__inner">
     <a href={localizedPath('/', locale)} class="site-brand" aria-label={siteConfig.name}>
-      <SiteLogo size="nav" />
+      <SiteLogo locale={locale} size="nav" />
     </a>
 
     <nav class="site-header__nav" aria-label={locale === 'es' ? 'Navegación principal' : 'Main navigation'}>

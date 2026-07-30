@@ -1,12 +1,13 @@
 :root {
-  /* Semantic tokens (design spec) */
-  --color-bg: #f0ede6;
-  --color-bg-card: #eae7df;
-  --color-text: #1c1a17;
-  --color-text-muted: #6b6560;
-  --color-accent: #7b3b2a;
-  --color-accent-subtle: rgba(123, 59, 42, 0.1);
-  --color-border: rgba(28, 26, 23, 0.12);
+  /* Paleta oficial, muestreada del manual de marca (docs/replanteo.md §1) */
+  --color-bg: #edeae1;
+  --color-bg-alt: #fafaeb;
+  --color-bg-card: #e3dfd4;
+  --color-text: #131416;
+  --color-text-muted: #66635e;
+  --color-accent: #b6573e;
+  --color-accent-subtle: rgba(182, 87, 62, 0.1);
+  --color-border: rgba(19, 20, 22, 0.12);
 
   --font-serif: "Newsreader", "Iowan Old Style", Georgia, serif;
   --font-sans: "Instrument Sans", system-ui, sans-serif;
@@ -26,9 +27,9 @@
   --c-ink-soft: var(--color-text-muted);
   --c-rule: var(--color-border);
   --c-accent: var(--color-accent);
-  --c-accent-hi: #8f4a35;
+  --c-accent-hi: #c96a4f;
   --c-accent-muted: var(--color-accent-subtle);
-  --c-bosque: #4a463e;
+  --c-bosque: #24252a;
 
   --texture-grain: url("/textures/paper-grain.svg");
   --texture-opacity: 0.04;

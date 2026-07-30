@@ -48,29 +48,6 @@
   flex-shrink: 0;
 }
 
-.site-logo {
-  object-fit: contain;
-  filter: invert(1);
-  mix-blend-mode: multiply;
-}
-
-.site-logo--nav {
-  height: 2.35rem;
-  width: auto;
-}
-
-.site-logo--hero {
-  height: auto;
-  width: min(200px, 50vw);
-  opacity: 0.88;
-}
-
-.site-logo--footer {
-  height: 2rem;
-  width: auto;
-  opacity: 0.75;
-}
-
 .menu-toggle {
   display: none;
   flex-direction: column;

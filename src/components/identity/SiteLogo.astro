@@ -1,20 +1,46 @@
 ---
+import type { Locale } from '../../config/site';
+
 interface Props {
+  locale: Locale;
   size?: 'nav' | 'hero' | 'footer';
+  variant?: 'abierto' | 'anillo' | 'solido';
   class?: string;
 }
 
-const { size = 'nav', class: className } = Astro.props;
-const heights = { nav: 36, hero: 140, footer: 40 };
-const h = heights[size];
+const { locale, size = 'nav', variant = 'abierto', class: className } = Astro.props;
+const src = `/brand/logo-${locale}-${variant}.svg`;
 ---
 
-<img
-  src="/jabali_icon.png"
-  alt=""
-  width={h * 2.2}
-  height={h}
+<span
   class:list={['site-logo', `site-logo--${size}`, className]}
-  loading={size === 'nav' ? 'eager' : 'lazy'}
-  decoding="async"
-/>
+  style={`--logo-src: url("${src}")`}
+  aria-hidden="true"
+></span>
+
+<style>
+  /* El sello se pinta como máscara sobre currentColor, así hereda el color del
+     contexto (crema, terracota o tinta) desde un único archivo cacheable. */
+  .site-logo {
+    display: block;
+    aspect-ratio: 1;
+    background-color: currentColor;
+    mask-image: var(--logo-src);
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+  }
+
+  .site-logo--nav {
+    width: 2.6rem;
+  }
+
+  .site-logo--hero {
+    width: min(220px, 55vw);
+  }
+
+  .site-logo--footer {
+    width: 2.5rem;
+    opacity: 0.75;
+  }
+</style>

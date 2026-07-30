@@ -32,12 +32,12 @@ const canonical = new URL(Astro.url.pathname, siteConfig.url).href;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={pageDescription} />
-    <link rel="icon" type="image/png" href="/jabali_icon.png" />
+    <link rel="icon" type="image/png" href="/brand/icon-512.png" />
     <link rel="canonical" href={canonical} />
     <link rel="alternate" hreflang="es" href={new URL(localizedPath(Astro.url.pathname.replace(/^\/en/, '') || '/', 'es'), siteConfig.url).href} />
     <link rel="alternate" hreflang="en" href={new URL(localizedPath(Astro.url.pathname.replace(/^\/en/, '') || '/', 'en'), siteConfig.url).href} />
     <link rel="alternate" hreflang="x-default" href={new URL(localizedPath(Astro.url.pathname.replace(/^\/en/, '') || '/', 'es'), siteConfig.url).href} />
-    <link rel="apple-touch-icon" href="/jabali_icon.png" />
+    <link rel="apple-touch-icon" href="/brand/icon-180.png" />
     <meta property="og:locale" content={locale === 'es' ? 'es_CL' : 'en_US'} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
