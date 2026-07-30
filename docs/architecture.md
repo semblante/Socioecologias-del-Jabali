@@ -1,41 +1,54 @@
 # Arquitectura — ecologiasdeljabali.cl
 
-## CMS: interfaz web, no repositorio
+## CMS: PocketBase en Railway
 
-Tironi edita contenido en **`/keystatic`**, un panel visual en el navegador. No necesita Git, terminal ni editar archivos.
+Tironi edita contenido en el **admin de PocketBase** (`/_/`). Email/contraseña; sin GitHub.
 
-| Entorno | Cómo guarda Keystatic |
+| Entorno | Cómo guarda |
 |---|---|
-| Desarrollo local | Archivos en `src/content/` (storage local) |
-| Producción | GitHub API (storage github) — invisible para el editor |
+| Producción | SQLite + archivos en volumen Railway del servicio `pocketbase` |
+| Desarrollo | PocketBase local (`tools/pocketbase serve`) + `PUBLIC_POCKETBASE_URL` |
+
+El sitio Astro lee la API en **SSR** vía `src/lib/content.ts`.
 
 ## Stack
 
-- Astro 5 + Content Layer
-- Keystatic (colecciones bilingües ES/EN)
-- CSS nativo con design tokens
-- Cloudflare Pages + adapter
+- Astro 5 + `@astrojs/node` (Railway)
+- PocketBase (colecciones bilingües ES/EN)
+- CSS nativo con design tokens (paleta del manual de marca)
 
 ## Rutas
 
 ```
-/              → ES (default)
-/en/           → EN
-/keystatic     → Panel de edición
+/                          Portada
+/proyecto                  Pregunta, zona de contacto
+/proyecto/objetivos        Objetivos e hipótesis
+/proyecto/metodologia      Métodos y cifras
+/territorio                Corredor peweñantu
+/territorio/winkulmapu     Acuerdo de Gobernanza
+/territorio/[sitio]        Puesco, Quiñenahuin, Panqui, Palguín
+/equipo                    Perfiles
+/cuaderno                  Cuaderno de campo (redirige desde /bitacora)
+/archivo                   Archivo visual
+/publicaciones             Bibliografía
+/productos                 Libro, briefs, exposición
+/contacto                  Contacto
+/en/...                    Espejo en inglés
 ```
 
-## Colecciones
+## Colecciones PocketBase
 
-- `bitacora/es|en` — cuaderno de campo
-- `equipo/es|en` — perfiles
-- `publicaciones/es|en` — bibliografía
-- `pages/es|en` — páginas institucionales
+`cuaderno`, `equipo`, `publicaciones`, `objetivos`, `metodos`, `sitios`, `productos`, `galeria`, `paginas` — cada una con `locale`, `translationKey`, `status`.
 
-Cada entrada tiene `translationKey` para enlazar versiones ES/EN.
+Scripts: `pnpm pb:schema`, `pnpm pb:seed`.
 
-## Deploy
+## Identidad
 
-1. Repo en GitHub (gestionado por el desarrollador)
-2. Cloudflare Pages conectado al repo
-3. Variables: `KEYSTATIC_GITHUB_REPO`, `KEYSTATIC_GITHUB_CLIENT_ID`, `KEYSTATIC_GITHUB_CLIENT_SECRET`, `KEYSTATIC_SECRET`
-4. OAuth App de GitHub con callback a `/api/keystatic/github/oauth/callback`
+Assets en `public/brand/`. Favicon = marca sin anillo ni disco naranja (`public/favicon.svg`).
+Paleta en `src/styles/tokens.css` (terracota `#b6573e`, crema `#edeae1`, tinta `#131416`).
+
+## Deploy (Railway)
+
+1. Proyecto `ecologiasdeljabali`
+2. Servicio `web` — Astro Node; env `PUBLIC_POCKETBASE_URL`
+3. Servicio `pocketbase` — Dockerfile en `pocketbase/`; volumen en `/pb_data`; healthcheck `/api/health`

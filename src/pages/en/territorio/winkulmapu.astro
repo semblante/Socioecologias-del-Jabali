@@ -1,0 +1,77 @@
+---
+export const prerender = false;
+
+import Base from '../../../layouts/Base.astro';
+import SiteMap from '../../../components/territorio/SiteMap.astro';
+import { localizedPath } from '../../../i18n/routing';
+
+const locale = 'en' as const;
+const markers = [
+  {
+    id: 'puesco',
+    nombre: 'Puesco-Lanín / Winkulmapu',
+    lat: -39.42,
+    lng: -71.75,
+    tipo: 'principal' as const,
+    aporte: '17,000 ha under Governance Agreement (2024)',
+  },
+];
+---
+
+<Base
+  title="Winkulmapu Governance Agreement"
+  description="17,000 hectares of the Puesco sector under Mapuche-Pewenche co-management"
+  locale={locale}
+>
+  <div class="section">
+    <div class="container container--reading">
+      <header class="page-header">
+        <p class="kicker">Territory · Winkulmapu</p>
+        <h1 class="page-header__title">Governance Agreement</h1>
+        <p class="page-header__lead">
+          A historic milestone: binding executive authority of Mapuche-Pewenche communities
+          over 17,000 hectares of Villarrica National Park.
+        </p>
+      </header>
+    </div>
+
+    <div class="container wink-map">
+      <SiteMap markers={markers} locale={locale} zoom={11} height="min(40vh, 22rem)" />
+    </div>
+
+    <div class="container container--reading">
+      <div class="prose">
+        <p>
+          Mid-20th century, most <em>mawiza</em> (mountain forests) of Curarrehue became part of
+          Villarrica National Park. Despite being peweñantu —ancestral Mapuche land inhabited by
+          the Pewenche for millennia— the park was imposed without co-management.
+        </p>
+        <p>
+          After decades of mobilization, in 2024 the <strong>Winkulmapu Indigenous Association</strong>
+          signed a Governance Agreement with CONAF and the Ministry of National Assets to manage
+          a 17,000-hectare subsection of Puesco. The agreement grants binding executive authority
+          —including invasive species management, especially wild boar.
+        </p>
+        <p>
+          It emerges in the context of the <strong>Biodiversity and Protected Areas Service (SBAP)</strong>
+          and future «Indigenous Conservation Areas». Neither is fully operational yet: the Agreement
+          sits at the frontier of an extraordinary policy transformation and is this Fondecyt’s
+          primary (co)laboratory.
+        </p>
+        <p>
+          A Mapuche <em>kintukafe</em> (researcher) formally participates in all four objectives
+          representing Winkulmapu.
+        </p>
+        <p>
+          <a href={localizedPath('/territorio', locale)}>← Back to Territory</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .wink-map {
+    margin-block: 0 var(--s-10);
+  }
+</style>

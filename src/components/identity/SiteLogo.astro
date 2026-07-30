@@ -4,12 +4,13 @@ import type { Locale } from '../../config/site';
 interface Props {
   locale: Locale;
   size?: 'nav' | 'hero' | 'footer';
-  variant?: 'abierto' | 'anillo' | 'solido';
+  /** `mark` = solo la escena central (sin anillo tipográfico). */
+  variant?: 'abierto' | 'anillo' | 'solido' | 'mark';
   class?: string;
 }
 
 const { locale, size = 'nav', variant = 'abierto', class: className } = Astro.props;
-const src = `/brand/logo-${locale}-${variant}.svg`;
+const src = variant === 'mark' ? '/brand/logo-mark.svg' : `/brand/logo-${locale}-${variant}.svg`;
 ---
 
 <span
@@ -25,9 +26,13 @@ const src = `/brand/logo-${locale}-${variant}.svg`;
     display: block;
     aspect-ratio: 1;
     background-color: currentColor;
+    -webkit-mask-image: var(--logo-src);
     mask-image: var(--logo-src);
+    -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
+    -webkit-mask-position: center;
     mask-position: center;
+    -webkit-mask-size: contain;
     mask-size: contain;
   }
 

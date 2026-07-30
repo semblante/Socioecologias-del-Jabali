@@ -1,0 +1,42 @@
+---
+import Base from '../layouts/Base.astro';
+import { siteConfig } from '../config/site';
+import { localizedPath, getLocaleFromUrl } from '../i18n/routing';
+
+const locale = getLocaleFromUrl(Astro.url);
+const copy =
+  locale === 'es'
+    ? {
+        title: 'Página no encontrada',
+        lead: 'Esta página no existe o fue movida.',
+        home: 'Volver al inicio',
+        project: 'El proyecto',
+        contact: 'Contacto',
+      }
+    : {
+        title: 'Page not found',
+        lead: 'This page does not exist or was moved.',
+        home: 'Back to home',
+        project: 'The project',
+        contact: 'Contact',
+      };
+---
+
+<Base title={copy.title} description={copy.lead} locale={locale}>
+  <div class="section">
+    <div class="container container--narrow">
+      <header class="page-header">
+        <h1 class="page-header__title">404</h1>
+        <p class="page-header__lead">{copy.lead}</p>
+      </header>
+      <p>
+        <a href={localizedPath('/', locale)}>{copy.home}</a>
+        {' · '}
+        <a href={localizedPath('/proyecto', locale)}>{copy.project}</a>
+        {' · '}
+        <a href={localizedPath('/contacto', locale)}>{copy.contact}</a>
+      </p>
+      <p class="meta">{siteConfig.fondecyt}</p>
+    </div>
+  </div>
+</Base>

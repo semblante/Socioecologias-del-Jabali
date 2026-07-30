@@ -11,14 +11,15 @@ interface Props {
 
 const { locale } = Astro.props;
 const ui = getUi(locale);
-const showCmsLink = import.meta.env.DEV;
+const cmsUrl = import.meta.env.PUBLIC_POCKETBASE_URL;
+const showCmsLink = Boolean(cmsUrl);
 const brand = siteConfig.nameShort[locale];
 
 const navLinks = [
   { key: 'proyecto' as const, href: localizedPath('/proyecto', locale) },
   { key: 'territorio' as const, href: localizedPath('/territorio', locale) },
   { key: 'equipo' as const, href: localizedPath('/equipo', locale) },
-  { key: 'bitacora' as const, href: localizedPath('/bitacora', locale) },
+  { key: 'bitacora' as const, href: localizedPath('/cuaderno', locale) },
   { key: 'archivo' as const, href: localizedPath('/archivo', locale) },
   { key: 'publicaciones' as const, href: localizedPath('/publicaciones', locale) },
   { key: 'productos' as const, href: localizedPath('/productos', locale) },
@@ -59,7 +60,7 @@ const navLinks = [
   {showCmsLink && (
     <div class="container site-footer__meta">
       <hr class="rule-line" />
-      <a href="/keystatic" class="site-footer__edit">{ui.footer.editContent}</a>
+      <a href={`${cmsUrl}/_/`} class="site-footer__edit" rel="nofollow">{ui.footer.editContent}</a>
     </div>
   )}
 </footer>

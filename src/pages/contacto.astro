@@ -1,38 +1,6 @@
 ---
-import Base from '../layouts/Base.astro';
-import { getPage } from '../lib/content';
-import { getUi } from '../i18n/ui';
-import { siteConfig } from '../config/site';
-import { render } from 'astro:content';
+export const prerender = false;
 
-const locale = 'es';
-const ui = getUi(locale);
-const page = await getPage('contacto', locale);
-const { Content } = page ? await render(page) : { Content: null };
+import ContactoPage from '../views/ContactoPage.astro';
 ---
-
-<Base title={ui.contact.title} description={page?.data.description} locale={locale}>
-  <div class="section">
-    <div class="container container--narrow">
-      <header class="page-header">
-        <h1 class="page-header__title">{ui.contact.title}</h1>
-      </header>
-
-      <div class="prose">
-        {Content && <Content />}
-
-        <h2>{ui.contact.email}</h2>
-        <p>
-          <a href={`mailto:${siteConfig.contact.email}`}>{siteConfig.contact.email}</a>
-        </p>
-
-        <h2>{ui.contact.institutions}</h2>
-        <ul>
-          {siteConfig.institutions.map((inst) => (
-            <li>{inst}</li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  </div>
-</Base>
+<ContactoPage locale="es" />

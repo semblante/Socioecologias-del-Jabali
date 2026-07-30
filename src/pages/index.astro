@@ -1,22 +1,6 @@
 ---
-import Base from '../layouts/Base.astro';
-import Hero from '../components/home/Hero.astro';
-import AboutBlurb from '../components/home/AboutBlurb.astro';
-import NewsList from '../components/home/NewsList.astro';
-import { getPage, getBitacora } from '../lib/content';
-import { getUi } from '../i18n/ui';
+export const prerender = false;
 
-const locale = 'es';
-const ui = getUi(locale);
-const home = await getPage('home', locale);
-const bitacora = await getBitacora(locale);
-
-const tagline = home?.data.tagline ?? 'Una investigación sobre el jabalí en la Araucanía Andina como zona de contacto entre mundos';
-const intro = home?.data.intro ?? '';
+import HomePage from '../views/HomePage.astro';
 ---
-
-<Base locale={locale}>
-  <Hero locale={locale} tagline={tagline} intro={intro} />
-  <AboutBlurb locale={locale} summary={ui.homeSummary} />
-  <NewsList locale={locale} entries={bitacora} />
-</Base>
+<HomePage locale="es" />

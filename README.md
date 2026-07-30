@@ -1,56 +1,25 @@
-# Ecologías del jabalí
+# README — Socioecologías del jabalí
 
-Sitio web del proyecto Fondecyt *Wild boar socioecologies* — Manuel Tironi et al.
+Sitio del Fondecyt Regular 1260739. Astro + PocketBase (CMS) en Railway.
 
-## Stack
-
-- [Astro 5](https://astro.build) (SSG + Cloudflare adapter)
-- [Keystatic](https://keystatic.com) — panel de edición en `/keystatic`
-- CSS nativo con design tokens
-- i18n ES (default) / EN
-- Deploy: Cloudflare Pages
-
-## Comandos
+## Desarrollo
 
 ```bash
 pnpm install
-pnpm dev        # http://localhost:4321
-pnpm build
-pnpm preview
+# Terminal 1: PocketBase local
+tools/pocketbase.exe serve --http=127.0.0.1:8090 --dir=tools/pb_data
+# Terminal 2
+cp .env.example .env   # PUBLIC_POCKETBASE_URL=http://127.0.0.1:8090
+pnpm pb:schema && pnpm pb:seed   # primera vez
+pnpm dev
 ```
 
-## Editar contenido (sin tocar Git)
+## CMS
 
-Tironi y su equipo **no necesitan usar la terminal ni el repositorio**. El contenido se edita desde el navegador:
+- Admin: `PUBLIC_POCKETBASE_URL/_/`
+- Guía para editores: `docs/cliente.md`
+- Schema/seed: `pnpm pb:schema`, `pnpm pb:seed`
 
-1. Abre **https://ecologiasdeljabali.cl/keystatic** (o `http://localhost:4321/keystatic` en desarrollo)
-2. Inicia sesión con GitHub (cuenta que el administrador haya autorizado)
-3. Edita cuaderno de campo, equipo, publicaciones o páginas desde formularios visuales
-4. Guarda — los cambios se publican automáticamente en el sitio
+## Deploy
 
-Guía detallada para el cliente: [docs/cliente.md](docs/cliente.md)
-
-## Estructura
-
-```
-src/
-  components/     UI y layout
-  content/          Contenido editable (MD/MDX)
-    bitacora/es|en/
-    equipo/es|en/
-    publicaciones/es|en/
-    pages/es|en/
-  pages/            Rutas del sitio
-  styles/           Tokens y estilos
-keystatic.config.ts  Configuración del CMS
-```
-
-## Deploy en Cloudflare Pages
-
-- Build command: `pnpm build`
-- Output directory: `dist`
-- Variables de entorno: ver `.env.example`
-
-## Desarrollo local
-
-En local, Keystatic guarda en archivos del proyecto (`storage: local`). En producción usa GitHub como backend.
+Servicios Railway: `web` (Astro) + `pocketbase` (volumen `/pb_data`).

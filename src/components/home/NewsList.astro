@@ -1,5 +1,4 @@
 ---
-import Card from '../ui/Card.astro';
 import type { Locale } from '../../config/site';
 import { getUi } from '../../i18n/ui';
 import { localizedPath, formatDate } from '../../i18n/routing';
@@ -12,32 +11,44 @@ interface Props {
 
 const { locale, entries } = Astro.props;
 const ui = getUi(locale);
+const shown = entries.slice(0, 3);
 ---
 
 <section class="notes">
   <div class="container">
     <div class="notes__head">
       <h2 class="notes__title">{ui.latestFieldNotes}</h2>
-      <a class="notes__all" href={localizedPath('/bitacora', locale)}>{ui.viewAll} →</a>
+      <a class="notes__all" href={localizedPath('/cuaderno', locale)}>{ui.viewAll} →</a>
     </div>
-    <div class="grid-cards grid-cards--3">
-      {entries.slice(0, 3).map((entry) => (
-        <Card
-          href={localizedPath(`/bitacora/${getEntrySlug(entry)}`, locale)}
-          title={entry.data.title}
-          excerpt={entry.data.description}
-          dateLabel={formatDate(entry.data.pubDate, locale)}
-          tag={entry.data.tags[0]}
-        />
-      ))}
-    </div>
+
+    {shown.length === 0 ? (
+      <p class="notes__empty">{locale === 'es' ? 'Pronto habrá notas de terreno.' : 'Field notes coming soon.'}</p>
+    ) : (
+      <ol class="notes__list">
+        {shown.map((entry) => (
+          <li class="notes__item">
+            <a class="notes__link" href={localizedPath(`/cuaderno/${getEntrySlug(entry)}`, locale)}>
+              <time class="notes__date" datetime={entry.data.pubDate.toISOString()}>
+                {formatDate(entry.data.pubDate, locale)}
+              </time>
+              <span class="notes__body">
+                <span class="notes__item-title">{entry.data.title}</span>
+                <span class="notes__excerpt">{entry.data.description}</span>
+                {entry.data.tags[0] && <span class="notes__tag">{entry.data.tags[0]}</span>}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    )}
   </div>
 </section>
 
 <style>
   .notes {
-    padding-block: clamp(3rem, 8vw, 5.5rem);
+    padding-block: clamp(3.5rem, 9vw, 6rem);
     background: var(--color-bg);
+    border-top: 1px solid var(--color-border);
   }
 
   .notes__head {
@@ -47,24 +58,106 @@ const ui = getUi(locale);
     gap: var(--s-4);
     flex-wrap: wrap;
     margin-bottom: var(--s-8);
+    padding-bottom: var(--s-4);
+    border-bottom: 1px solid var(--color-border);
   }
 
   .notes__title {
     margin: 0;
     font-family: var(--font-serif);
-    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-size: clamp(1.65rem, 3.2vw, 2.35rem);
     font-weight: 500;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
   }
 
   .notes__all {
-    font-size: var(--t-sm);
-    font-weight: 500;
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     text-decoration: none;
     color: var(--color-text-muted);
   }
 
   .notes__all:hover {
     color: var(--color-accent);
+  }
+
+  .notes__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .notes__item + .notes__item {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .notes__link {
+    display: grid;
+    gap: var(--s-3);
+    padding-block: var(--s-6);
+    text-decoration: none;
+    color: inherit;
+    transition: opacity var(--d-fast) var(--ease-organic);
+  }
+
+  @media (min-width: 720px) {
+    .notes__link {
+      grid-template-columns: 9rem minmax(0, 1fr);
+      gap: var(--s-8);
+      align-items: start;
+    }
+  }
+
+  .notes__link:hover .notes__item-title {
+    color: var(--color-accent);
+  }
+
+  .notes__date {
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .notes__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    min-width: 0;
+  }
+
+  .notes__item-title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.15rem, 2vw, 1.4rem);
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    transition: color var(--d-fast) var(--ease-organic);
+  }
+
+  .notes__excerpt {
+    font-size: var(--t-sm);
+    line-height: 1.55;
+    color: var(--color-text-muted);
+    max-width: 52ch;
+  }
+
+  .notes__tag {
+    align-self: start;
+    margin-top: var(--s-1);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .notes__empty {
+    color: var(--color-text-muted);
+    font-style: italic;
+    font-family: var(--font-serif);
   }
 </style>

@@ -6,5 +6,5 @@ year: 2022
 type: article
 locale: en
 translationKey: tironi-2022-antropoceno
-status: placeholder
+status: reviewed
 ---

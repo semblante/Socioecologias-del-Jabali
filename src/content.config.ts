@@ -4,6 +4,12 @@ import { glob } from 'astro/loaders';
 const statusEnum = z.enum(['placeholder', 'draft', 'reviewed', 'published']).default('published');
 const localeEnum = z.enum(['es', 'en']);
 
+const shared = {
+  locale: localeEnum,
+  translationKey: z.string(),
+  status: statusEnum,
+};
+
 const pages = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/pages' }),
   schema: z.object({
@@ -11,9 +17,8 @@ const pages = defineCollection({
     description: z.string().optional(),
     tagline: z.string().optional(),
     intro: z.string().optional(),
-    locale: localeEnum,
-    translationKey: z.string(),
-    status: statusEnum,
+    hero: z.string().optional(),
+    ...shared,
   }),
 });
 
@@ -23,10 +28,9 @@ const bitacora = defineCollection({
     title: z.string(),
     description: z.string(),
     pubDate: z.coerce.date(),
-    locale: localeEnum,
-    translationKey: z.string(),
-    status: statusEnum,
+    cover: z.string().optional(),
     tags: z.array(z.string()).default([]),
+    ...shared,
   }),
 });
 
@@ -38,10 +42,8 @@ const equipo = defineCollection({
     affiliation: z.string(),
     group: z.enum(['investigator', 'collaborator']),
     order: z.number().default(0),
-    locale: localeEnum,
-    translationKey: z.string(),
-    status: statusEnum,
     externalUrl: z.string().url().optional(),
+    ...shared,
   }),
 });
 
@@ -53,12 +55,86 @@ const publicaciones = defineCollection({
     venue: z.string(),
     year: z.number(),
     type: z.enum(['article', 'chapter', 'book', 'report']),
-    locale: localeEnum,
-    translationKey: z.string(),
-    status: statusEnum,
     url: z.string().url().optional(),
     doi: z.string().optional(),
+    ...shared,
   }),
 });
 
-export const collections = { pages, bitacora, equipo, publicaciones };
+const objetivos = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/objetivos' }),
+  schema: z.object({
+    numero: z.number(),
+    titulo: z.string(),
+    resumen: z.string(),
+    ...shared,
+  }),
+});
+
+const metodos = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/metodos' }),
+  schema: z.object({
+    componente: z.enum(['ecologia', 'etnografia', 'participativo']),
+    titulo: z.string(),
+    order: z.number().default(0),
+    cifras: z
+      .array(
+        z.object({
+          valor: z.string(),
+          unidad: z.string(),
+        }),
+      )
+      .default([]),
+    ...shared,
+  }),
+});
+
+const sitios = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/sitios' }),
+  schema: z.object({
+    nombre: z.string(),
+    tipo: z.enum(['principal', 'secundario']),
+    order: z.number().default(0),
+    coordenadas: z.string().optional(),
+    aporte: z.string(),
+    imagen: z.string().optional(),
+    ...shared,
+  }),
+});
+
+const productos = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/productos' }),
+  schema: z.object({
+    titulo: z.string(),
+    tipo: z.enum(['libro', 'policy-brief', 'exposicion', 'evento']),
+    estado: z.enum(['planificado', 'en-curso', 'publicado']).default('planificado'),
+    fecha: z.string().optional(),
+    ...shared,
+  }),
+});
+
+const galeria = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/galeria' }),
+  schema: z.object({
+    titulo: z.string(),
+    imagen: z.string(),
+    pie: z.string().optional(),
+    autoria: z.string().optional(),
+    fecha: z.coerce.date().optional(),
+    sitio: z.string().optional(),
+    tags: z.array(z.string()).default([]),
+    ...shared,
+  }),
+});
+
+export const collections = {
+  pages,
+  bitacora,
+  equipo,
+  publicaciones,
+  objetivos,
+  metodos,
+  sitios,
+  productos,
+  galeria,
+};

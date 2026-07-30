@@ -1,24 +1,26 @@
 :root {
-  /* Paleta oficial, muestreada del manual de marca (docs/replanteo.md §1) */
+  /* Paleta oficial — manual de marca (sello: tinta / crema / terracota) */
   --color-bg: #edeae1;
-  --color-bg-alt: #fafaeb;
-  --color-bg-card: #e3dfd4;
+  --color-bg-alt: #f5f2e8;
+  --color-bg-card: #e4e0d5;
   --color-text: #131416;
-  --color-text-muted: #66635e;
+  --color-text-muted: #5c5954;
   --color-accent: #b6573e;
-  --color-accent-subtle: rgba(182, 87, 62, 0.1);
-  --color-border: rgba(19, 20, 22, 0.12);
+  --color-accent-subtle: rgba(182, 87, 62, 0.12);
+  --color-border: rgba(19, 20, 22, 0.14);
+  --color-ink-deep: #0c0c0e;
 
-  --font-serif: "Newsreader", "Iowan Old Style", Georgia, serif;
+  /* Tipografía: serif de archivo (sello) + sans de lectura + mono de metadatos */
+  --font-serif: "Newsreader", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --font-sans: "Instrument Sans", system-ui, sans-serif;
   --font-mono: "Geist Mono", "Courier New", monospace;
 
-  --radius-sm: 2px;
-  --radius-md: 4px;
+  --radius-sm: 0;
+  --radius-md: 0;
 
-  --space-section: 5rem;
-  --space-section-inner: 3rem;
-  --max-prose: 68ch;
+  --space-section: 6rem;
+  --space-section-inner: 3.5rem;
+  --max-prose: 62ch;
 
   /* Legacy aliases */
   --c-bg: var(--color-bg);
@@ -29,24 +31,25 @@
   --c-accent: var(--color-accent);
   --c-accent-hi: #c96a4f;
   --c-accent-muted: var(--color-accent-subtle);
-  --c-bosque: #24252a;
+  --c-bosque: #1a1816;
 
   --texture-grain: url("/textures/paper-grain.svg");
-  --texture-opacity: 0.04;
-  --texture-opacity-soft: 0.06;
+  --texture-opacity: 0.055;
+  --texture-opacity-soft: 0.08;
 
   --f-display: var(--font-serif);
   --f-body: var(--font-sans);
   --f-mono: var(--font-mono);
 
-  --t-xs: 0.8rem;
-  --t-sm: 0.9rem;
-  --t-base: 1rem;
+  /* Escala editorial: saltos más marcados entre meta / cuerpo / display */
+  --t-xs: 0.72rem;
+  --t-sm: 0.875rem;
+  --t-base: 1.0625rem;
   --t-md: 1.25rem;
-  --t-lg: 1.563rem;
-  --t-xl: 1.953rem;
-  --t-2xl: 2.441rem;
-  --t-3xl: 3.052rem;
+  --t-lg: 1.5rem;
+  --t-xl: 1.875rem;
+  --t-2xl: 2.375rem;
+  --t-3xl: 3.25rem;
 
   --s-1: 0.25rem;
   --s-2: 0.5rem;
@@ -61,16 +64,16 @@
   --s-32: 8rem;
 
   --w-text: var(--max-prose);
-  --w-wide: 1200px;
-  --w-narrow: 720px;
-  --w-reading: 960px;
+  --w-wide: 1120px;
+  --w-narrow: 680px;
+  --w-reading: 920px;
 
   --ease-organic: cubic-bezier(0.22, 0.61, 0.36, 1);
   --d-fast: 180ms;
   --d-medium: 420ms;
   --d-slow: 900ms;
 
-  --header-h: 4.75rem;
+  --header-h: 4.5rem;
 }
 
 @media (prefers-reduced-motion: reduce) {

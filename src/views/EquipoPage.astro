@@ -1,0 +1,131 @@
+---
+import Base from '../layouts/Base.astro';
+import MarkdownBody from '../components/MarkdownBody.astro';
+import type { Locale } from '../config/site';
+import { getEquipo } from '../lib/content';
+import { getUi } from '../i18n/ui';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const ui = getUi(locale);
+const team = await getEquipo(locale);
+const investigators = team.filter((m) => m.data.group === 'investigator');
+const collaborators = team.filter((m) => m.data.group === 'collaborator');
+---
+
+<Base title={ui.nav.equipo} locale={locale}>
+  <div class="section">
+    <div class="container container--reading">
+      <header class="page-header">
+        <h1 class="page-header__title">{ui.nav.equipo}</h1>
+        <p class="page-header__lead">
+          {locale === 'es'
+            ? 'Investigación transdisciplinaria en colaboración con la Asociación Indígena Winkulmapu.'
+            : 'Transdisciplinary research in collaboration with the Winkulmapu Indigenous Association.'}
+        </p>
+      </header>
+
+      <h2 class="team-heading">{ui.equipo.investigators}</h2>
+      <ul class="team-list">
+        {investigators.map((member) => (
+          <li class:list={['team-row', { 'team-row--lead': member.data.order === 1 }]}>
+            <h3 class="team-row__name">
+              {member.data.externalUrl ? (
+                <a href={member.data.externalUrl} target="_blank" rel="noopener noreferrer" class="external-link">
+                  {member.data.name}
+                  <span class="visually-hidden">{ui.opensNewTab}</span>
+                </a>
+              ) : (
+                member.data.name
+              )}
+            </h3>
+            <p class="team-row__role">{member.data.role}</p>
+            <p class="team-row__aff">{member.data.affiliation}</p>
+            <MarkdownBody content={member.content} class="team-row__bio" />
+          </li>
+        ))}
+      </ul>
+
+      <h2 class="team-heading">{ui.equipo.collaborators}</h2>
+      <ul class="team-list">
+        {collaborators.map((member) => (
+          <li class="team-row">
+            <h3 class="team-row__name">{member.data.name}</h3>
+            <p class="team-row__role">{member.data.role}</p>
+            <p class="team-row__aff">{member.data.affiliation}</p>
+            <MarkdownBody content={member.content} class="team-row__bio" />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .team-heading {
+    margin: var(--s-12) 0 var(--s-4);
+    padding-bottom: var(--s-3);
+    border-bottom: 1px solid var(--color-border);
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .team-heading:first-of-type {
+    margin-top: 0;
+  }
+
+  .team-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .team-row {
+    padding-block: var(--s-8);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .team-row--lead .team-row__name {
+    font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+  }
+
+  .team-row__name {
+    margin: 0 0 var(--s-2);
+    font-family: var(--font-serif);
+    font-size: clamp(1.2rem, 2vw, 1.45rem);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+  }
+
+  .team-row__name a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .team-row__name a:hover {
+    color: var(--color-accent);
+  }
+
+  .team-row__role {
+    margin: 0;
+    font-size: var(--t-sm);
+    font-weight: 500;
+  }
+
+  .team-row__aff {
+    margin: var(--s-1) 0 var(--s-4);
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: var(--t-sm);
+    color: var(--color-text-muted);
+  }
+
+  .team-row__bio {
+    font-size: 1rem !important;
+    max-width: 58ch;
+  }
+</style>

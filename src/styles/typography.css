@@ -1,11 +1,13 @@
 .prose {
   max-width: var(--w-text);
-  font-size: 1.0625rem;
-  line-height: 1.7;
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  line-height: 1.72;
+  letter-spacing: -0.005em;
 }
 
 .prose > * + * {
-  margin-top: 1.35em;
+  margin-top: 1.4em;
 }
 
 .prose h2 {
@@ -13,8 +15,8 @@
   font-size: var(--t-xl);
   font-weight: 500;
   line-height: 1.2;
-  letter-spacing: -0.015em;
-  margin-top: 2em;
+  letter-spacing: -0.02em;
+  margin-top: 2.1em;
   margin-bottom: 0.5em;
   scroll-margin-top: calc(var(--header-h) + var(--s-4));
 }
@@ -35,7 +37,7 @@
 .prose blockquote {
   margin: 1.5em 0;
   padding-left: var(--s-6);
-  border-left: 3px solid var(--c-accent);
+  border-left: 2px solid var(--c-accent);
   font-family: var(--f-display);
   font-size: var(--t-md);
   font-style: italic;
@@ -45,6 +47,8 @@
 .prose ul,
 .prose ol {
   padding-left: 1.25em;
+  font-family: var(--font-sans);
+  font-size: 1rem;
 }
 
 .prose li + li {
@@ -53,10 +57,9 @@
 
 .prose code {
   font-family: var(--f-mono);
-  font-size: 0.9em;
+  font-size: 0.85em;
   background: var(--c-bg-soft);
   padding: 0.1em 0.35em;
-  border-radius: 3px;
 }
 
 .prose a {
@@ -66,7 +69,7 @@
 
 .prose--article > p:first-of-type::first-letter {
   font-family: var(--f-display);
-  font-size: 3.2em;
+  font-size: 3.4em;
   float: left;
   line-height: 0.85;
   margin: 0.05em 0.12em 0 0;
@@ -76,16 +79,16 @@
 .meta {
   font-family: var(--f-mono);
   font-size: var(--t-xs);
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   font-weight: 500;
-  color: color-mix(in srgb, var(--c-ink-soft) 85%, var(--c-accent));
   text-transform: uppercase;
+  color: var(--c-ink-soft);
 }
 
 .kicker {
   font-family: var(--f-mono);
   font-size: var(--t-xs);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--c-accent);
   margin: 0 0 var(--s-4);

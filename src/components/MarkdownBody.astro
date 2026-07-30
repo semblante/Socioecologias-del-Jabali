@@ -1,0 +1,13 @@
+---
+import { markdownToHtml } from '../lib/markdown';
+
+interface Props {
+  content?: string;
+  class?: string;
+}
+
+const html = markdownToHtml(Astro.props.content ?? '');
+const className = Astro.props.class;
+---
+
+{html ? <div class:list={['prose', className]} set:html={html} /> : null}

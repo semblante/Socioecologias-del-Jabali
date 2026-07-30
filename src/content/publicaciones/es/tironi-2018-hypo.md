@@ -6,6 +6,6 @@ year: 2018
 type: article
 locale: es
 translationKey: tironi-2018-hypo
-status: placeholder
+status: reviewed
 doi: 10.1177/0306312718775536
 ---

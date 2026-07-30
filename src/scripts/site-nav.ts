@@ -49,3 +49,21 @@ function initSiteNav() {
 
 document.addEventListener('astro:page-load', initSiteNav);
 initSiteNav();
+
+function syncHomeHeader() {
+  if (!document.body.classList.contains('is-home')) {
+    document.body.classList.remove('is-scrolled');
+    return;
+  }
+  document.body.classList.toggle('is-scrolled', window.scrollY > 48);
+}
+
+function initHomeHeader() {
+  syncHomeHeader();
+  if ((window as Window & { __homeHeaderBound?: boolean }).__homeHeaderBound) return;
+  (window as Window & { __homeHeaderBound?: boolean }).__homeHeaderBound = true;
+  window.addEventListener('scroll', syncHomeHeader, { passive: true });
+  document.addEventListener('astro:page-load', syncHomeHeader);
+}
+
+initHomeHeader();

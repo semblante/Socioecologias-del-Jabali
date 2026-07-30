@@ -1,0 +1,79 @@
+---
+export const prerender = false;
+
+import Base from '../../layouts/Base.astro';
+import SiteMap from '../../components/territorio/SiteMap.astro';
+import { localizedPath } from '../../i18n/routing';
+
+const locale = 'es' as const;
+const markers = [
+  {
+    id: 'puesco',
+    nombre: 'Puesco-Lanín / Winkulmapu',
+    lat: -39.42,
+    lng: -71.75,
+    tipo: 'principal' as const,
+    aporte: '17.000 ha bajo Acuerdo de Gobernanza (2024)',
+  },
+];
+---
+
+<Base
+  title="Acuerdo de Gobernanza Winkulmapu"
+  description="17.000 hectáreas del sector Puesco bajo cogestión mapuche-pewenche"
+  locale={locale}
+>
+  <div class="section">
+    <div class="container container--reading">
+      <header class="page-header">
+        <p class="kicker">Territorio · Winkulmapu</p>
+        <h1 class="page-header__title">Acuerdo de Gobernanza</h1>
+        <p class="page-header__lead">
+          Un hito histórico: autoridad ejecutiva vinculante de comunidades mapuche-pewenche
+          sobre 17.000 hectáreas del Parque Nacional Villarrica.
+        </p>
+      </header>
+    </div>
+
+    <div class="container wink-map">
+      <SiteMap markers={markers} locale={locale} zoom={11} height="min(40vh, 22rem)" />
+    </div>
+
+    <div class="container container--reading">
+      <div class="prose">
+        <p>
+          A mediados del siglo XX, la mayor parte de los <em>mawiza</em> (bosques de montaña)
+          de Curarrehue pasaron a formar parte del Parque Nacional Villarrica. Pese a ser
+          peweñantu —tierra ancestral mapuche habitada por el pueblo pewenche desde hace milenios—
+          el parque se impuso sin esquemas de cogestión.
+        </p>
+        <p>
+          Tras décadas de movilización, en 2024 la <strong>Asociación Indígena Winkulmapu</strong>
+          firmó un Acuerdo de Gobernanza con CONAF y el Ministerio de Bienes Nacionales para
+          gestionar una subsección de 17.000 hectáreas del sector Puesco. El acuerdo otorga
+          autoridad ejecutiva vinculante —incluida la gestión de especies invasoras, sobre todo
+          los chanchos—, no solo administración de sitios o distribución de ingresos.
+        </p>
+        <p>
+          Surge en el contexto del <strong>Servicio de Biodiversidad y Áreas Protegidas (SBAP)</strong>
+          y de las futuras «Áreas de Conservación Indígenas». Ni el SBAP ni esa categoría están
+          aún operativos: el AG se sitúa a la vanguardia de una transformación política extraordinaria
+          y es el (co)laboratorio principal de este Fondecyt.
+        </p>
+        <p>
+          Un <em>kintukafe</em> mapuche participa formalmente en los cuatro objetivos del proyecto
+          en representación de Winkulmapu.
+        </p>
+        <p>
+          <a href={localizedPath('/territorio', locale)}>← Volver a Territorio</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .wink-map {
+    margin-block: 0 var(--s-10);
+  }
+</style>

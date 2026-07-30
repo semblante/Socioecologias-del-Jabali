@@ -1,13 +1,13 @@
 ---
-import Base from '../../layouts/Base.astro';
-import { getPage } from '../../lib/content';
-import { render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import MarkdownBody from '../components/MarkdownBody.astro';
+import type { Locale } from '../config/site';
+import { getPage } from '../lib/content';
 
-const locale = 'en';
+interface Props { locale: Locale }
+const { locale } = Astro.props;
 const page = await getPage('proyecto', locale);
 if (!page) throw new Error('Missing proyecto page');
-
-const { Content } = await render(page);
 ---
 
 <Base title={page.data.title} description={page.data.description} locale={locale}>
@@ -17,9 +17,7 @@ const { Content } = await render(page);
         <h1 class="page-header__title">{page.data.title}</h1>
         {page.data.description && <p class="page-header__lead">{page.data.description}</p>}
       </header>
-      <div class="prose">
-        <Content />
-      </div>
+      <MarkdownBody content={page.content} />
     </div>
   </div>
 </Base>

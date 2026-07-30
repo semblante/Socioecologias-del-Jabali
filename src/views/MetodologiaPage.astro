@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import MarkdownBody from '../components/MarkdownBody.astro';
+import StatBlock from '../components/ui/StatBlock.astro';
+import type { Locale } from '../config/site';
+import { getMetodos } from '../lib/content';
+import { localizedPath } from '../i18n/routing';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const metodos = await getMetodos(locale);
+const title = locale === 'es' ? 'Metodología' : 'Methodology';
+const lead =
+  locale === 'es'
+    ? 'Cada objetivo combina ecología, etnografía y participación. No hay un método por disciplina: las fronteras se difuminan a propósito.'
+    : 'Each objective combines ecology, ethnography, and participation. Borders are deliberately blurred.';
+---
+
+<Base title={title} description={lead} locale={locale}>
+  <div class="section">
+    <div class="container container--reading">
+      <header class="page-header">
+        <p class="kicker">{locale === 'es' ? 'Proyecto · Metodología' : 'Project · Methodology'}</p>
+        <h1 class="page-header__title">{locale === 'es' ? 'Intra-acción' : 'Intra-action'}</h1>
+        <p class="page-header__lead">{lead}</p>
+      </header>
+
+      {metodos.map((m) => (
+        <>
+          <StatBlock
+            title={m.data.titulo}
+            stats={m.data.cifras.map((c) => ({ value: c.valor, label: c.unidad }))}
+          />
+          <MarkdownBody content={m.content} />
+        </>
+      ))}
+
+      <div class="prose" style="margin-top: var(--s-8);">
+        <p>
+          <a href={localizedPath('/proyecto', locale)}>
+            {locale === 'es' ? '← Volver al proyecto' : '← Back to the project'}
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</Base>

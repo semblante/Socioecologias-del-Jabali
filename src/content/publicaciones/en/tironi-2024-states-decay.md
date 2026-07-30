@@ -6,6 +6,6 @@ year: 2024
 type: article
 locale: en
 translationKey: tironi-2024-states-decay
-status: placeholder
+status: reviewed
 url: https://journals.sagepub.com/
 ---

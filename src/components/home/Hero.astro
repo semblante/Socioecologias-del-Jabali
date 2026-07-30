@@ -14,16 +14,13 @@ interface Props {
 const { locale, tagline, intro } = Astro.props;
 const ui = getUi(locale);
 const brand = siteConfig.nameShort[locale];
-const place = siteConfig.tagline[locale];
 ---
 
-<section class="hero" aria-label={brand}>
+<section class="hero" aria-label={brand} data-home-hero>
   <div class="hero__atmosphere" aria-hidden="true"></div>
-  <div class="hero__inner container">
+  <div class="hero__inner">
     <div class="hero__brand">
       <SiteLogo locale={locale} size="hero" class="hero__seal" />
-      <p class="hero__brand-name">{brand}</p>
-      <p class="hero__brand-place">{place}</p>
     </div>
 
     <div class="hero__copy">
@@ -31,22 +28,26 @@ const place = siteConfig.tagline[locale];
       <h1 class="hero__title">{tagline}</h1>
       <p class="hero__intro">{intro}</p>
       <div class="hero__actions">
-        <a class="btn btn--light" href={localizedPath('/proyecto', locale)}>{ui.projectCta}</a>
-        <a class="btn btn--ghost" href={localizedPath('/bitacora', locale)}>{ui.fieldNotesCta}</a>
+        <a class="hero__cta hero__cta--solid" href={localizedPath('/proyecto', locale)}>{ui.projectCta}</a>
+        <a class="hero__cta hero__cta--ghost" href={localizedPath('/cuaderno', locale)}>{ui.fieldNotesCta}</a>
       </div>
     </div>
   </div>
 </section>
 
 <style>
+  /* Colores literales: evita que un token roto deje el hero crema/negro. */
   .hero {
+    --hero-ink: #0c0c0e;
+    --hero-cream: #f5f2e8;
+    --hero-accent: #b6573e;
     position: relative;
     isolation: isolate;
-    min-height: min(92vh, 52rem);
+    min-height: min(94vh, 54rem);
     display: flex;
     align-items: flex-end;
-    color: var(--color-bg-alt);
-    background: var(--color-text);
+    color: var(--hero-cream);
+    background: var(--hero-ink);
     overflow: hidden;
   }
 
@@ -54,10 +55,11 @@ const place = siteConfig.tagline[locale];
     position: absolute;
     inset: 0;
     z-index: 0;
+    pointer-events: none;
     background:
-      radial-gradient(ellipse 90% 70% at 15% 85%, color-mix(in srgb, var(--color-accent) 28%, transparent), transparent 55%),
-      radial-gradient(ellipse 70% 50% at 90% 10%, color-mix(in srgb, var(--color-bg-alt) 8%, transparent), transparent 50%),
-      linear-gradient(165deg, #0c0c0e 0%, #1a1816 45%, #24201c 100%);
+      radial-gradient(ellipse 100% 75% at 8% 100%, rgba(182, 87, 62, 0.38), transparent 58%),
+      radial-gradient(ellipse 60% 45% at 92% 8%, rgba(245, 242, 232, 0.07), transparent 55%),
+      linear-gradient(168deg, #070708 0%, #141210 42%, #1f1a16 100%);
   }
 
   .hero__atmosphere::after {
@@ -66,24 +68,37 @@ const place = siteConfig.tagline[locale];
     inset: 0;
     background-image: var(--texture-grain);
     background-size: 180px 180px;
-    opacity: 0.18;
+    opacity: 0.22;
     mix-blend-mode: soft-light;
   }
 
   .hero__inner {
     position: relative;
     z-index: 1;
-    width: 100%;
+    width: min(100% - 2.5rem, var(--w-wide, 1120px));
+    margin-inline: auto;
     display: grid;
-    gap: var(--s-12);
-    padding-block: clamp(4rem, 12vh, 7rem) clamp(3rem, 8vh, 5rem);
+    gap: clamp(2rem, 5vw, 4rem);
+    padding-block: clamp(5.5rem, 14vh, 8rem) clamp(3.25rem, 9vh, 5.5rem);
+    padding-inline: 0.25rem;
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 639px) {
+    .hero__inner {
+      width: min(100% - 1.5rem, var(--w-wide, 1120px));
+    }
   }
 
   @media (min-width: 900px) {
     .hero__inner {
-      grid-template-columns: minmax(14rem, 0.9fr) minmax(0, 1.4fr);
-      align-items: end;
-      gap: clamp(2rem, 6vw, 5rem);
+      grid-template-columns: minmax(15rem, 0.85fr) minmax(0, 1.35fr);
+      align-items: center;
+      gap: clamp(2.5rem, 7vw, 5.5rem);
+    }
+
+    .hero {
+      align-items: center;
     }
   }
 
@@ -91,115 +106,99 @@ const place = siteConfig.tagline[locale];
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--s-4);
-    animation: hero-rise 900ms var(--ease-organic) both;
+    gap: var(--s-5, 1.25rem);
+    animation: hero-rise 900ms var(--ease-organic, cubic-bezier(0.22, 0.61, 0.36, 1)) both;
   }
 
   .hero__seal {
-    color: var(--color-bg-alt);
-    width: min(220px, 58vw);
-  }
-
-  .hero__brand-name {
-    margin: 0;
-    font-family: var(--font-serif);
-    font-size: clamp(1.4rem, 2.8vw, 2rem);
-    font-weight: 500;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    max-width: 14ch;
-  }
-
-  .hero__brand-place {
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: var(--t-xs);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: color-mix(in srgb, var(--color-bg-alt) 70%, transparent);
+    color: var(--hero-cream) !important;
+    width: min(248px, 62vw);
+    filter: drop-shadow(0 12px 40px rgba(0, 0, 0, 0.35));
   }
 
   .hero__copy {
-    animation: hero-rise 900ms var(--ease-organic) 120ms both;
+    animation: hero-rise 900ms var(--ease-organic, cubic-bezier(0.22, 0.61, 0.36, 1)) 110ms both;
   }
 
   .hero__kicker {
-    margin: 0 0 var(--s-4);
-    font-family: var(--font-mono);
-    font-size: var(--t-xs);
-    letter-spacing: 0.12em;
+    margin: 0 0 var(--s-4, 1rem);
+    font-family: var(--font-mono, "Geist Mono", monospace);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--color-accent);
+    color: var(--hero-accent);
   }
 
   .hero__title {
-    margin: 0 0 var(--s-6);
-    font-family: var(--font-serif);
-    font-size: clamp(1.65rem, 4.2vw, 2.75rem);
+    margin: 0 0 var(--s-6, 1.5rem);
+    font-family: var(--font-serif, "Newsreader", Georgia, serif);
+    font-size: clamp(1.85rem, 4.6vw, 3.05rem);
     font-weight: 500;
-    line-height: 1.12;
-    letter-spacing: -0.025em;
-    max-width: 18ch;
-    color: var(--color-bg-alt);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    max-width: 16ch;
+    color: var(--hero-cream);
   }
 
   .hero__intro {
-    margin: 0 0 var(--s-8);
-    max-width: 42ch;
-    font-size: clamp(1rem, 1.5vw, 1.15rem);
+    margin: 0 0 var(--s-8, 2rem);
+    max-width: 40ch;
+    font-family: var(--font-sans, "Instrument Sans", system-ui, sans-serif);
+    font-size: clamp(1.02rem, 1.55vw, 1.18rem);
     line-height: 1.65;
-    color: color-mix(in srgb, var(--color-bg-alt) 78%, transparent);
+    color: rgba(245, 242, 232, 0.78);
   }
 
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--s-3);
+    gap: 0.75rem;
     align-items: center;
   }
 
-  .btn {
+  .hero__cta {
     display: inline-flex;
     align-items: center;
-    padding: 0.85rem 1.35rem;
-    font-family: var(--font-sans);
-    font-size: var(--t-sm);
+    padding: 0.9rem 1.4rem;
+    font-family: var(--font-sans, "Instrument Sans", system-ui, sans-serif);
+    font-size: 0.9rem;
     font-weight: 500;
     letter-spacing: 0.02em;
     text-decoration: none;
     border: 1px solid transparent;
     transition:
-      background var(--d-fast) var(--ease-organic),
-      color var(--d-fast) var(--ease-organic),
-      border-color var(--d-fast) var(--ease-organic);
+      background 180ms ease,
+      color 180ms ease,
+      border-color 180ms ease;
   }
 
-  .btn--light {
-    background: var(--color-bg-alt);
-    color: var(--color-text);
+  .hero__cta--solid {
+    background: var(--hero-cream);
+    color: var(--hero-ink);
+    border-color: var(--hero-cream);
   }
 
-  .btn--light:hover {
-    background: color-mix(in srgb, var(--color-bg-alt) 88%, var(--color-accent));
-    color: var(--color-text);
+  .hero__cta--solid:hover {
+    background: #fff8ea;
+    color: var(--hero-ink);
   }
 
-  .btn--ghost {
+  .hero__cta--ghost {
     background: transparent;
-    color: var(--color-bg-alt);
-    border-color: color-mix(in srgb, var(--color-bg-alt) 35%, transparent);
+    color: var(--hero-cream);
+    border-color: rgba(245, 242, 232, 0.38);
   }
 
-  .btn--ghost:hover {
-    border-color: var(--color-bg-alt);
-    color: var(--color-bg-alt);
-    background: color-mix(in srgb, var(--color-bg-alt) 8%, transparent);
+  .hero__cta--ghost:hover {
+    border-color: var(--hero-cream);
+    background: rgba(245, 242, 232, 0.08);
+    color: var(--hero-cream);
   }
 
   @keyframes hero-rise {
     from {
       opacity: 0;
-      transform: translateY(1.25rem);
+      transform: translateY(1.15rem);
     }
     to {
       opacity: 1;
@@ -221,7 +220,11 @@ const place = siteConfig.tagline[locale];
     }
 
     .hero__seal {
-      width: min(160px, 48vw);
+      width: min(168px, 52vw);
+    }
+
+    .hero__title {
+      max-width: 20ch;
     }
   }
 </style>

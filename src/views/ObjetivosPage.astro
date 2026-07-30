@@ -1,0 +1,95 @@
+---
+import Base from '../layouts/Base.astro';
+import MarkdownBody from '../components/MarkdownBody.astro';
+import type { Locale } from '../config/site';
+import { getObjetivos } from '../lib/content';
+import { localizedPath } from '../i18n/routing';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const objetivos = await getObjetivos(locale);
+const title = locale === 'es' ? 'Objetivos e hipótesis' : 'Objectives and hypotheses';
+const lead =
+  locale === 'es'
+    ? 'Cuatro objetivos y tres hipótesis articulan el programa de investigación.'
+    : 'Four objectives and three hypotheses structure the research program.';
+---
+
+<Base title={title} description={lead} locale={locale}>
+  <div class="section">
+    <div class="container container--reading">
+      <header class="page-header">
+        <p class="kicker">{locale === 'es' ? 'Proyecto' : 'Project'}</p>
+        <h1 class="page-header__title">{title}</h1>
+        <p class="page-header__lead">{lead}</p>
+      </header>
+
+      <ol class="obj-list">
+        {objetivos.map((obj) => (
+          <li class="obj-item">
+            <p class="obj-item__num">{locale === 'es' ? `Objetivo ${obj.data.numero}` : `Objective ${obj.data.numero}`}</p>
+            <h2 class="obj-item__title">{obj.data.titulo}</h2>
+            <p class="obj-item__resumen">{obj.data.resumen}</p>
+            <MarkdownBody content={obj.content} />
+          </li>
+        ))}
+      </ol>
+
+      <div class="hypotheses">
+        <h2>{locale === 'es' ? 'Hipótesis' : 'Hypotheses'}</h2>
+        {locale === 'es' ? (
+          <ol>
+            <li>Comprender al jabalí exige co-construcción entre actores a lo largo de todo el ciclo de investigación.</li>
+            <li>Los chanchos constituyen un fenómeno socioecológico que desborda enfoques simplistas (bueno/malo, daño/alegría).</li>
+            <li>El manejo debe ser territorial e integrado, con evaluaciones diferenciadas para agricultura, biodiversidad y mundos mapuches.</li>
+          </ol>
+        ) : (
+          <ol>
+            <li>Understanding wild boar requires co-construction among actors across the full research cycle.</li>
+            <li>Boars are a socioecological phenomenon beyond simplistic good/bad or harm/joy framings.</li>
+            <li>Management must be territorially integrated, with differentiated assessments for agriculture, biodiversity, and Mapuche worlds.</li>
+          </ol>
+        )}
+      </div>
+
+      <p><a href={localizedPath('/proyecto', locale)}>{locale === 'es' ? '← Volver al proyecto' : '← Back to the project'}</a></p>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .obj-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-8);
+  }
+  .obj-item__num {
+    margin: 0 0 var(--s-2);
+    font-family: var(--font-mono);
+    font-size: var(--t-xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+  .obj-item__title {
+    margin: 0 0 var(--s-3);
+    font-family: var(--font-serif);
+    font-size: var(--t-lg);
+    font-weight: 500;
+  }
+  .obj-item__resumen {
+    margin: 0 0 var(--s-4);
+    color: var(--color-text-muted);
+  }
+  .hypotheses {
+    margin-top: var(--s-12);
+    padding-top: var(--s-8);
+    border-top: 1px solid var(--color-border);
+  }
+  .hypotheses h2 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+  }
+</style>

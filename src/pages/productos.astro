@@ -1,30 +1,6 @@
 ---
-import Base from '../layouts/Base.astro';
+export const prerender = false;
 
-const locale = 'es' as const;
+import ProductosPage from '../views/ProductosPage.astro';
 ---
-
-<Base
-  title="Productos"
-  description="Libro comunitario, policy briefs y exposición de arte"
-  locale={locale}
->
-  <div class="section">
-    <div class="container container--reading">
-      <header class="page-header">
-        <h1 class="page-header__title">Productos</h1>
-        <p class="page-header__lead">
-          Salidas públicas del proyecto: más allá del paper académico.
-        </p>
-      </header>
-      <div class="prose">
-        <ul>
-          <li><strong>Libro comunitario</strong> — co-escrito con interlocutores del territorio.</li>
-          <li><strong>Policy briefs</strong> — directrices para el manejo multiactor y el SBAP.</li>
-          <li><strong>Exposición de arte</strong> — colaboración con artistas locales sobre los desafíos territoriales del jabalí.</li>
-        </ul>
-        <p>Los productos se irán publicando aquí a medida que avancen.</p>
-      </div>
-    </div>
-  </div>
-</Base>
+<ProductosPage locale="es" />

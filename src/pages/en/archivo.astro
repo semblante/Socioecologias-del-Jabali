@@ -1,29 +1,6 @@
 ---
-import Base from '../../layouts/Base.astro';
+export const prerender = false;
 
-const locale = 'en' as const;
+import ArchivoPage from '../../views/ArchivoPage.astro';
 ---
-
-<Base
-  title="Archive"
-  description="Visual archive: fieldwork, camera traps, and community maps"
-  locale={locale}
->
-  <div class="section">
-    <div class="container container--reading">
-      <header class="page-header">
-        <h1 class="page-header__title">Archive</h1>
-        <p class="page-header__lead">
-          Field images, camera-trap records, and community maps. This section will
-          fill as the team uploads material through the editing panel.
-        </p>
-      </header>
-      <div class="prose">
-        <p>
-          The archive will gather the project’s visual trail: field trips, boar signs,
-          workshops, <em>trawun</em>, and the Puesco–Quiñenahuin–Panqui–Palguín corridor.
-        </p>
-      </div>
-    </div>
-  </div>
-</Base>
+<ArchivoPage locale="en" />

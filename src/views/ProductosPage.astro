@@ -1,0 +1,51 @@
+---
+import Base from '../layouts/Base.astro';
+import MarkdownBody from '../components/MarkdownBody.astro';
+import type { Locale } from '../config/site';
+import { getProductos } from '../lib/content';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const productos = await getProductos(locale);
+const title = locale === 'es' ? 'Productos' : 'Outputs';
+const lead =
+  locale === 'es'
+    ? 'Salidas públicas del proyecto: más allá del paper académico.'
+    : 'Public deliverables beyond the academic paper.';
+const estadoLabel: Record<string, string> = locale === 'es'
+  ? { planificado: 'Planificado', 'en-curso': 'En curso', publicado: 'Publicado' }
+  : { planificado: 'Planned', 'en-curso': 'In progress', publicado: 'Published' };
+---
+
+<Base title={title} description={lead} locale={locale}>
+  <div class="section">
+    <div class="container container--reading">
+      <header class="page-header">
+        <h1 class="page-header__title">{title}</h1>
+        <p class="page-header__lead">{lead}</p>
+      </header>
+      <div class="prod-list">
+        {productos.map((p) => (
+          <article class="prod-item">
+            <p class="kicker">{p.data.tipo} · {estadoLabel[p.data.estado]}</p>
+            <h2>{p.data.titulo}</h2>
+            <MarkdownBody content={p.content} />
+          </article>
+        ))}
+      </div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .prod-list { display: grid; gap: var(--s-8); }
+  .prod-item {
+    padding-bottom: var(--s-8);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .prod-item h2 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    margin: 0 0 var(--s-4);
+  }
+</style>

@@ -1,0 +1,73 @@
+---
+export const prerender = false;
+
+import Base from '../../../layouts/Base.astro';
+import MarkdownBody from '../../../components/MarkdownBody.astro';
+import SiteMap from '../../../components/territorio/SiteMap.astro';
+import { getSitioBySlug, getEntrySlug } from '../../../lib/content';
+import { localizedPath } from '../../../i18n/routing';
+import { parseCoords } from '../../../lib/geo';
+
+const locale = 'en' as const;
+const { slug } = Astro.params;
+const sitio = await getSitioBySlug(slug!, locale);
+if (!sitio) return Astro.redirect('/en/territorio');
+const coords = parseCoords(sitio.data.coordenadas);
+const markers = coords
+  ? [
+      {
+        id: getEntrySlug(sitio),
+        nombre: sitio.data.nombre,
+        lat: coords.lat,
+        lng: coords.lng,
+        tipo: sitio.data.tipo as 'principal' | 'secundario',
+        aporte: sitio.data.aporte,
+      },
+    ]
+  : [];
+---
+
+<Base title={sitio.data.nombre} description={sitio.data.aporte} locale={locale}>
+  <div class="section">
+    <div class="container container--narrow">
+      <header class="page-header">
+        <p class="kicker">{sitio.data.tipo === 'principal' ? 'Core case' : 'Secondary case'}</p>
+        <h1 class="page-header__title">{sitio.data.nombre}</h1>
+        <p class="page-header__lead">{sitio.data.aporte}</p>
+      </header>
+    </div>
+
+    {markers.length > 0 && (
+      <div class="container sitio-map">
+        <SiteMap markers={markers} locale={locale} zoom={11} height="min(36vh, 18rem)" />
+      </div>
+    )}
+
+    <div class="container container--narrow">
+      <MarkdownBody content={sitio.content} />
+      {sitio.data.tipo === 'principal' && (
+        <p class="sitio-wink">
+          <a href={localizedPath('/territorio/winkulmapu', locale)}>Winkulmapu Governance Agreement →</a>
+        </p>
+      )}
+      <p style="margin-top: var(--s-8);">
+        <a href={localizedPath('/territorio', locale)}>← Back to Territory</a>
+      </p>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .sitio-map {
+    margin-bottom: var(--s-10);
+  }
+  .sitio-wink {
+    margin-top: var(--s-6);
+  }
+  .sitio-wink a {
+    color: var(--color-accent);
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
+  }
+</style>

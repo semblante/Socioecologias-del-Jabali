@@ -1,0 +1,73 @@
+---
+import Base from '../layouts/Base.astro';
+import type { Locale } from '../config/site';
+import { getGaleria } from '../lib/content';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const items = await getGaleria(locale);
+const title = locale === 'es' ? 'Archivo' : 'Archive';
+const lead =
+  locale === 'es'
+    ? 'Imágenes de terreno, registros de cámaras trampa y cartografías comunitarias.'
+    : 'Field images, camera-trap records, and community maps.';
+const empty =
+  locale === 'es'
+    ? 'Aún no hay imágenes publicadas. El equipo podrá subirlas desde el panel de edición.'
+    : 'No images published yet. The team can upload them from the editing panel.';
+---
+
+<Base title={title} description={lead} locale={locale}>
+  <div class="section">
+    <div class="container container--reading">
+      <header class="page-header">
+        <h1 class="page-header__title">{title}</h1>
+        <p class="page-header__lead">{lead}</p>
+      </header>
+
+      {items.length === 0 ? (
+        <p class="archivo-empty">{empty}</p>
+      ) : (
+        <div class="archivo-grid">
+          {items.map((item) => (
+            <figure class="archivo-item">
+              <img src={item.data.imagen} alt={item.data.titulo} loading="lazy" />
+              <figcaption>
+                <strong>{item.data.titulo}</strong>
+                {item.data.pie && <span> — {item.data.pie}</span>}
+                {item.data.autoria && <span class="meta"> · {item.data.autoria}</span>}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+</Base>
+
+<style>
+  .archivo-empty {
+    color: var(--color-text-muted);
+    font-size: var(--t-md);
+  }
+  .archivo-grid {
+    display: grid;
+    gap: var(--s-8);
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  }
+  .archivo-item {
+    margin: 0;
+  }
+  .archivo-item img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    background: var(--color-bg-card);
+  }
+  .archivo-item figcaption {
+    margin-top: var(--s-3);
+    font-size: var(--t-sm);
+    color: var(--color-text-muted);
+  }
+</style>
