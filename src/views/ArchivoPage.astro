@@ -9,12 +9,12 @@ const items = await getGaleria(locale);
 const title = locale === 'es' ? 'Archivo' : 'Archive';
 const lead =
   locale === 'es'
-    ? 'Imágenes de terreno, registros de cámaras trampa y cartografías comunitarias.'
-    : 'Field images, camera-trap records, and community maps.';
+    ? 'Galería visual del proyecto: imágenes de terreno, registros de cámaras trampa y cartografías comunitarias.'
+    : 'Project visual gallery: field images, camera-trap records, and community maps.';
 const empty =
   locale === 'es'
-    ? 'Aún no hay imágenes publicadas. El equipo podrá subirlas desde el panel de edición.'
-    : 'No images published yet. The team can upload them from the editing panel.';
+    ? 'Aún no hay imágenes publicadas. El equipo podrá cargarlas desde el panel de edición. El Cuaderno, en cambio, concentra las entradas narrativas de campo.'
+    : 'No images published yet. The team can upload them from the editing panel. The Field notes section holds narrative fieldwork entries.';
 ---
 
 <Base title={title} description={lead} locale={locale}>

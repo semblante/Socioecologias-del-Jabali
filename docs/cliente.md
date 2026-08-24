@@ -12,15 +12,15 @@ Esta guía es para Manuel Tironi y su equipo. **No necesitas saber programar ni 
 
 | Colección | Qué es |
 |---|---|
-| **cuaderno** | Entradas del cuaderno de campo |
-| **equipo** | Perfiles del equipo |
+| **cuaderno** | Diario de campo: entradas narrativas que se van sumando |
+| **equipo** | Perfiles del equipo (investigadores, tesistas, colaboradores) |
 | **publicaciones** | Lista bibliográfica |
-| **objetivos** | Objetivos del Fondecyt |
+| **objetivos** | Objetivos del Fondecyt (también resumidos en la página Proyecto) |
 | **metodos** | Componentes metodológicos y cifras |
 | **sitios** | Puesco-Lanín y casos secundarios |
 | **productos** | Libro, policy briefs, exposición |
-| **galeria** | Archivo visual |
-| **paginas** | Portada, El proyecto, Contacto (`key`: home / proyecto / contacto) |
+| **galeria** | Archivo visual (fotos, cámaras, mapas) — distinto del Cuaderno |
+| **paginas** | Portada, El proyecto, Contacto (`key`: home / proyecto / contacto). En `home`, `heroMedia` es la URL o ruta del video/imagen de portada |
 
 ## Publicación
 

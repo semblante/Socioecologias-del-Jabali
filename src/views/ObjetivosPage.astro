@@ -4,6 +4,7 @@ import MarkdownBody from '../components/MarkdownBody.astro';
 import type { Locale } from '../config/site';
 import { getObjetivos } from '../lib/content';
 import { localizedPath } from '../i18n/routing';
+import { textWithSpecies } from '../lib/markdown';
 
 interface Props { locale: Locale }
 const { locale } = Astro.props;
@@ -28,8 +29,8 @@ const lead =
         {objetivos.map((obj) => (
           <li class="obj-item">
             <p class="obj-item__num">{locale === 'es' ? `Objetivo ${obj.data.numero}` : `Objective ${obj.data.numero}`}</p>
-            <h2 class="obj-item__title">{obj.data.titulo}</h2>
-            <p class="obj-item__resumen">{obj.data.resumen}</p>
+            <h2 class="obj-item__title" set:html={textWithSpecies(obj.data.titulo)} />
+            <p class="obj-item__resumen" set:html={textWithSpecies(obj.data.resumen)} />
             <MarkdownBody content={obj.content} />
           </li>
         ))}

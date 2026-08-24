@@ -2,6 +2,8 @@
 import type { Locale } from '../../config/site';
 import { getUi } from '../../i18n/ui';
 import { localizedPath } from '../../i18n/routing';
+import { textWithSpecies } from '../../lib/markdown';
+import SiteLogo from '../identity/SiteLogo.astro';
 
 interface Props {
   locale: Locale;
@@ -19,8 +21,11 @@ const frameworks =
 
 <section class="about">
   <div class="about__inner container">
+    <div class="about__brand">
+      <SiteLogo locale={locale} size="hero" class="about__seal" />
+    </div>
     <p class="about__label">{ui.aboutProject}</p>
-    <p class="about__statement">{summary}</p>
+    <p class="about__statement" set:html={textWithSpecies(summary)} />
     <ul class="about__lenses">
       {frameworks.map((fw) => (
         <li>{fw}</li>
@@ -42,6 +47,17 @@ const frameworks =
     display: grid;
     gap: var(--s-6);
     max-width: 52rem;
+  }
+
+  .about__brand {
+    margin-bottom: var(--s-2);
+  }
+
+  .about__seal {
+    width: min(7.5rem, 36vw);
+    max-width: 7.5rem;
+    opacity: 1;
+    color: var(--color-text);
   }
 
   .about__label {

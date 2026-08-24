@@ -79,7 +79,7 @@ const collections = [
       text('name', true),
       text('role', true),
       text('affiliation', true),
-      select('group', ['investigator', 'collaborator'], true),
+      select('group', ['investigator', 'collaborator', 'tesista'], true),
       number('order', false),
       urlField('externalUrl', false),
       text('bio', false),
@@ -167,6 +167,8 @@ const collections = [
       text('description', false),
       text('tagline', false),
       text('intro', false),
+      // ponytail: URL/ruta en public/; vacío = atmósfera del hero sin media
+      file('heroMedia', false),
       text('content', false),
     ],
   },

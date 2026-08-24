@@ -22,9 +22,9 @@ const ui = {
     projectCta: 'Conoce la investigación',
     fieldNotesCta: 'Cuaderno de campo',
     homeSummary:
-      'Las especies invasoras no son entidades discretas: son zonas de contacto. Este Fondecyt analiza al jabalí en la Araucanía andina desde la ecología, la etnografía y el kimün mapuche, en colaboración con la Asociación Indígena Winkulmapu.',
+      'Las especies invasoras no son entidades unívocas: son zonas de contacto donde se dan cita —y producen— múltiples conocimientos, relaciones y tensiones. En la Araucanía andina, el jabalí se ha convertido en un problema para las comunidades mapuche que han convivido con el chancho por décadas.',
     bitacora: {
-      lead: 'Registro de trabajo de campo, encuentros y avances del proyecto en el Peweñantu.',
+      lead: 'Registros de trabajo de campo, encuentros y avances del proyecto en el Peweñantu.',
     },
     publicaciones: {
       lead: 'Selección de publicaciones del investigador responsable como referencia bibliográfica del proyecto.',
@@ -38,6 +38,7 @@ const ui = {
     equipo: {
       investigators: 'Investigadores principales',
       collaborators: 'Colaboradores territoriales',
+      students: 'Tesistas',
     },
     pub: {
       filterAll: 'Todas',
@@ -75,9 +76,9 @@ const ui = {
     projectCta: 'About the research',
     fieldNotesCta: 'Field journal',
     homeSummary:
-      'Invasive species are not discrete entities: they are contact zones. This Fondecyt studies wild boar in the Andean Araucanía through ecology, ethnography, and Mapuche kimün, in collaboration with the Winkulmapu Indigenous Association.',
+      'Invasive species are not univocal entities: they are contact zones where multiple knowledges, relations, and tensions gather —and are produced. In the Andean Araucanía, wild boar has become a problem for Mapuche communities that have lived with the chancho for decades.',
     bitacora: {
-      lead: 'Fieldwork records, meetings, and project updates from Peweñantu.',
+      lead: 'Records of fieldwork, gatherings, and project advances in the Peweñantu.',
     },
     publicaciones: {
       lead: 'Selected publications by the principal investigator as bibliographic reference for the project.',
@@ -91,6 +92,7 @@ const ui = {
     equipo: {
       investigators: 'Principal investigators',
       collaborators: 'Territorial collaborators',
+      students: 'Graduate researchers',
     },
     pub: {
       filterAll: 'All',

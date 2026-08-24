@@ -109,7 +109,11 @@ export async function getEquipo(locale: Locale) {
           name: String(row.name ?? ''),
           role: String(row.role ?? ''),
           affiliation: String(row.affiliation ?? ''),
-          group: (row.group === 'collaborator' ? 'collaborator' : 'investigator') as 'investigator' | 'collaborator',
+          group: (
+            row.group === 'collaborator' || row.group === 'tesista'
+              ? row.group
+              : 'investigator'
+          ) as 'investigator' | 'collaborator' | 'tesista',
           order: Number(row.order ?? 0),
           externalUrl: row.externalUrl ? String(row.externalUrl) : undefined,
           locale: asLocale(row.locale),
@@ -162,6 +166,7 @@ export async function getPage(slug: string, locale: Locale) {
       description: row.description ? String(row.description) : undefined,
       tagline: row.tagline ? String(row.tagline) : undefined,
       intro: row.intro ? String(row.intro) : undefined,
+      heroMedia: row.heroMedia ? String(row.heroMedia) : undefined,
       locale: asLocale(row.locale),
       translationKey: String(row.translationKey ?? slug),
       status: String(row.status ?? 'published'),

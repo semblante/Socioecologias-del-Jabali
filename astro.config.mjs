@@ -19,7 +19,7 @@ export default defineConfig({
     },
   },
   redirects: {
-    // Slug redirects live in pages/bitacora/[slug].astro (static + Cloudflare-safe).
+    // Slugs viven en pages/bitacora/[slug].astro; estos son solo los índices.
     '/bitacora': '/cuaderno',
     '/en/bitacora': '/en/cuaderno',
   },

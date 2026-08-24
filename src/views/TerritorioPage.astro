@@ -6,6 +6,7 @@ import type { Locale } from '../config/site';
 import { getSitios, getEntrySlug } from '../lib/content';
 import { localizedPath } from '../i18n/routing';
 import { parseCoords } from '../lib/geo';
+import { textWithSpecies } from '../lib/markdown';
 
 interface Props { locale: Locale }
 const { locale } = Astro.props;
@@ -15,8 +16,16 @@ const secundarios = sitios.filter((s) => s.data.tipo === 'secundario');
 const title = locale === 'es' ? 'Territorio' : 'Territory';
 const lead =
   locale === 'es'
-    ? 'El peweñantu como (co)laboratorio: un corredor volcánico donde el jabalí encuentra bosque, comunidad y política de conservación.'
-    : 'The peweñantu as a (co)laboratory: a volcanic corridor where wild boar meet forest, community, and conservation policy.';
+    ? 'Winkulmapu: territorio winkulche-pewenche. El sector Puesco-Lanín y el peweñantu de Kurarewe como territorio principal de acción e investigación.'
+    : 'Winkulmapu: winkulche-pewenche territory. The Puesco-Lanín sector and the peweñantu of Kurarewe as the main territory of action and research.';
+const intro =
+  locale === 'es'
+    ? 'El proyecto tiene como territorio principal de acción e investigación el sector Puesco-Lanín del Parque Nacional Villarrica, específicamente el área de 17.000 hectáreas que bajo el Acuerdo de Gobernanza entre la Asociación Indígena Winkulmapu, CONAF y Bienes Nacionales queda bajo la gestión de las comunidades mapuche de Kurarewe.'
+    : 'The project’s main territory of action and research is the Puesco-Lanín sector of Villarrica National Park —specifically the 17,000 hectares that, under the Governance Agreement among the Winkulmapu Indigenous Association, CONAF, and the Ministry of National Assets, are managed by the Mapuche communities of Kurarewe.';
+const secondaryLead =
+  locale === 'es'
+    ? 'Para complementar la información recolectada en este territorio, el proyecto incluye como casos secundarios a Quiñenahuin, Panqui y Palguín Alto. Estos sectores conforman el amplio peweñantu (bosque de pewen) de la zona cordillerana de Kurarewe, un territorio ecológico y político donde el Sus scrofa se ha asentado hace más de un siglo.'
+    : 'To complement information gathered in this territory, the project includes Quiñenahuin, Panqui, and Palguín Alto as secondary cases. These sectors make up the broader peweñantu (pewen forest) of the Kurarewe cordillera —an ecological and political territory where Sus scrofa has been established for more than a century.';
 
 const markers = sitios
   .map((s) => {
@@ -43,6 +52,7 @@ const markers = sitios
         <h1 class="page-header__title">{title}</h1>
         <p class="page-header__lead">{lead}</p>
       </header>
+      <p class="territorio__intro-body" set:html={textWithSpecies(intro)} />
     </div>
 
     {markers.length > 0 && (
@@ -71,6 +81,7 @@ const markers = sitios
       <h2 class="territorio__sub">
         {locale === 'es' ? 'Casos secundarios' : 'Secondary cases'}
       </h2>
+      <p class="territorio__secondary-lead" set:html={textWithSpecies(secondaryLead)} />
       <ul class="sitio-list">
         {secundarios.map((sitio) => (
           <li class="sitio-list__item">
@@ -93,6 +104,20 @@ const markers = sitios
 
   .territorio__intro {
     padding-top: var(--s-8);
+  }
+
+  .territorio__intro-body,
+  .territorio__secondary-lead {
+    margin: var(--s-6) 0 0;
+    max-width: 58ch;
+    font-size: var(--t-md);
+    line-height: 1.65;
+    color: var(--color-text);
+  }
+
+  .territorio__secondary-lead {
+    margin: 0 0 var(--s-6);
+    color: var(--color-text-muted);
   }
 
   @media (min-width: 768px) {

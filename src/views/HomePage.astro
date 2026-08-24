@@ -15,10 +15,11 @@ const home = await getPage('home', locale);
 const bitacora = await getBitacora(locale);
 const tagline = home?.data.tagline ?? '';
 const intro = home?.data.intro ?? '';
+const heroMedia = home?.data.heroMedia ?? '';
 ---
 
 <Base locale={locale}>
-  <Hero locale={locale} tagline={tagline} intro={intro} />
+  <Hero locale={locale} tagline={tagline} intro={intro} heroMedia={heroMedia} />
   <AboutBlurb locale={locale} summary={ui.homeSummary} />
   <TerritoryTeaser locale={locale} />
   <NewsList locale={locale} entries={bitacora} />

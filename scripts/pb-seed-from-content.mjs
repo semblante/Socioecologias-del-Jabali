@@ -192,6 +192,7 @@ async function main() {
       description: data.description || '',
       tagline: data.tagline || '',
       intro: data.intro || '',
+      heroMedia: data.heroMedia || '',
       content: content.trim(),
     });
   }

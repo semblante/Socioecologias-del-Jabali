@@ -1,6 +1,18 @@
 ---
 export const prerender = false;
 
-import MetodologiaPage from '../../views/MetodologiaPage.astro';
+const target = '/proyecto#metodologia';
 ---
-<MetodologiaPage locale="es" />
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content={`0;url=${target}`} />
+    <link rel="canonical" href="/proyecto" />
+    <title>Redirigiendo…</title>
+    <script is:inline define:vars={{ target }}>
+      location.replace(target);
+    </script>
+  </head>
+  <body></body>
+</html>

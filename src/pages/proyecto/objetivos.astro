@@ -1,6 +1,18 @@
 ---
 export const prerender = false;
 
-import ObjetivosPage from '../../views/ObjetivosPage.astro';
+const target = '/proyecto#objetivos';
 ---
-<ObjetivosPage locale="es" />
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="refresh" content={`0;url=${target}`} />
+    <link rel="canonical" href="/proyecto" />
+    <title>Redirigiendo…</title>
+    <script is:inline define:vars={{ target }}>
+      location.replace(target);
+    </script>
+  </head>
+  <body></body>
+</html>

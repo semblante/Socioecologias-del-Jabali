@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /keystatic
 
 Sitemap: https://ecologiasdeljabali.cl/sitemap-index.xml

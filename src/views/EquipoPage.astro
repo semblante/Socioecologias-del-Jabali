@@ -11,6 +11,7 @@ const ui = getUi(locale);
 const team = await getEquipo(locale);
 const investigators = team.filter((m) => m.data.group === 'investigator');
 const collaborators = team.filter((m) => m.data.group === 'collaborator');
+const students = team.filter((m) => m.data.group === 'tesista');
 ---
 
 <Base title={ui.nav.equipo} locale={locale}>
@@ -25,38 +26,80 @@ const collaborators = team.filter((m) => m.data.group === 'collaborator');
         </p>
       </header>
 
-      <h2 class="team-heading">{ui.equipo.investigators}</h2>
-      <ul class="team-list">
-        {investigators.map((member) => (
-          <li class:list={['team-row', { 'team-row--lead': member.data.order === 1 }]}>
-            <h3 class="team-row__name">
-              {member.data.externalUrl ? (
-                <a href={member.data.externalUrl} target="_blank" rel="noopener noreferrer" class="external-link">
-                  {member.data.name}
-                  <span class="visually-hidden">{ui.opensNewTab}</span>
-                </a>
-              ) : (
-                member.data.name
-              )}
-            </h3>
-            <p class="team-row__role">{member.data.role}</p>
-            <p class="team-row__aff">{member.data.affiliation}</p>
-            <MarkdownBody content={member.content} class="team-row__bio" />
-          </li>
-        ))}
-      </ul>
+      {investigators.length > 0 && (
+        <>
+          <h2 class="team-heading">{ui.equipo.investigators}</h2>
+          <ul class="team-list">
+            {investigators.map((member) => (
+              <li class:list={['team-row', { 'team-row--lead': member.data.order === 1 }]}>
+                <h3 class="team-row__name">
+                  {member.data.externalUrl ? (
+                    <a href={member.data.externalUrl} target="_blank" rel="noopener noreferrer" class="external-link">
+                      {member.data.name}
+                      <span class="visually-hidden">{ui.opensNewTab}</span>
+                    </a>
+                  ) : (
+                    member.data.name
+                  )}
+                </h3>
+                <p class="team-row__role">{member.data.role}</p>
+                <p class="team-row__aff">{member.data.affiliation}</p>
+                <MarkdownBody content={member.content} class="team-row__bio" />
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
 
-      <h2 class="team-heading">{ui.equipo.collaborators}</h2>
-      <ul class="team-list">
-        {collaborators.map((member) => (
-          <li class="team-row">
-            <h3 class="team-row__name">{member.data.name}</h3>
-            <p class="team-row__role">{member.data.role}</p>
-            <p class="team-row__aff">{member.data.affiliation}</p>
-            <MarkdownBody content={member.content} class="team-row__bio" />
-          </li>
-        ))}
-      </ul>
+      {students.length > 0 && (
+        <>
+          <h2 class="team-heading">{ui.equipo.students}</h2>
+          <ul class="team-list">
+            {students.map((member) => (
+              <li class="team-row">
+                <h3 class="team-row__name">
+                  {member.data.externalUrl ? (
+                    <a href={member.data.externalUrl} target="_blank" rel="noopener noreferrer" class="external-link">
+                      {member.data.name}
+                      <span class="visually-hidden">{ui.opensNewTab}</span>
+                    </a>
+                  ) : (
+                    member.data.name
+                  )}
+                </h3>
+                <p class="team-row__role">{member.data.role}</p>
+                <p class="team-row__aff">{member.data.affiliation}</p>
+                <MarkdownBody content={member.content} class="team-row__bio" />
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {collaborators.length > 0 && (
+        <>
+          <h2 class="team-heading">{ui.equipo.collaborators}</h2>
+          <ul class="team-list">
+            {collaborators.map((member) => (
+              <li class="team-row">
+                <h3 class="team-row__name">
+                  {member.data.externalUrl ? (
+                    <a href={member.data.externalUrl} target="_blank" rel="noopener noreferrer" class="external-link">
+                      {member.data.name}
+                      <span class="visually-hidden">{ui.opensNewTab}</span>
+                    </a>
+                  ) : (
+                    member.data.name
+                  )}
+                </h3>
+                <p class="team-row__role">{member.data.role}</p>
+                <p class="team-row__aff">{member.data.affiliation}</p>
+                <MarkdownBody content={member.content} class="team-row__bio" />
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
   </div>
 </Base>
