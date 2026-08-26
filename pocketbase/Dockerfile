@@ -5,6 +5,8 @@ RUN apk add --no-cache ca-certificates unzip wget \
   && unzip /tmp/pb.zip -d /app \
   && chmod +x /app/pocketbase \
   && rm /tmp/pb.zip
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 WORKDIR /app
 EXPOSE 8080
-CMD ["/app/pocketbase", "serve", "--http=0.0.0.0:8080", "--dir=/pb_data"]
+CMD ["/app/entrypoint.sh"]
