@@ -13,7 +13,8 @@
     "astro": "astro",
     "visual:audit": "node scripts/visual-audit.mjs",
     "pb:schema": "node scripts/pb-schema.mjs",
-    "pb:seed": "node scripts/pb-seed-from-content.mjs"
+    "pb:seed": "node scripts/pb-seed-from-content.mjs",
+    "validate:prod": "node scripts/validate-prod.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.14",

@@ -40,8 +40,9 @@ type PbRow = Record<string, unknown> & { id: string; collectionId?: string };
 
 async function listAll(collection: string, filter?: string) {
   const pb = getPb();
+  // ponytail: omit filter key when unset — PB SDK sends filter=undefined and API returns 400
   return pb.collection(collection).getFullList<PbRow>({
-    filter,
+    ...(filter ? { filter } : {}),
     requestKey: null,
   });
 }
