@@ -20,7 +20,8 @@
 
   --space-section: 6rem;
   --space-section-inner: 3.5rem;
-  --max-prose: 62ch;
+  /* Escala de anchos: aire en monitores anchos sin romper medida de lectura. */
+  --max-prose: 70ch;
 
   /* Legacy aliases */
   --c-bg: var(--color-bg);
@@ -64,9 +65,9 @@
   --s-32: 8rem;
 
   --w-text: var(--max-prose);
-  --w-wide: 1120px;
-  --w-narrow: 680px;
-  --w-reading: 920px;
+  --w-wide: 1360px;
+  --w-narrow: 800px;
+  --w-reading: 1100px;
 
   --ease-organic: cubic-bezier(0.22, 0.61, 0.36, 1);
   --d-fast: 180ms;

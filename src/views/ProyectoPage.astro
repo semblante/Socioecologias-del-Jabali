@@ -12,7 +12,7 @@ if (!page) throw new Error('Missing proyecto page');
 
 <Base title={page.data.title} description={page.data.description} locale={locale}>
   <div class="section">
-    <div class="container container--narrow">
+    <div class="container container--reading">
       <header class="page-header">
         <h1 class="page-header__title">{page.data.title}</h1>
         {page.data.description && <p class="page-header__lead">{page.data.description}</p>}
