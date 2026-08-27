@@ -31,6 +31,7 @@ const mediaKind = (() => {
   if (heroSources.length === 1) return 'image' as const;
   return null;
 })();
+const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
 ---
 
 <section
@@ -45,18 +46,21 @@ const mediaKind = (() => {
   {mediaKind === 'video' && (
     <>
       <div class="hero__media-frame" aria-hidden="true">
-        <video
-          class="hero__media hero__media--video is-active"
-          data-hero-video
-          src={heroSources[0]}
-          muted
-          playsinline
-          preload="auto"
-        ></video>
-        {heroSources.length > 1 && (
-          <video class="hero__media hero__media--video" data-hero-video muted playsinline preload="none"></video>
-        )}
+        <div class="hero__media-stack">
+          <video
+            class="hero__media hero__media--video is-active"
+            data-hero-video
+            src={heroSources[0]}
+            muted
+            playsinline
+            preload="auto"
+          ></video>
+          {hasPlaylist && (
+            <video class="hero__media hero__media--video" data-hero-video muted playsinline preload="none"></video>
+          )}
+        </div>
         <div class="hero__media-tint" aria-hidden="true"></div>
+        <div class="hero__media-psych" aria-hidden="true"></div>
       </div>
       <p class="hero__credit">{ui.hero.footageCredit}</p>
     </>
@@ -93,16 +97,20 @@ const mediaKind = (() => {
       const videos = [...hero.querySelectorAll('[data-hero-video]')];
       if (!sources.length || !videos.length) return;
 
-      if (window.__heroVideoRaf) {
-        cancelAnimationFrame(window.__heroVideoRaf);
-        window.__heroVideoRaf = 0;
+      if (typeof window.__heroVideoCleanup === 'function') {
+        window.__heroVideoCleanup();
+        window.__heroVideoCleanup = null;
       }
 
+      const FADE_MS = 1500;
+      const LEAD_S = 1.55;
       let sourceIdx = 0;
       let activeLayer = 0;
-      let forward = true;
-      let last = 0;
-      const speed = 0.86;
+      let switching = false;
+      /** @type {number[]} */
+      const timers = [];
+      /** @type {Array<() => void>} */
+      const cleanups = [];
 
       function layerVideo(layer) {
         return videos[layer] || videos[0];
@@ -123,57 +131,92 @@ const mediaKind = (() => {
         return new Promise((resolve) => video.addEventListener('loadedmetadata', resolve, { once: true }));
       }
 
-      function preloadNext(fromIdx) {
+      async function playSrc(layer, src) {
+        const video = layerVideo(layer);
+        await loadVideo(video, src);
+        try {
+          video.currentTime = 0;
+        } catch (_) {
+          /* ignore seek before ready */
+        }
+        try {
+          await video.play();
+        } catch (_) {
+          /* autoplay policies / reduced data */
+        }
+      }
+
+      function preloadNext() {
         if (sources.length < 2 || videos.length < 2) return;
-        const nextIdx = (fromIdx + 1) % sources.length;
-        const inactiveLayer = 1 - activeLayer;
-        loadVideo(layerVideo(inactiveLayer), sources[nextIdx]);
+        const nextIdx = (sourceIdx + 1) % sources.length;
+        loadVideo(layerVideo(1 - activeLayer), sources[nextIdx]);
       }
 
-      function tick(t) {
-        const video = layerVideo(activeLayer);
-        if (!last) last = t;
-        const dt = ((t - last) / 1000) * speed;
-        last = t;
+      async function beginCrossfade() {
+        if (switching || sources.length < 2 || videos.length < 2) return;
+        switching = true;
 
+        const nextIdx = (sourceIdx + 1) % sources.length;
+        const nextLayer = 1 - activeLayer;
+        const prevLayer = activeLayer;
+
+        await playSrc(nextLayer, sources[nextIdx]);
+        setActiveLayer(nextLayer);
+
+        const done = window.setTimeout(() => {
+          layerVideo(prevLayer).pause();
+          sourceIdx = nextIdx;
+          activeLayer = nextLayer;
+          switching = false;
+          preloadNext();
+        }, FADE_MS);
+        timers.push(done);
+      }
+
+      function onActiveProgress(event) {
+        if (switching || sources.length < 2 || videos.length < 2) return;
+        const video = event.currentTarget;
+        if (video !== layerVideo(activeLayer)) return;
         const dur = video.duration;
-        if (!dur || !Number.isFinite(dur)) {
-          window.__heroVideoRaf = requestAnimationFrame(tick);
-          return;
+        if (!dur || !Number.isFinite(dur)) return;
+        if (video.currentTime >= Math.max(0.2, dur - LEAD_S)) {
+          beginCrossfade();
         }
-
-        if (forward) {
-          video.currentTime = Math.min(dur, video.currentTime + dt);
-          if (video.currentTime >= dur - 0.05) forward = false;
-        } else {
-          video.currentTime = Math.max(0, video.currentTime - dt);
-          if (video.currentTime <= 0.05) {
-            forward = true;
-            if (sources.length > 1 && videos.length > 1) {
-              sourceIdx = (sourceIdx + 1) % sources.length;
-              activeLayer = 1 - activeLayer;
-              last = 0;
-              loadVideo(layerVideo(activeLayer), sources[sourceIdx]).then(() => {
-                layerVideo(activeLayer).currentTime = 0;
-                setActiveLayer(activeLayer);
-                preloadNext(sourceIdx);
-                window.__heroVideoRaf = requestAnimationFrame(tick);
-              });
-              return;
-            }
-          }
-        }
-
-        window.__heroVideoRaf = requestAnimationFrame(tick);
       }
 
-      videos.forEach((video) => video.pause());
-      setActiveLayer(0);
-      loadVideo(layerVideo(0), sources[0]).then(() => {
-        layerVideo(0).currentTime = 0;
-        preloadNext(0);
-        window.__heroVideoRaf = requestAnimationFrame(tick);
+      function onActiveEnded(event) {
+        if (switching || sources.length < 2 || videos.length < 2) return;
+        if (event.currentTarget !== layerVideo(activeLayer)) return;
+        beginCrossfade();
+      }
+
+      videos.forEach((video) => {
+        video.addEventListener('timeupdate', onActiveProgress);
+        video.addEventListener('ended', onActiveEnded);
+        cleanups.push(() => {
+          video.removeEventListener('timeupdate', onActiveProgress);
+          video.removeEventListener('ended', onActiveEnded);
+        });
       });
+
+      window.__heroVideoCleanup = () => {
+        timers.forEach((id) => clearTimeout(id));
+        cleanups.forEach((fn) => fn());
+        videos.forEach((video) => video.pause());
+      };
+
+      setActiveLayer(0);
+
+      if (sources.length === 1 || videos.length === 1) {
+        layerVideo(0).loop = true;
+        playSrc(0, sources[0]);
+        return;
+      }
+
+      videos.forEach((video) => {
+        video.loop = false;
+      });
+      playSrc(0, sources[0]).then(preloadNext);
     }
 
     initHeroVideo();
@@ -214,54 +257,47 @@ const mediaKind = (() => {
     inset: 0;
     background-image: var(--texture-grain);
     background-size: 180px 180px;
-    opacity: 0.22;
+    opacity: 0.28;
     mix-blend-mode: soft-light;
   }
 
   .hero[data-has-media='true'] .hero__atmosphere {
-    opacity: 0.28;
+    opacity: 0.22;
   }
 
-  /*
-    Ventana 16:9 contenida (no full-bleed).
-    Los clips son 848×480 H.264 — formato web correcto; el “pegado” venía del cover.
-  */
+  /* Plano full-bleed: las dos capas de video viven en el mismo rectángulo. */
   .hero__media-frame {
     position: absolute;
     inset: 0;
     z-index: 0;
-    display: grid;
-    place-items: center;
     overflow: hidden;
     pointer-events: none;
-    /* Empuja el plano hacia arriba para dejar aire bajo el copy */
-    padding: clamp(4.5rem, 12vh, 7rem) clamp(1.25rem, 5vw, 4rem) clamp(7rem, 22vh, 12rem);
   }
 
-  .hero__media {
-    width: min(100%, 56rem);
-    height: auto;
-    max-height: min(52vh, 28rem);
-    aspect-ratio: 16 / 9;
-    object-fit: contain;
+  .hero__media-stack {
+    position: absolute;
+    inset: -4%;
+    animation: hero-media-drift 32s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+
+  .hero__media,
+  .hero__media--still {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     object-position: center center;
     pointer-events: none;
-    /* Leve viñeta propia del marco, como pantalla de cámara */
-    box-shadow:
-      0 0 0 1px rgba(245, 242, 232, 0.08),
-      0 1.5rem 3rem rgba(0, 0, 0, 0.45);
-  }
-
-  .hero__media--still {
-    width: min(100%, 56rem);
-    max-height: min(52vh, 28rem);
-    object-fit: contain;
   }
 
   .hero__media--video {
     opacity: 0;
-    transition: opacity 1.6s ease;
-    will-change: opacity;
+    transition: opacity 1.5s ease;
+    filter: saturate(1.28) contrast(1.1);
+    animation: hero-media-hue 40s ease-in-out infinite alternate;
+    will-change: opacity, filter;
   }
 
   .hero__media--video.is-active {
@@ -273,19 +309,71 @@ const mediaKind = (() => {
     inset: 0;
     pointer-events: none;
     mix-blend-mode: color;
-    opacity: 0.85;
+    opacity: 0.88;
     animation: hero-field-tint 28s ease-in-out infinite alternate;
+  }
+
+  .hero__media-psych {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: soft-light;
+    opacity: 0.62;
+    animation: hero-psych-wash 22s ease-in-out infinite alternate;
+  }
+
+  .hero__media-psych::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: var(--texture-grain);
+    background-size: 160px 160px;
+    opacity: 0.35;
+    mix-blend-mode: overlay;
+  }
+
+  @keyframes hero-media-drift {
+    0% {
+      transform: scale(1.04) translate(0.4%, -0.3%);
+    }
+    100% {
+      transform: scale(1.1) translate(-1.2%, 0.8%);
+    }
+  }
+
+  @keyframes hero-media-hue {
+    0% {
+      filter: saturate(1.22) contrast(1.08) hue-rotate(-6deg);
+    }
+    50% {
+      filter: saturate(1.38) contrast(1.12) hue-rotate(14deg);
+    }
+    100% {
+      filter: saturate(1.26) contrast(1.1) hue-rotate(4deg);
+    }
   }
 
   @keyframes hero-field-tint {
     0% {
-      background: rgba(36, 78, 58, 0.42);
+      background: rgba(36, 78, 58, 0.48);
     }
     50% {
-      background: rgba(118, 72, 44, 0.34);
+      background: rgba(118, 72, 44, 0.4);
     }
     100% {
-      background: rgba(34, 52, 68, 0.38);
+      background: rgba(34, 52, 68, 0.44);
+    }
+  }
+
+  @keyframes hero-psych-wash {
+    0% {
+      background: rgba(42, 92, 64, 0.55);
+    }
+    45% {
+      background: rgba(182, 87, 62, 0.42);
+    }
+    100% {
+      background: rgba(40, 58, 86, 0.5);
     }
   }
 
@@ -309,8 +397,8 @@ const mediaKind = (() => {
     z-index: 1;
     pointer-events: none;
     background:
-      linear-gradient(180deg, rgba(7, 7, 8, 0.12) 0%, rgba(7, 7, 8, 0.2) 42%, rgba(7, 7, 8, 0.78) 100%),
-      linear-gradient(90deg, rgba(7, 7, 8, 0.35) 0%, transparent 42%);
+      linear-gradient(180deg, rgba(7, 7, 8, 0.18) 0%, rgba(7, 7, 8, 0.28) 42%, rgba(7, 7, 8, 0.82) 100%),
+      linear-gradient(90deg, rgba(7, 7, 8, 0.42) 0%, transparent 48%);
   }
 
   .hero:not([data-has-media='true']) .hero__veil {
@@ -331,16 +419,6 @@ const mediaKind = (() => {
     .hero__inner {
       width: min(100% - 1.5rem, var(--w-wide, 1120px));
       padding-bottom: clamp(4.5rem, 12vh, 6rem);
-    }
-
-    .hero__media-frame {
-      padding: clamp(3.5rem, 10vh, 5rem) 0.85rem clamp(6rem, 20vh, 9rem);
-    }
-
-    .hero__media,
-    .hero__media--still {
-      width: min(100%, 40rem);
-      max-height: min(42vh, 22rem);
     }
   }
 
@@ -440,13 +518,24 @@ const mediaKind = (() => {
       animation: none;
     }
 
-    .hero__media-tint {
+    .hero__media-stack,
+    .hero__media--video,
+    .hero__media-tint,
+    .hero__media-psych {
       animation: none;
+    }
+
+    .hero__media-tint {
       background: rgba(36, 78, 58, 0.35);
+    }
+
+    .hero__media-psych {
+      display: none;
     }
 
     .hero__media--video {
       transition: none;
+      filter: none;
     }
 
     .hero video.hero__media {

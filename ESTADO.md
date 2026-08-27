@@ -2,7 +2,7 @@
 
 **Qué es:** Sitio bilingüe del proyecto Fondecyt Regular 1260739 «Socioecologías del jabalí», liderado por Manuel Tironi (PUC), sobre el jabalí como zona de contacto socioecológica en el peweñantu de la Araucanía andina, en colaboración con la Asociación Indígena Winkulmapu. Astro 5 con SSR y PocketBase como CMS.
 **Etapa:** piloto (estructura, diseño y contenido semilla en Railway; dominio registrado en Railway pendiente de DNS; cliente aún no valida contenido).
-**Actualizado:** 2026-08-26
+**Actualizado:** 2026-08-27
 
 > Este repo **ya no usa Keystatic ni Cloudflare**. Migró a PocketBase en julio de 2026 y el
 > deploy es Railway. El legacy se borró el 2026-08-03.
@@ -14,7 +14,7 @@
 - Lectura de contenido en runtime en `src/lib/content.ts`; seed idempotente desde `src/content/` con `pnpm pb:seed`.
 - Rutas en español e inglés: `/`, `/proyecto`, `/proyecto/objetivos` → ancla, `/proyecto/metodologia` → ancla, `/territorio`, `/territorio/winkulmapu`, `/territorio/[slug]`, `/equipo`, `/cuaderno`, `/cuaderno/[slug]`, `/archivo`, `/publicaciones`, `/productos`, `/contacto`, más `/en/...`. Redirección de `/bitacora` a `/cuaderno`.
 - Contenido alineado a correcciones de Tironi (2026-08-20): portada (bajada + about), proyecto largo con objetivos y metodología, territorio Winkulmapu, perfiles de equipo + tesistas, lead del cuaderno.
-- Hero listo para media full-bleed (`paginas.heroMedia`: video `.mp4/.webm` o imagen); sin media usa atmósfera. Logo del sello bajó a la sección «Sobre el proyecto».
+- Hero full-bleed con playlist (`paginas.heroMedia`: `.mp4/.webm` o imagen): reproducción nativa + crossfade entre clips y tinte de campo; sin media usa atmósfera. Logo del sello bajó a la sección «Sobre el proyecto».
 - Equipo: grupo `tesista` en schema; Francisco Colipe como Co-Investigador; Fernanda Fuentes y Marcelo Alvarado Lincopi.
 - Dirección visual «Sello de campo» documentada en `docs/design-sello-de-campo.md`, con tokens en `src/styles/tokens.css`.
 - Tipografías: Newsreader, Instrument Sans, Geist Mono.
