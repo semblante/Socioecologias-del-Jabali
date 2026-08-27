@@ -1,9 +1,21 @@
+/** Debe coincidir con el breakpoint `nav` en tokens.css (hamburger debajo de 960px). */
+const NAV_DESKTOP_MQ = '(min-width: 960px)';
+
+function setMainInert(inert: boolean) {
+  document.getElementById('main')?.toggleAttribute('inert', inert);
+}
+
 function closeNav() {
   document.getElementById('site-nav')?.classList.remove('is-open');
   const toggle = document.getElementById('menu-toggle');
   toggle?.classList.remove('is-active');
   toggle?.setAttribute('aria-expanded', 'false');
+  toggle?.setAttribute(
+    'aria-label',
+    document.documentElement.lang === 'en' ? 'Open navigation menu' : 'Abrir menú de navegación',
+  );
   document.body.classList.remove('nav-open');
+  setMainInert(false);
 }
 
 function initSiteNav() {
@@ -32,6 +44,7 @@ function initSiteNav() {
             : 'Abrir menú de navegación',
       );
       document.body.classList.toggle('nav-open', !!open);
+      setMainInert(!!open);
       return;
     }
 
@@ -45,9 +58,19 @@ function initSiteNav() {
       closeNav();
     }
   });
+
+  // Evita body con overflow:hidden si el menú quedó abierto al pasar a desktop.
+  const desktopMq = window.matchMedia(NAV_DESKTOP_MQ);
+  const onViewportChange = () => {
+    if (desktopMq.matches) closeNav();
+  };
+  desktopMq.addEventListener('change', onViewportChange);
 }
 
-document.addEventListener('astro:page-load', initSiteNav);
+document.addEventListener('astro:page-load', () => {
+  closeNav();
+  initSiteNav();
+});
 initSiteNav();
 
 function syncHomeHeader() {

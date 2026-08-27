@@ -97,10 +97,16 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
       const videos = [...hero.querySelectorAll('[data-hero-video]')];
       if (!sources.length || !videos.length) return;
 
+      // ClientRouter dispara astro:page-load también en la carga inicial.
+      // Si ya vivimos en este nodo, no re-init (evita el reinicio a los ~2s).
+      if (hero.dataset.heroVideoLive === '1') return;
+
       if (typeof window.__heroVideoCleanup === 'function') {
         window.__heroVideoCleanup();
         window.__heroVideoCleanup = null;
       }
+
+      hero.dataset.heroVideoLive = '1';
 
       const FADE_MS = 1500;
       const LEAD_S = 1.55;
@@ -120,9 +126,17 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
         videos.forEach((video, i) => video.classList.toggle('is-active', i === layer));
       }
 
+      function resolvedSrc(video) {
+        return video.dataset.loadedSrc || video.getAttribute('src') || '';
+      }
+
       function loadVideo(video, src) {
-        if (video.dataset.loadedSrc === src && video.readyState >= 1) {
-          return Promise.resolve();
+        // No llamar load() si ya es el mismo src (p. ej. markup inicial):
+        // eso reinicia el buffer y se ve como un salto al inicio.
+        if (resolvedSrc(video) === src) {
+          video.dataset.loadedSrc = src;
+          if (video.readyState >= 1) return Promise.resolve();
+          return new Promise((resolve) => video.addEventListener('loadedmetadata', resolve, { once: true }));
         }
         video.dataset.loadedSrc = src;
         video.src = src;
@@ -131,13 +145,15 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
         return new Promise((resolve) => video.addEventListener('loadedmetadata', resolve, { once: true }));
       }
 
-      async function playSrc(layer, src) {
+      async function playSrc(layer, src, { restart = true } = {}) {
         const video = layerVideo(layer);
         await loadVideo(video, src);
-        try {
-          video.currentTime = 0;
-        } catch (_) {
-          /* ignore seek before ready */
+        if (restart) {
+          try {
+            video.currentTime = 0;
+          } catch (_) {
+            /* ignore seek before ready */
+          }
         }
         try {
           await video.play();
@@ -160,7 +176,7 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
         const nextLayer = 1 - activeLayer;
         const prevLayer = activeLayer;
 
-        await playSrc(nextLayer, sources[nextIdx]);
+        await playSrc(nextLayer, sources[nextIdx], { restart: true });
         setActiveLayer(nextLayer);
 
         const done = window.setTimeout(() => {
@@ -191,6 +207,10 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
       }
 
       videos.forEach((video) => {
+        // Marca el src inline para no re-disparar load() en el primer play.
+        if (video.getAttribute('src') && !video.dataset.loadedSrc) {
+          video.dataset.loadedSrc = video.getAttribute('src');
+        }
         video.addEventListener('timeupdate', onActiveProgress);
         video.addEventListener('ended', onActiveEnded);
         cleanups.push(() => {
@@ -200,6 +220,7 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
       });
 
       window.__heroVideoCleanup = () => {
+        hero.dataset.heroVideoLive = '';
         timers.forEach((id) => clearTimeout(id));
         cleanups.forEach((fn) => fn());
         videos.forEach((video) => video.pause());
@@ -209,18 +230,21 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
 
       if (sources.length === 1 || videos.length === 1) {
         layerVideo(0).loop = true;
-        playSrc(0, sources[0]);
+        playSrc(0, sources[0], { restart: false });
         return;
       }
 
       videos.forEach((video) => {
         video.loop = false;
       });
-      playSrc(0, sources[0]).then(preloadNext);
+      // restart:false — el clip 0 ya viene en el markup; no saltar al frame 0 otra vez.
+      playSrc(0, sources[0], { restart: false }).then(preloadNext);
     }
 
-    initHeroVideo();
+    // page-load cubre SPA; la llamada directa cubre si el script llega tarde.
+    // El flag heroVideoLive evita el doble init (reinicio a ~2s) en la carga inicial.
     document.addEventListener('astro:page-load', initHeroVideo);
+    initHeroVideo();
   </script>
 )}
 
@@ -232,7 +256,9 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
     --hero-accent: #b6573e;
     position: relative;
     isolation: isolate;
+    /* dvh evita que la barra de URL móvil deje el hero demasiado alto. */
     min-height: min(96vh, 56rem);
+    min-height: min(96dvh, 56rem);
     display: flex;
     align-items: flex-end;
     color: var(--hero-cream);
@@ -381,6 +407,7 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
     position: absolute;
     right: clamp(1.25rem, 3.5vw, 2.25rem);
     bottom: clamp(1.35rem, 3.5vh, 2rem);
+    bottom: clamp(1.35rem, 3.5dvh, 2rem);
     z-index: 2;
     margin: 0;
     font-family: var(--font-mono, "Geist Mono", monospace);
@@ -397,8 +424,8 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
     z-index: 1;
     pointer-events: none;
     background:
-      linear-gradient(180deg, rgba(7, 7, 8, 0.18) 0%, rgba(7, 7, 8, 0.28) 42%, rgba(7, 7, 8, 0.82) 100%),
-      linear-gradient(90deg, rgba(7, 7, 8, 0.42) 0%, transparent 48%);
+      linear-gradient(180deg, rgba(7, 7, 8, 0.14) 0%, rgba(7, 7, 8, 0.22) 38%, rgba(7, 7, 8, 0.78) 100%),
+      linear-gradient(105deg, rgba(7, 7, 8, 0.55) 0%, rgba(7, 7, 8, 0.22) 42%, transparent 68%);
   }
 
   .hero:not([data-has-media='true']) .hero__veil {
@@ -411,29 +438,35 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
     width: min(100% - 2.5rem, var(--w-wide, 1120px));
     margin-inline: auto;
     padding-block: clamp(5.5rem, 14vh, 8rem) clamp(4rem, 11vh, 6.5rem);
+    padding-block: clamp(5.5rem, 14dvh, 8rem) clamp(4rem, 11dvh, 6.5rem);
     padding-inline: 0.25rem;
     box-sizing: border-box;
   }
 
-  @media (max-width: 639px) {
+  @media (min-width: 960px) {
     .hero__inner {
-      width: min(100% - 1.5rem, var(--w-wide, 1120px));
-      padding-bottom: clamp(4.5rem, 12vh, 6rem);
+      /* Empuja el bloque hacia el centro óptico; evita el muro pegado a la izquierda. */
+      padding-inline: clamp(2rem, 10vw, 8rem) 0.25rem;
     }
   }
 
   .hero__copy {
-    max-width: 40rem;
+    max-width: 42rem;
     animation: hero-rise 900ms var(--ease-organic, cubic-bezier(0.22, 0.61, 0.36, 1)) both;
   }
 
   .hero__kicker {
     margin: 0 0 var(--s-4, 1rem);
+    padding-left: 0.7rem;
+    border-left: 2px solid var(--hero-accent);
     font-family: var(--font-mono, "Geist Mono", monospace);
     font-size: 0.72rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--hero-accent);
+    color: rgba(245, 242, 232, 0.92);
+    text-shadow:
+      0 1px 2px rgba(7, 7, 8, 0.85),
+      0 0 18px rgba(7, 7, 8, 0.45);
   }
 
   .hero__title {
@@ -549,11 +582,51 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
 
   @media (max-width: 639px) {
     .hero {
-      min-height: min(90vh, 42rem);
+      /* Deja ver ~15–20% de «Sobre el proyecto» sin scroll. */
+      min-height: min(72vh, 34rem);
+      min-height: min(72dvh, 34rem);
+    }
+
+    .hero__inner {
+      width: min(100% - 1.5rem, var(--w-wide, 1120px));
+      padding-block: clamp(4.75rem, 12vh, 6.5rem) clamp(2.25rem, 6vh, 3.25rem);
+      padding-block: clamp(4.75rem, 12dvh, 6.5rem) clamp(2.25rem, 6dvh, 3.25rem);
+    }
+
+    .hero__kicker {
+      margin-bottom: 0.75rem;
+      font-size: 0.68rem;
     }
 
     .hero__title {
-      max-width: 20ch;
+      max-width: none;
+      margin-bottom: 1rem;
+      font-size: clamp(1.7rem, 7.2vw, 2.15rem);
+      line-height: 1.12;
+    }
+
+    .hero__intro {
+      margin-bottom: 1.25rem;
+      font-size: 0.95rem;
+      line-height: 1.55;
+      max-width: none;
+    }
+
+    .hero__actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.65rem;
+    }
+
+    .hero__cta {
+      justify-content: center;
+      width: 100%;
+      padding: 0.85rem 1.15rem;
+    }
+
+    /* Evita que el crédito compita con los CTAs en pantallas cortas. */
+    .hero__credit {
+      display: none;
     }
   }
 </style>

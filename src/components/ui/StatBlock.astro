@@ -51,7 +51,13 @@ const { title, lead, stats } = Astro.props;
     display: grid;
     gap: var(--s-4);
     margin: 0;
-    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  }
+
+  @media (max-width: 639px) {
+    .method-block__stats {
+      grid-template-columns: 1fr;
+    }
   }
 
   .method-block__stat dt {

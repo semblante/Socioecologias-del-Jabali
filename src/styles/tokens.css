@@ -75,6 +75,14 @@
   --d-slow: 900ms;
 
   --header-h: 4.5rem;
+
+  /*
+   * Breakpoints (literales en @media — CSS vars no aplican ahí):
+   *   compact  640px  gutters densos, tipografía móvil, hero compacto
+   *   nav      960px  hamburger debajo; nav inline desde aquí
+   *   layout   768px  side-by-side editorial (territorio)
+   *   wide     960px  grids de 3 cols (coincide con nav)
+   */
 }
 
 @media (prefers-reduced-motion: reduce) {

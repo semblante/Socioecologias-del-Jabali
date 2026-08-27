@@ -9,12 +9,14 @@
   border-bottom: 1px solid var(--c-rule);
   background: color-mix(in srgb, var(--c-bg) 96%, var(--c-bg-soft));
   box-shadow: 0 1px 0 color-mix(in srgb, var(--c-rule) 50%, transparent);
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 /* Home: header starts over dark hero, then becomes solid on scroll via .is-scrolled */
 body.is-home .site-header {
   position: fixed;
   inset-inline: 0;
+  top: 0;
   background: linear-gradient(to bottom, rgba(7, 7, 8, 0.78), rgba(7, 7, 8, 0.22) 75%, transparent);
   border-bottom-color: transparent;
   box-shadow: none;
@@ -133,7 +135,7 @@ body.is-home.is-scrolled .menu-toggle__bar {
 }
 
 .site-header__nav {
-  justify-self: start;
+  justify-self: center;
   min-width: 0;
 }
 
@@ -242,7 +244,7 @@ body.is-home.is-scrolled .menu-toggle__bar {
   font-weight: 500;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 960px) {
   .site-nav a[aria-current="page"]::after,
   .site-nav a.active::after {
     opacity: 1;
@@ -263,10 +265,14 @@ body.is-home.is-scrolled .menu-toggle__bar {
 }
 
 .lang-switch a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--c-ink);
   text-decoration: none;
   padding: var(--s-2);
   min-width: 2rem;
+  min-height: 2.75rem;
   text-align: center;
   border-bottom: none;
   opacity: 0.55;
@@ -292,21 +298,34 @@ body.nav-open {
   overflow: hidden;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 959px) {
   .site-header {
     height: auto;
-    min-height: var(--header-h);
+    min-height: calc(var(--header-h) + env(safe-area-inset-top, 0px));
   }
 
+  /* Flex: con nav en overlay solo quedan marca + end; el 1fr del grid
+     dejaba ES/EN flotando al centro (como en la captura). */
   .site-header__inner {
-    grid-template-columns: auto 1fr auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     column-gap: var(--s-3);
-    width: min(100% - var(--s-4), var(--w-wide));
+    width: min(
+      100% - var(--s-4) - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px),
+      var(--w-wide)
+    );
     padding-block: var(--s-2);
+    padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);
   }
 
   .site-header__nav {
     display: contents;
+  }
+
+  .site-header__end {
+    margin-left: auto;
+    gap: var(--s-2);
   }
 
   .menu-toggle {
@@ -322,11 +341,13 @@ body.nav-open {
     display: none;
     position: fixed;
     inset: 0;
-    top: var(--header-h);
+    top: calc(var(--header-h) + env(safe-area-inset-top, 0px));
     flex-direction: column;
     align-items: stretch;
     gap: 0;
-    padding: var(--s-4) var(--s-6) var(--s-8);
+    padding: var(--s-4) var(--s-6) calc(var(--s-8) + env(safe-area-inset-bottom, 0px));
+    padding-inline: max(var(--s-6), env(safe-area-inset-left, 0px))
+      max(var(--s-6), env(safe-area-inset-right, 0px));
     background: color-mix(in srgb, var(--c-bg) 98%, var(--c-bg-soft));
     background-image: var(--texture-grain);
     background-size: 200px 200px;
@@ -384,6 +405,7 @@ body.nav-open {
   }
 
   body.nav-open.is-home .site-logo--nav,
+  body.nav-open.is-home .site-brand__name,
   body.nav-open.is-home .site-brand__place,
   body.nav-open.is-home .lang-switch a,
   body.nav-open.is-home .lang-switch span,
@@ -401,20 +423,6 @@ body.nav-open {
 
   body.nav-open.is-home .menu-toggle__bar {
     background: currentColor;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 960px) {
-  .site-header__inner {
-    column-gap: var(--s-6);
-  }
-
-  .site-nav {
-    gap: var(--s-1) var(--s-4);
-  }
-
-  .site-nav a {
-    font-size: var(--t-xs);
   }
 }
 
@@ -469,6 +477,9 @@ body.nav-open {
 }
 
 .site-footer__nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
   color: var(--c-ink-soft);
   text-decoration: none;
   font-size: var(--t-sm);
@@ -722,7 +733,7 @@ body.nav-open {
 .pub-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem;
+  gap: 0.35rem 1.25rem;
   border-bottom: 1px solid var(--color-border);
   padding-bottom: 0;
   margin-bottom: 2rem;
@@ -735,7 +746,8 @@ body.nav-open {
   color: var(--color-text-muted);
   background: none;
   border: none;
-  padding: 0 0 0.75rem 0;
+  padding: 0.75rem 0.15rem;
+  min-height: 2.75rem;
   cursor: pointer;
   position: relative;
   transition: color 0.15s ease;

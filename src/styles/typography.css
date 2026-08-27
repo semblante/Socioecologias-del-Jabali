@@ -18,7 +18,7 @@
   letter-spacing: -0.02em;
   margin-top: 2.1em;
   margin-bottom: 0.5em;
-  scroll-margin-top: calc(var(--header-h) + var(--s-4));
+  scroll-margin-top: calc(var(--header-h) + var(--s-4) + env(safe-area-inset-top, 0px));
 }
 
 .prose h3 {
@@ -62,6 +62,23 @@
   padding: 0.1em 0.35em;
 }
 
+.prose pre {
+  overflow-x: auto;
+  max-width: 100%;
+  padding: var(--s-4);
+  background: var(--c-bg-soft);
+  font-family: var(--f-mono);
+  font-size: 0.85em;
+  line-height: 1.5;
+}
+
+.prose table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
 .prose a {
   color: var(--c-accent);
   text-underline-offset: 0.2em;
@@ -74,6 +91,16 @@
   line-height: 0.85;
   margin: 0.05em 0.12em 0 0;
   color: var(--c-accent);
+}
+
+@media (max-width: 639px) {
+  .prose--article > p:first-of-type::first-letter {
+    float: none;
+    font-size: inherit;
+    line-height: inherit;
+    margin: 0;
+    color: inherit;
+  }
 }
 
 .meta {
