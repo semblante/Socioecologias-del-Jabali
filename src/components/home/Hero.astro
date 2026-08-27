@@ -28,15 +28,18 @@ const mediaKind = (() => {
   <div class="hero__atmosphere" aria-hidden="true"></div>
 
   {mediaKind === 'video' && (
-    <video
-      class="hero__media"
-      src={heroMedia}
-      autoplay
-      muted
-      loop
-      playsinline
-      aria-hidden="true"
-    ></video>
+    <>
+      <video
+        class="hero__media hero__media--video"
+        data-hero-video
+        src={heroMedia}
+        muted
+        playsinline
+        preload="auto"
+        aria-hidden="true"
+      ></video>
+      <p class="hero__credit">{ui.hero.footageCredit}</p>
+    </>
   )}
   {mediaKind === 'image' && (
     <img class="hero__media" src={heroMedia} alt="" aria-hidden="true" />
@@ -56,6 +59,46 @@ const mediaKind = (() => {
     </div>
   </div>
 </section>
+
+{mediaKind === 'video' && (
+  <script>
+    function initHeroVideoBounce() {
+      const video = document.querySelector('[data-hero-video]');
+      if (!video || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      let forward = true;
+      let last = 0;
+      const speed = 0.92;
+
+      function frame(t) {
+        if (!last) last = t;
+        const dt = ((t - last) / 1000) * speed;
+        last = t;
+        const dur = video.duration;
+        if (!dur || !Number.isFinite(dur)) {
+          requestAnimationFrame(frame);
+          return;
+        }
+        if (forward) {
+          video.currentTime = Math.min(dur, video.currentTime + dt);
+          if (video.currentTime >= dur - 0.03) forward = false;
+        } else {
+          video.currentTime = Math.max(0, video.currentTime - dt);
+          if (video.currentTime <= 0.03) forward = true;
+        }
+        requestAnimationFrame(frame);
+      }
+
+      video.pause();
+      const start = () => requestAnimationFrame(frame);
+      if (video.readyState >= 1) start();
+      else video.addEventListener('loadedmetadata', start, { once: true });
+    }
+
+    initHeroVideoBounce();
+    document.addEventListener('astro:page-load', initHeroVideoBounce);
+  </script>
+)}
 
 <style>
   /* Colores literales: evita que un token roto deje el hero crema/negro. */
@@ -105,6 +148,36 @@ const mediaKind = (() => {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    pointer-events: none;
+  }
+
+  .hero__media--video {
+    animation: hero-field-tint 28s ease-in-out infinite alternate;
+  }
+
+  @keyframes hero-field-tint {
+    0% {
+      filter: grayscale(1) sepia(0.35) hue-rotate(85deg) saturate(1.08) contrast(1.08) brightness(0.9);
+    }
+    50% {
+      filter: grayscale(1) sepia(0.55) hue-rotate(18deg) saturate(0.92) contrast(1.1) brightness(0.88);
+    }
+    100% {
+      filter: grayscale(1) sepia(0.42) hue-rotate(-8deg) saturate(1.02) contrast(1.06) brightness(0.91);
+    }
+  }
+
+  .hero__credit {
+    position: absolute;
+    right: clamp(1rem, 3vw, 2rem);
+    bottom: clamp(0.85rem, 2.5vh, 1.35rem);
+    z-index: 2;
+    margin: 0;
+    font-family: var(--font-mono, "Geist Mono", monospace);
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(245, 242, 232, 0.42);
     pointer-events: none;
   }
 
@@ -234,7 +307,16 @@ const mediaKind = (() => {
       animation: none;
     }
 
+    .hero__media--video {
+      animation: none;
+      filter: grayscale(1) contrast(1.05) brightness(0.9);
+    }
+
     .hero video.hero__media {
+      display: none;
+    }
+
+    .hero__credit {
       display: none;
     }
   }

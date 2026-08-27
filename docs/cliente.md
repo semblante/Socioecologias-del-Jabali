@@ -20,7 +20,7 @@ Esta guía es para Manuel Tironi y su equipo. **No necesitas saber programar ni 
 | **sitios** | Puesco-Lanín y casos secundarios |
 | **productos** | Libro, policy briefs, exposición |
 | **galeria** | Archivo visual (fotos, cámaras, mapas) — distinto del Cuaderno |
-| **paginas** | Portada, El proyecto, Contacto (`key`: home / proyecto / contacto). En `home`, `heroMedia` es la URL o ruta del video/imagen de portada |
+| **paginas** | Portada, El proyecto, Contacto (`key`: home / proyecto / contacto). En `home`, `heroMedia` es la ruta del video o imagen de portada (p. ej. `/media/jabali1.mp4`; el archivo va en el servidor bajo `public/media/`) |
 
 ## Publicación
 

@@ -21,6 +21,9 @@ const ui = {
     aboutProject: 'Sobre el proyecto',
     projectCta: 'Conoce la investigación',
     fieldNotesCta: 'Cuaderno de campo',
+    hero: {
+      footageCredit: 'Autor: Nicolás Gálvez',
+    },
     homeSummary:
       'Las especies invasoras no son entidades unívocas: son zonas de contacto donde se dan cita —y producen— múltiples conocimientos, relaciones y tensiones. En la Araucanía andina, el jabalí se ha convertido en un problema para las comunidades mapuche que han convivido con el chancho por décadas.',
     bitacora: {
@@ -75,6 +78,9 @@ const ui = {
     aboutProject: 'About the project',
     projectCta: 'About the research',
     fieldNotesCta: 'Field journal',
+    hero: {
+      footageCredit: 'Footage: Nicolás Gálvez',
+    },
     homeSummary:
       'Invasive species are not univocal entities: they are contact zones where multiple knowledges, relations, and tensions gather —and are produced. In the Andean Araucanía, wild boar has become a problem for Mapuche communities that have lived with the chancho for decades.',
     bitacora: {
