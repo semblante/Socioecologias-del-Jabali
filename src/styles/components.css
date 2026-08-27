@@ -71,6 +71,16 @@ body.is-home.is-scrolled .lang-switch a[aria-current="page"] {
   color: #b6573e;
 }
 
+body.is-home .site-nav a:hover:not([aria-current="page"]),
+body.is-home .site-nav a:focus-visible:not([aria-current="page"]) {
+  color: #f5f2e8;
+}
+
+body.is-home.is-scrolled .site-nav a:hover:not([aria-current="page"]),
+body.is-home.is-scrolled .site-nav a:focus-visible:not([aria-current="page"]) {
+  color: var(--color-text);
+}
+
 body.is-home .site-logo--nav {
   color: #f5f2e8;
 }
@@ -195,8 +205,35 @@ body.is-home.is-scrolled .menu-toggle__bar {
   transition: color var(--d-fast) var(--ease-organic);
 }
 
-.site-nav a:hover {
-  color: var(--color-accent);
+/* Hover sutil: tinta + hairline que crece; el accent queda para la página activa. */
+.site-nav a::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: currentColor;
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition:
+    opacity var(--d-fast) var(--ease-organic),
+    transform var(--d-medium) var(--ease-organic),
+    background-color var(--d-fast) var(--ease-organic),
+    height var(--d-fast) var(--ease-organic);
+  pointer-events: none;
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible {
+  color: var(--color-text);
+}
+
+.site-nav a:hover:not([aria-current="page"]):not(.active)::after,
+.site-nav a:focus-visible:not([aria-current="page"]):not(.active)::after {
+  opacity: 0.45;
+  transform: scaleX(1);
 }
 
 .site-nav a[aria-current="page"],
@@ -208,14 +245,10 @@ body.is-home.is-scrolled .menu-toggle__bar {
 @media (min-width: 768px) {
   .site-nav a[aria-current="page"]::after,
   .site-nav a.active::after {
-    content: "";
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    right: 0;
+    opacity: 1;
+    transform: scaleX(1);
     height: 1.5px;
     background: var(--color-accent);
-    border-radius: 1px;
   }
 }
 
@@ -315,6 +348,15 @@ body.nav-open {
     font-size: var(--t-md);
     border-bottom: none;
     color: var(--c-ink);
+  }
+
+  .site-nav a::after {
+    display: none;
+  }
+
+  .site-nav a:hover,
+  .site-nav a:focus-visible {
+    color: var(--c-accent);
   }
 
   .site-nav a[aria-current="page"] {
