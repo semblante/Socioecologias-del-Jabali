@@ -16,33 +16,53 @@ const { locale, tagline, intro, heroMedia = '' } = Astro.props;
 const ui = getUi(locale);
 const brand = siteConfig.nameShort[locale];
 
-// ponytail: solo archivo directo; YouTube/Vimeo exigirían iframe aparte
+function parseHeroSources(raw: string): string[] {
+  return raw
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+// ponytail: rutas locales o URLs directas; YouTube/Vimeo exigirían iframe aparte
+const heroSources = parseHeroSources(heroMedia);
 const mediaKind = (() => {
-  if (!heroMedia.trim()) return null;
-  if (/\.(mp4|webm|ogg)(\?|$)/i.test(heroMedia)) return 'video' as const;
-  return 'image' as const;
+  if (!heroSources.length) return null;
+  if (heroSources.every((src) => /\.(mp4|webm|ogg)(\?|$)/i.test(src))) return 'video' as const;
+  if (heroSources.length === 1) return 'image' as const;
+  return null;
 })();
 ---
 
-<section class="hero" aria-label={brand} data-home-hero data-has-media={mediaKind ? 'true' : 'false'}>
+<section
+  class="hero"
+  aria-label={brand}
+  data-home-hero
+  data-has-media={mediaKind ? 'true' : 'false'}
+  data-hero-sources={mediaKind === 'video' ? heroSources.join(',') : undefined}
+>
   <div class="hero__atmosphere" aria-hidden="true"></div>
 
   {mediaKind === 'video' && (
     <>
-      <video
-        class="hero__media hero__media--video"
-        data-hero-video
-        src={heroMedia}
-        muted
-        playsinline
-        preload="auto"
-        aria-hidden="true"
-      ></video>
+      <div class="hero__media-frame" aria-hidden="true">
+        <video
+          class="hero__media hero__media--video is-active"
+          data-hero-video
+          src={heroSources[0]}
+          muted
+          playsinline
+          preload="auto"
+        ></video>
+        {heroSources.length > 1 && (
+          <video class="hero__media hero__media--video" data-hero-video muted playsinline preload="none"></video>
+        )}
+        <div class="hero__media-tint" aria-hidden="true"></div>
+      </div>
       <p class="hero__credit">{ui.hero.footageCredit}</p>
     </>
   )}
   {mediaKind === 'image' && (
-    <img class="hero__media" src={heroMedia} alt="" aria-hidden="true" />
+    <img class="hero__media hero__media--still" src={heroSources[0]} alt="" aria-hidden="true" />
   )}
 
   <div class="hero__veil" aria-hidden="true"></div>
@@ -62,41 +82,102 @@ const mediaKind = (() => {
 
 {mediaKind === 'video' && (
   <script>
-    function initHeroVideoBounce() {
-      const video = document.querySelector('[data-hero-video]');
-      if (!video || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    function initHeroVideo() {
+      const hero = document.querySelector('[data-home-hero]');
+      if (!hero || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+      const sources = (hero.getAttribute('data-hero-sources') || '')
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const videos = [...hero.querySelectorAll('[data-hero-video]')];
+      if (!sources.length || !videos.length) return;
+
+      if (window.__heroVideoRaf) {
+        cancelAnimationFrame(window.__heroVideoRaf);
+        window.__heroVideoRaf = 0;
+      }
+
+      let sourceIdx = 0;
+      let activeLayer = 0;
       let forward = true;
       let last = 0;
-      const speed = 0.92;
+      const speed = 0.86;
 
-      function frame(t) {
+      function layerVideo(layer) {
+        return videos[layer] || videos[0];
+      }
+
+      function setActiveLayer(layer) {
+        videos.forEach((video, i) => video.classList.toggle('is-active', i === layer));
+      }
+
+      function loadVideo(video, src) {
+        if (video.dataset.loadedSrc === src && video.readyState >= 1) {
+          return Promise.resolve();
+        }
+        video.dataset.loadedSrc = src;
+        video.src = src;
+        video.load();
+        if (video.readyState >= 1) return Promise.resolve();
+        return new Promise((resolve) => video.addEventListener('loadedmetadata', resolve, { once: true }));
+      }
+
+      function preloadNext(fromIdx) {
+        if (sources.length < 2 || videos.length < 2) return;
+        const nextIdx = (fromIdx + 1) % sources.length;
+        const inactiveLayer = 1 - activeLayer;
+        loadVideo(layerVideo(inactiveLayer), sources[nextIdx]);
+      }
+
+      function tick(t) {
+        const video = layerVideo(activeLayer);
         if (!last) last = t;
         const dt = ((t - last) / 1000) * speed;
         last = t;
+
         const dur = video.duration;
         if (!dur || !Number.isFinite(dur)) {
-          requestAnimationFrame(frame);
+          window.__heroVideoRaf = requestAnimationFrame(tick);
           return;
         }
+
         if (forward) {
           video.currentTime = Math.min(dur, video.currentTime + dt);
-          if (video.currentTime >= dur - 0.03) forward = false;
+          if (video.currentTime >= dur - 0.05) forward = false;
         } else {
           video.currentTime = Math.max(0, video.currentTime - dt);
-          if (video.currentTime <= 0.03) forward = true;
+          if (video.currentTime <= 0.05) {
+            forward = true;
+            if (sources.length > 1 && videos.length > 1) {
+              sourceIdx = (sourceIdx + 1) % sources.length;
+              activeLayer = 1 - activeLayer;
+              last = 0;
+              loadVideo(layerVideo(activeLayer), sources[sourceIdx]).then(() => {
+                layerVideo(activeLayer).currentTime = 0;
+                setActiveLayer(activeLayer);
+                preloadNext(sourceIdx);
+                window.__heroVideoRaf = requestAnimationFrame(tick);
+              });
+              return;
+            }
+          }
         }
-        requestAnimationFrame(frame);
+
+        window.__heroVideoRaf = requestAnimationFrame(tick);
       }
 
-      video.pause();
-      const start = () => requestAnimationFrame(frame);
-      if (video.readyState >= 1) start();
-      else video.addEventListener('loadedmetadata', start, { once: true });
+      videos.forEach((video) => video.pause());
+      setActiveLayer(0);
+      loadVideo(layerVideo(0), sources[0]).then(() => {
+        layerVideo(0).currentTime = 0;
+        preloadNext(0);
+        window.__heroVideoRaf = requestAnimationFrame(tick);
+      });
     }
 
-    initHeroVideoBounce();
-    document.addEventListener('astro:page-load', initHeroVideoBounce);
+    initHeroVideo();
+    document.addEventListener('astro:page-load', initHeroVideo);
   </script>
 )}
 
@@ -108,7 +189,7 @@ const mediaKind = (() => {
     --hero-accent: #b6573e;
     position: relative;
     isolation: isolate;
-    min-height: min(94vh, 54rem);
+    min-height: min(96vh, 56rem);
     display: flex;
     align-items: flex-end;
     color: var(--hero-cream);
@@ -138,39 +219,73 @@ const mediaKind = (() => {
   }
 
   .hero[data-has-media='true'] .hero__atmosphere {
-    opacity: 0.35;
+    opacity: 0.28;
+  }
+
+  /* Marco más grande que el viewport → menos crop agresivo, más aire alrededor del plano. */
+  .hero__media-frame {
+    position: absolute;
+    inset: -14%;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
   }
 
   .hero__media {
     position: absolute;
     inset: 0;
-    z-index: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center 38%;
     pointer-events: none;
   }
 
+  .hero__media--still {
+    inset: -14%;
+    width: auto;
+    height: auto;
+    min-width: 128%;
+    min-height: 128%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
   .hero__media--video {
+    opacity: 0;
+    transition: opacity 1.6s ease;
+    will-change: opacity;
+  }
+
+  .hero__media--video.is-active {
+    opacity: 1;
+  }
+
+  .hero__media-tint {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: color;
     animation: hero-field-tint 28s ease-in-out infinite alternate;
   }
 
   @keyframes hero-field-tint {
     0% {
-      filter: grayscale(1) sepia(0.35) hue-rotate(85deg) saturate(1.08) contrast(1.08) brightness(0.9);
+      background: rgba(36, 78, 58, 0.42);
     }
     50% {
-      filter: grayscale(1) sepia(0.55) hue-rotate(18deg) saturate(0.92) contrast(1.1) brightness(0.88);
+      background: rgba(118, 72, 44, 0.34);
     }
     100% {
-      filter: grayscale(1) sepia(0.42) hue-rotate(-8deg) saturate(1.02) contrast(1.06) brightness(0.91);
+      background: rgba(34, 52, 68, 0.38);
     }
   }
 
   .hero__credit {
     position: absolute;
-    right: clamp(1rem, 3vw, 2rem);
-    bottom: clamp(0.85rem, 2.5vh, 1.35rem);
+    right: clamp(1.25rem, 3.5vw, 2.25rem);
+    bottom: clamp(1.35rem, 3.5vh, 2rem);
     z-index: 2;
     margin: 0;
     font-family: var(--font-mono, "Geist Mono", monospace);
@@ -187,8 +302,8 @@ const mediaKind = (() => {
     z-index: 1;
     pointer-events: none;
     background:
-      linear-gradient(180deg, rgba(7, 7, 8, 0.25) 0%, rgba(7, 7, 8, 0.55) 45%, rgba(7, 7, 8, 0.88) 100%),
-      linear-gradient(90deg, rgba(7, 7, 8, 0.55) 0%, transparent 55%);
+      linear-gradient(180deg, rgba(7, 7, 8, 0.18) 0%, rgba(7, 7, 8, 0.42) 50%, rgba(7, 7, 8, 0.82) 100%),
+      linear-gradient(90deg, rgba(7, 7, 8, 0.48) 0%, transparent 58%);
   }
 
   .hero:not([data-has-media='true']) .hero__veil {
@@ -200,7 +315,7 @@ const mediaKind = (() => {
     z-index: 2;
     width: min(100% - 2.5rem, var(--w-wide, 1120px));
     margin-inline: auto;
-    padding-block: clamp(5.5rem, 14vh, 8rem) clamp(3.25rem, 9vh, 5.5rem);
+    padding-block: clamp(5.5rem, 14vh, 8rem) clamp(4rem, 11vh, 6.5rem);
     padding-inline: 0.25rem;
     box-sizing: border-box;
   }
@@ -208,6 +323,11 @@ const mediaKind = (() => {
   @media (max-width: 639px) {
     .hero__inner {
       width: min(100% - 1.5rem, var(--w-wide, 1120px));
+      padding-bottom: clamp(4.5rem, 12vh, 6rem);
+    }
+
+    .hero__media-frame {
+      inset: -10%;
     }
   }
 
@@ -307,9 +427,13 @@ const mediaKind = (() => {
       animation: none;
     }
 
-    .hero__media--video {
+    .hero__media-tint {
       animation: none;
-      filter: grayscale(1) contrast(1.05) brightness(0.9);
+      background: rgba(36, 78, 58, 0.35);
+    }
+
+    .hero__media--video {
+      transition: none;
     }
 
     .hero video.hero__media {
@@ -323,7 +447,7 @@ const mediaKind = (() => {
 
   @media (max-width: 639px) {
     .hero {
-      min-height: min(88vh, 40rem);
+      min-height: min(90vh, 42rem);
     }
 
     .hero__title {
