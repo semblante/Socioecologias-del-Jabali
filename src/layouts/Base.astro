@@ -7,6 +7,7 @@ import { getUi } from '../i18n/ui';
 import { localizedPath, getLocaleFromUrl } from '../i18n/routing';
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
+import { surfaceFromPath } from '../lib/surface';
 
 interface Props {
   title?: string;
@@ -28,6 +29,7 @@ const canonical = new URL(Astro.url.pathname, siteConfig.url).href;
 const ogImageUrl = new URL(ogImage ?? '/brand/icon-512.png', siteConfig.url).href;
 const pathSansLocale = Astro.url.pathname.replace(/^\/en(?=\/|$)/, '') || '/';
 const isHome = pathSansLocale === '/' || pathSansLocale === '';
+const surface = surfaceFromPath(Astro.url.pathname);
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -77,7 +79,8 @@ const jsonLd = {
     <ClientRouter />
     <title>{pageTitle}</title>
   </head>
-  <body class:list={{ 'is-home': isHome }}>
+  <body class:list={{ 'is-home': isHome, [`surface-${surface}`]: true }}>
+    <div class="site-topo" aria-hidden="true"></div>
     <a class="skip-link" href="#main">{ui.skipToContent}</a>
     <Header locale={locale} currentPath={Astro.url.pathname} />
     <main id="main">

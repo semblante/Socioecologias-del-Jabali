@@ -1,4 +1,5 @@
 import { swapFunctions } from 'astro:transitions/client';
+import { surfaceFromPath } from '../lib/surface';
 
 function localeOf(path: string) {
   return path.startsWith('/en') ? 'en' : 'es';
@@ -43,6 +44,9 @@ export function syncShellState(path = window.location.pathname) {
   const isHome = without === '/' || without === '';
   document.body.classList.toggle('is-home', isHome);
   if (!isHome) document.body.classList.remove('is-scrolled');
+
+  document.body.classList.remove('surface-editorial', 'surface-territory', 'surface-archive');
+  document.body.classList.add(`surface-${surfaceFromPath(path)}`);
 
   document.documentElement.lang = isEn ? 'en' : 'es';
 }

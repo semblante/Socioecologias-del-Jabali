@@ -73,6 +73,41 @@ main {
   z-index: 1;
 }
 
+.site-topo {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: var(--texture-topo);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: var(--topo-position);
+  opacity: var(--topo-opacity);
+  mix-blend-mode: var(--topo-blend);
+  filter: var(--topo-filter);
+}
+
+body.surface-editorial {
+  --topo-opacity: 0.07;
+  --topo-blend: multiply;
+  --topo-filter: invert(1) sepia(0.35) hue-rotate(8deg);
+  --topo-position: 38% 42%;
+}
+
+body.surface-territory {
+  --topo-opacity: 0.09;
+  --topo-blend: multiply;
+  --topo-filter: sepia(0.5) hue-rotate(85deg) saturate(0.6);
+  --topo-position: 72% 28%;
+}
+
+body.surface-archive {
+  --topo-opacity: 0.05;
+  --topo-blend: multiply;
+  --topo-filter: invert(1) opacity(0.5) sepia(0.2) hue-rotate(-15deg);
+  --topo-position: 20% 65%;
+}
+
 img,
 svg {
   display: block;
