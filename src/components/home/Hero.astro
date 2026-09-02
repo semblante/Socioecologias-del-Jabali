@@ -42,6 +42,7 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
   data-hero-sources={mediaKind === 'video' ? heroSources.join(',') : undefined}
 >
   <div class="hero__atmosphere" aria-hidden="true"></div>
+  <div class="hero__topo" aria-hidden="true"></div>
 
   {mediaKind === 'video' && (
     <>
@@ -59,8 +60,16 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
             <video class="hero__media hero__media--video" data-hero-video muted playsinline preload="none"></video>
           )}
         </div>
-        <div class="hero__media-tint" aria-hidden="true"></div>
-        <div class="hero__media-psych" aria-hidden="true"></div>
+        <div class="hero__media-tint" aria-hidden="true">
+          <span class="hero__wash hero__wash--a"></span>
+          <span class="hero__wash hero__wash--b"></span>
+          <span class="hero__wash hero__wash--c"></span>
+        </div>
+        <div class="hero__media-psych" aria-hidden="true">
+          <span class="hero__wash hero__wash--a"></span>
+          <span class="hero__wash hero__wash--b"></span>
+          <span class="hero__wash hero__wash--c"></span>
+        </div>
       </div>
       <p class="hero__credit">{ui.hero.footageCredit}</p>
     </>
@@ -291,6 +300,23 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
     opacity: 0.22;
   }
 
+  .hero__topo {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image: var(--texture-topo);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 42% 58%;
+    opacity: 0.14;
+    mix-blend-mode: soft-light;
+  }
+
+  .hero[data-has-media='true'] .hero__topo {
+    opacity: 0.11;
+  }
+
   /* Plano full-bleed: las dos capas de video viven en el mismo rectángulo. */
   .hero__media-frame {
     position: absolute;
@@ -336,7 +362,6 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
     pointer-events: none;
     mix-blend-mode: color;
     opacity: 0.88;
-    animation: hero-field-tint 28s ease-in-out infinite alternate;
   }
 
   .hero__media-psych {
@@ -345,7 +370,59 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
     pointer-events: none;
     mix-blend-mode: soft-light;
     opacity: 0.62;
-    animation: hero-psych-wash 22s ease-in-out infinite alternate;
+  }
+
+  /*
+   * El vaivén de color se hace cruzando la opacidad de tres capas de color
+   * fijas. Animar `background` a pantalla completa obliga a repintar todo el
+   * viewport en cada frame, y eso arrastraba el scroll y hasta el hover del
+   * menú; la opacidad la resuelve el compositor.
+   */
+  .hero__wash {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    animation: 28s ease-in-out infinite alternate;
+  }
+
+  .hero__media-psych .hero__wash {
+    animation-duration: 22s;
+  }
+
+  .hero__wash--a {
+    animation-name: hero-wash-a;
+  }
+
+  .hero__wash--b {
+    animation-name: hero-wash-b;
+  }
+
+  .hero__wash--c {
+    animation-name: hero-wash-c;
+  }
+
+  .hero__media-tint .hero__wash--a {
+    background: rgba(36, 78, 58, 0.48);
+  }
+
+  .hero__media-tint .hero__wash--b {
+    background: rgba(118, 72, 44, 0.4);
+  }
+
+  .hero__media-tint .hero__wash--c {
+    background: rgba(34, 52, 68, 0.44);
+  }
+
+  .hero__media-psych .hero__wash--a {
+    background: rgba(42, 92, 64, 0.55);
+  }
+
+  .hero__media-psych .hero__wash--b {
+    background: rgba(182, 87, 62, 0.42);
+  }
+
+  .hero__media-psych .hero__wash--c {
+    background: rgba(40, 58, 86, 0.5);
   }
 
   .hero__media-psych::after {
@@ -379,27 +456,33 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
     }
   }
 
-  @keyframes hero-field-tint {
+  @keyframes hero-wash-a {
     0% {
-      background: rgba(36, 78, 58, 0.48);
+      opacity: 1;
     }
-    50% {
-      background: rgba(118, 72, 44, 0.4);
-    }
+    50%,
     100% {
-      background: rgba(34, 52, 68, 0.44);
+      opacity: 0;
     }
   }
 
-  @keyframes hero-psych-wash {
-    0% {
-      background: rgba(42, 92, 64, 0.55);
+  @keyframes hero-wash-b {
+    0%,
+    100% {
+      opacity: 0;
     }
-    45% {
-      background: rgba(182, 87, 62, 0.42);
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes hero-wash-c {
+    0%,
+    50% {
+      opacity: 0;
     }
     100% {
-      background: rgba(40, 58, 86, 0.5);
+      opacity: 1;
     }
   }
 
@@ -553,9 +636,12 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
 
     .hero__media-stack,
     .hero__media--video,
-    .hero__media-tint,
-    .hero__media-psych {
+    .hero__wash {
       animation: none;
+    }
+
+    .hero__wash {
+      opacity: 0;
     }
 
     .hero__media-tint {
