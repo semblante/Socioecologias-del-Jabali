@@ -10,6 +10,45 @@
   background: color-mix(in srgb, var(--c-bg) 96%, var(--c-bg-soft));
   box-shadow: 0 1px 0 color-mix(in srgb, var(--c-rule) 50%, transparent);
   padding-top: env(safe-area-inset-top, 0px);
+  overflow: hidden;
+}
+
+/* Barrido de navegación SPA — anima transform (compositor), no background. */
+body.is-navigating .site-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 38%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--c-accent) 45%,
+    color-mix(in srgb, var(--c-accent) 55%, #f5f2e8) 70%,
+    transparent
+  );
+  pointer-events: none;
+  animation: header-nav-sweep 0.9s var(--ease-organic) infinite;
+}
+
+@keyframes header-nav-sweep {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(280%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.is-navigating .site-header::after {
+    width: 100%;
+    background: var(--c-accent);
+    opacity: 0.55;
+    animation: none;
+    transform: none;
+  }
 }
 
 /* Home: header starts over dark hero, then becomes solid on scroll via .is-scrolled */

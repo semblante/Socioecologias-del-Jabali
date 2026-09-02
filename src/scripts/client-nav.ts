@@ -91,6 +91,10 @@ function swapMainOnly(newDoc: Document) {
   syncShellState(nextPath);
 }
 
+document.addEventListener('astro:before-preparation', () => {
+  document.body.classList.add('is-navigating');
+});
+
 document.addEventListener('astro:before-swap', (event) => {
   event.swap = () => {
     try {
@@ -102,5 +106,6 @@ document.addEventListener('astro:before-swap', (event) => {
 });
 
 document.addEventListener('astro:page-load', () => {
+  document.body.classList.remove('is-navigating');
   syncShellState();
 });
