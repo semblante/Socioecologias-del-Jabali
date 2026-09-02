@@ -85,6 +85,10 @@ body.is-home .lang-switch a {
   opacity: 0.7;
 }
 
+body.is-home:not(.is-scrolled) .lang-switch {
+  border-left-color: rgba(245, 242, 232, 0.22);
+}
+
 body.is-home .lang-switch a[aria-current="page"] {
   opacity: 1;
 }
@@ -146,6 +150,43 @@ body.is-home.is-scrolled .menu-toggle {
 
 body.is-home.is-scrolled .menu-toggle__bar {
   background: currentColor;
+}
+
+/*
+ * Home transparente: al pasar por la esquina ES/EN (o foco teclado) se tiñe
+ * solo esa zona para que el texto no se pierda sobre el video del hero.
+ */
+body.is-home:not(.is-scrolled):not(.nav-open) .site-header__end {
+  padding: 0.4rem 0.55rem;
+  margin-inline-end: -0.35rem;
+  transition: background var(--d-fast) var(--ease-organic);
+}
+
+body.is-home:not(.is-scrolled):not(.nav-open) .site-header__end:hover,
+body.is-home:not(.is-scrolled):not(.nav-open) .site-header__end:focus-within {
+  background: rgba(7, 7, 8, 0.82);
+}
+
+body.is-home:not(.is-scrolled):not(.nav-open) .site-header__end:hover .lang-switch,
+body.is-home:not(.is-scrolled):not(.nav-open) .site-header__end:focus-within .lang-switch {
+  border-left-color: rgba(245, 242, 232, 0.28);
+}
+
+body.is-home:not(.is-scrolled):not(.nav-open) .site-header__end:hover .lang-switch a,
+body.is-home:not(.is-scrolled):not(.nav-open) .site-header__end:focus-within .lang-switch a {
+  color: #f5f2e8;
+  opacity: 1;
+}
+
+body.is-home:not(.is-scrolled):not(.nav-open) .site-header__end:hover .lang-switch a[aria-current="page"],
+body.is-home:not(.is-scrolled):not(.nav-open) .site-header__end:focus-within .lang-switch a[aria-current="page"] {
+  color: #b6573e;
+}
+
+body.is-home:not(.is-scrolled):not(.nav-open) .site-header__end:hover .lang-switch span,
+body.is-home:not(.is-scrolled):not(.nav-open) .site-header__end:focus-within .lang-switch span {
+  color: rgba(245, 242, 232, 0.55);
+  opacity: 1;
 }
 
 .site-header__inner {
