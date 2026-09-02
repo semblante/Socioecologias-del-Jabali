@@ -87,10 +87,14 @@ main {
   filter: var(--topo-filter);
 }
 
+/*
+ * Sin invert(): sobre crema, invert vuelve las líneas claras y multiply las
+ * disuelve en el fondo. Misma familia que territory: oscurecer + teñir.
+ */
 body.surface-editorial {
-  --topo-opacity: 0.07;
+  --topo-opacity: 0.08;
   --topo-blend: multiply;
-  --topo-filter: invert(1) sepia(0.35) hue-rotate(8deg);
+  --topo-filter: sepia(0.35) hue-rotate(8deg) saturate(0.55) brightness(0.92);
   --topo-position: 38% 42%;
 }
 
@@ -102,9 +106,9 @@ body.surface-territory {
 }
 
 body.surface-archive {
-  --topo-opacity: 0.05;
+  --topo-opacity: 0.075;
   --topo-blend: multiply;
-  --topo-filter: invert(1) opacity(0.5) sepia(0.2) hue-rotate(-15deg);
+  --topo-filter: sepia(0.22) hue-rotate(-18deg) saturate(0.42) brightness(0.9);
   --topo-position: 20% 65%;
 }
 

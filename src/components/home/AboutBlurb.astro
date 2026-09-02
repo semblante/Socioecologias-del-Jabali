@@ -40,7 +40,8 @@ const frameworks =
     position: relative;
     padding-block: clamp(3.5rem, 10vw, 6.5rem);
     border-bottom: 1px solid var(--color-border);
-    background: var(--color-bg-alt);
+    /* transparente: un fondo sólido tapa site-topo (z-index bajo main) */
+    background: transparent;
   }
 
   .about__inner {
