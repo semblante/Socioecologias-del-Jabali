@@ -113,11 +113,12 @@ const entries = await getBitacora(locale);
   }
 
   .journal__title {
-    font-family: var(--font-serif);
-    font-size: clamp(1.2rem, 2.4vw, 1.55rem);
-    font-weight: 500;
-    letter-spacing: -0.015em;
-    line-height: 1.25;
+    font-family: var(--font-display);
+    font-stretch: 82%;
+    font-weight: 650;
+    letter-spacing: -0.012em;
+    font-size: clamp(1.3rem, 2.4vw, 1.75rem);
+    line-height: 1.15;
     color: var(--color-text);
     transition: color var(--d-fast) var(--ease-organic);
   }
@@ -137,12 +138,21 @@ const entries = await getBitacora(locale);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--color-accent);
-    padding: 0.2rem 0.45rem;
-    background: var(--color-accent-subtle);
+    /* Sin pastilla (ver design doc): etiqueta mono con un filo corto. */
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .journal__tag::before {
+    content: "";
+    width: 0.9rem;
+    height: 2px;
+    background: currentColor;
   }
 
   .journal__arrow {
-    font-family: var(--font-serif);
+    font-family: var(--font-sans);
     font-size: 1.15rem;
     color: var(--color-text-muted);
     padding-top: 0.2rem;

@@ -1,0 +1,60 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "nombre": "Sector Puesco-Lanín · Acuerdo Winkulmapu",
+        "aproximado": true,
+        "fuente": "Trazado aproximado (~17.000 ha). Reemplazar por el KMZ oficial convertido a GeoJSON."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -71.6413,
+              -39.5181
+            ],
+            [
+              -71.5845,
+              -39.5039
+            ],
+            [
+              -71.5277,
+              -39.5228
+            ],
+            [
+              -71.4899,
+              -39.5607
+            ],
+            [
+              -71.4946,
+              -39.608
+            ],
+            [
+              -71.5372,
+              -39.6459
+            ],
+            [
+              -71.6035,
+              -39.6411
+            ],
+            [
+              -71.6461,
+              -39.5985
+            ],
+            [
+              -71.6603,
+              -39.5559
+            ],
+            [
+              -71.6413,
+              -39.5181
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

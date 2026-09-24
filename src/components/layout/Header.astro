@@ -87,29 +87,37 @@ function isCurrent(href: string) {
     opacity: 0.85;
   }
 
+  /*
+   * Bloque de marca: aire sobre el nombre para que no quede pegado al borde
+   * superior; el bloque sigue centrado junto al sello.
+   */
   .site-brand__text {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
+    display: grid;
+    align-content: space-between;
+    height: 2.75rem;
     min-width: 0;
-    line-height: 1.15;
+    padding-block: 0.4rem 0.05rem;
   }
 
   .site-brand__name {
-    font-family: var(--font-serif);
-    font-size: 0.92rem;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    max-width: 11.5rem;
-    line-height: 1.2;
+    font-family: var(--font-display);
+    font-stretch: 62%;
+    font-size: 1.55rem;
+    font-weight: 800;
+    letter-spacing: 0.005em;
+    text-transform: uppercase;
+    line-height: 0.82;
+    white-space: nowrap;
   }
 
   .site-brand__place {
+    display: block;
     font-family: var(--font-mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
+    font-size: 0.6rem;
+    line-height: 1;
     text-transform: uppercase;
     color: var(--color-text-muted);
+    letter-spacing: 0.16em;
   }
 
   @media (max-width: 959px) {
@@ -129,9 +137,13 @@ function isCurrent(href: string) {
       min-width: 0;
     }
 
+    .site-brand__text {
+      height: auto;
+    }
+
     .site-brand__name {
       max-width: none;
-      font-size: 0.82rem;
+      font-size: 1.2rem;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;

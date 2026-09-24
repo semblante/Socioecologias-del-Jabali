@@ -1,0 +1,172 @@
+---
+import type { Locale } from '../../config/site';
+import { localizedPath } from '../../i18n/routing';
+import type { GaleriaEntry } from '../../lib/content';
+
+interface Props {
+  locale: Locale;
+  items: GaleriaEntry[];
+}
+
+const { locale, items } = Astro.props;
+// Las primeras cinco de `galeria` (panel de PocketBase). Sin imágenes, no se muestra.
+const shown = items.filter((i) => i.data.imagen).slice(0, 5);
+const label = locale === 'es' ? 'Registro de campo' : 'Field record';
+const all = locale === 'es' ? 'Ver el archivo' : 'See the archive';
+---
+
+{shown.length > 0 && (
+  <section class="strip" aria-label={label}>
+    <div class="container">
+      <div class="strip__head">
+        <p class="section-mark">{label}</p>
+        <a class="link-line" href={localizedPath('/archivo', locale)}>{all} <span class="link-line__arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="strip__grid" data-count={shown.length}>
+        {shown.map((item, i) => (
+          <figure class="strip__item">
+            <div class="strip__frame">
+              <img src={item.data.imagen} alt={item.data.pie || item.data.titulo} loading="lazy" decoding="async" />
+            </div>
+            <figcaption>
+              <span class="strip__n">{String(i + 1).padStart(2, '0')}</span>
+              <span class="strip__title">{item.data.titulo}</span>
+              {item.data.autoria && <span class="strip__credit">{item.data.autoria}</span>}
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .strip {
+    padding-block: clamp(3.5rem, 8vw, 6rem);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .strip__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--s-4);
+    margin-bottom: var(--s-8);
+  }
+
+  .strip__grid {
+    display: grid;
+    gap: var(--s-6) var(--s-4);
+  }
+
+  .strip__item {
+    margin: 0;
+    display: grid;
+    gap: var(--s-2);
+    align-content: start;
+  }
+
+  .strip__frame {
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    background: var(--color-ink-deep);
+  }
+
+  .strip__frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.82) contrast(1.06);
+    transition:
+      transform var(--d-slow) var(--ease-organic),
+      filter var(--d-medium) ease;
+  }
+
+  .strip__item:hover .strip__frame img {
+    transform: scale(1.03);
+    filter: saturate(1) contrast(1.06);
+  }
+
+  .strip__item figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .strip__n {
+    color: var(--color-accent);
+  }
+
+  .strip__title {
+    color: var(--color-text);
+  }
+
+  .strip__credit {
+    flex-basis: 100%;
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 767px) {
+    /* En móvil, cinta horizontal con snap: no alarga la portada. */
+    .strip__grid {
+      grid-auto-flow: column;
+      grid-auto-columns: 78%;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-bottom: var(--s-2);
+    }
+
+    .strip__item {
+      scroll-snap-align: start;
+    }
+  }
+
+  @media (min-width: 768px) {
+    /* Retícula de 12: la primera imagen manda, las otras la acompañan. */
+    .strip__grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .strip__item {
+      grid-column: span 4;
+    }
+
+    .strip__grid[data-count='1'] .strip__item {
+      grid-column: 1 / -1;
+    }
+
+    .strip__grid[data-count='2'] .strip__item {
+      grid-column: span 6;
+    }
+
+    .strip__grid:is([data-count='4'], [data-count='5']) .strip__item:first-child {
+      grid-column: span 6;
+      grid-row: span 2;
+      grid-template-rows: minmax(0, 1fr) auto;
+    }
+
+    .strip__grid:is([data-count='4'], [data-count='5']) .strip__item:first-child .strip__frame {
+      aspect-ratio: auto;
+      height: 100%;
+    }
+
+    .strip__grid[data-count='4'] .strip__item:not(:first-child) {
+      grid-column: span 3;
+    }
+
+    .strip__grid[data-count='4'] .strip__item:last-child {
+      grid-column: span 6;
+    }
+
+    .strip__grid[data-count='5'] .strip__item:not(:first-child) {
+      grid-column: span 3;
+    }
+  }
+</style>

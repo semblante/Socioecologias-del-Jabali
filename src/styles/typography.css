@@ -10,27 +10,37 @@
   margin-top: 1.4em;
 }
 
+/*
+ * Sistema: Archivo condensada en versales = títulos de sección; Archivo
+ * semicondensada = títulos de ítem; Newsreader = lectura; Geist Mono = meta.
+ */
 .prose h2 {
-  font-family: var(--f-display);
-  font-size: var(--t-xl);
-  font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+  font-stretch: 62%;
+  font-size: clamp(2rem, 3.8vw, 2.9rem);
+  font-weight: 800;
+  line-height: 0.92;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  text-wrap: balance;
   margin-top: 2.1em;
   margin-bottom: 0.5em;
   scroll-margin-top: calc(var(--header-h) + var(--s-4) + env(safe-area-inset-top, 0px));
 }
 
 .prose h3 {
-  font-family: var(--f-display);
-  font-size: var(--t-lg);
-  font-weight: 500;
-  line-height: 1.25;
+  font-family: var(--font-display);
+  font-stretch: 82%;
+  font-size: clamp(1.3rem, 2.2vw, 1.6rem);
+  font-weight: 650;
+  letter-spacing: -0.012em;
+  line-height: 1.15;
   margin-top: 1.75em;
   margin-bottom: 0.5em;
 }
 
-.prose p {
+/* :where() deja la especificidad en 0: así manda el ritmo de .prose > * + *. */
+:where(.prose) p {
   margin: 0;
 }
 
@@ -38,7 +48,7 @@
   margin: 1.5em 0;
   padding-left: var(--s-6);
   border-left: 2px solid var(--c-accent);
-  font-family: var(--f-display);
+  font-family: var(--font-serif);
   font-size: var(--t-md);
   font-style: italic;
   color: var(--c-ink-soft);
@@ -85,8 +95,11 @@
 }
 
 .prose--article > p:first-of-type::first-letter {
-  font-family: var(--f-display);
-  font-size: 3.4em;
+  font-family: var(--font-display);
+  font-stretch: 62%;
+  font-weight: 800;
+  color: var(--c-accent);
+  font-size: 4.2em;
   float: left;
   line-height: 0.85;
   margin: 0.05em 0.12em 0 0;
@@ -119,6 +132,44 @@
   text-transform: uppercase;
   color: var(--c-accent);
   margin: 0 0 var(--s-4);
+}
+
+/* Marca de sección de portada: hilo espectral corto + etiqueta mono. */
+.section-mark {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin: 0;
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-ink);
+}
+
+.section-mark::before {
+  content: "";
+  flex: none;
+  width: 2.75rem;
+  height: 6px;
+  background: var(--spectrum-x);
+}
+
+/* Título de sección en portada: misma voz que el título del hero, a menor escala. */
+.display-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-stretch: 62%;
+  font-weight: 800;
+  font-size: clamp(2.8rem, 9.4vw, 8.25rem);
+  line-height: 0.86;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  word-spacing: 0.06em;
+  overflow-wrap: normal;
+  hyphens: none;
+  padding-top: 0.08em;
 }
 
 .breadcrumbs {

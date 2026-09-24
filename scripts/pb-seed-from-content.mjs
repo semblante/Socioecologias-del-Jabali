@@ -1,6 +1,10 @@
 /**
  * Seed PocketBase from src/content MDX/MD files.
  * Idempotent on (collection, slug|key, locale).
+ *
+ * OJO: por defecto ACTUALIZA los registros existentes y pisa lo que el cliente
+ * haya editado en el panel. En producción usar `--create-only`: solo crea los
+ * registros que faltan y no toca los que ya existen.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -11,6 +15,7 @@ const url = (process.env.PUBLIC_POCKETBASE_URL || 'http://127.0.0.1:8090').repla
 const email = process.env.POCKETBASE_ADMIN_EMAIL;
 const password = process.env.POCKETBASE_ADMIN_PASSWORD;
 const root = path.resolve('src/content');
+const createOnly = process.argv.includes('--create-only');
 
 if (!email || !password) {
   console.error('Set POCKETBASE_ADMIN_EMAIL and POCKETBASE_ADMIN_PASSWORD');
@@ -44,6 +49,10 @@ function slugFromPath(file) {
 async function upsert(collection, filter, data) {
   try {
     const existing = await pb.collection(collection).getFirstListItem(filter);
+    if (createOnly) {
+      console.log('skip (exists)', collection, filter);
+      return;
+    }
     await pb.collection(collection).update(existing.id, data);
     console.log('update', collection, filter);
   } catch {
@@ -176,6 +185,25 @@ async function main() {
       estado: data.estado || 'planificado',
       fecha: data.fecha || '',
       content: content.trim(),
+    });
+  }
+
+  for (const file of walk(path.join(root, 'galeria'))) {
+    const { data } = matter(fs.readFileSync(file, 'utf8'));
+    const locale = data.locale || localeFromPath(file);
+    const slug = slugFromPath(file);
+    await upsert('galeria', `slug = "${slug}" && locale = "${locale}"`, {
+      slug,
+      locale,
+      translationKey: data.translationKey || slug,
+      status: data.status || 'published',
+      titulo: data.titulo || data.title,
+      imagen: data.imagen,
+      pie: data.pie || '',
+      autoria: data.autoria || '',
+      fecha: data.fecha ? new Date(data.fecha).toISOString().slice(0, 10) : null,
+      sitio: data.sitio || '',
+      tags: data.tags || [],
     });
   }
 

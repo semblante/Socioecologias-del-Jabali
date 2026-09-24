@@ -3,7 +3,7 @@
  * Usage: node scripts/validate-prod.mjs
  * Env opcional: BASE_URL, PUBLIC_POCKETBASE_URL, POCKETBASE_ADMIN_EMAIL, POCKETBASE_ADMIN_PASSWORD
  */
-const BASE = (process.env.BASE_URL || 'https://web-production-57fa0.up.railway.app').replace(/\/$/, '');
+const BASE = (process.env.BASE_URL || 'https://ecologiasdeljabali.cl').replace(/\/$/, '');
 const PB = (process.env.PUBLIC_POCKETBASE_URL || 'https://pocketbase-production-6f98.up.railway.app').replace(/\/$/, '');
 
 const STATIC_ROUTES = [
@@ -180,19 +180,21 @@ async function checkPocketBase() {
 async function checkSchemaFields() {
   const email = process.env.POCKETBASE_ADMIN_EMAIL;
   const password = process.env.POCKETBASE_ADMIN_PASSWORD;
-  let headers = {};
-  if (email && password) {
-    const auth = await fetch(`${PB}/api/admins/auth-with-password`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ identity: email, password }),
-    });
-    if (!auth.ok) {
-      fail('schema fields', `admin auth ${auth.status}`);
-      return;
-    }
-    headers = { Authorization: (await auth.json()).token };
+  if (!email || !password) {
+    pass('schema fields', 'skipped (no env creds)');
+    return;
   }
+  let headers = {};
+  const auth = await fetch(`${PB}/api/admins/auth-with-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ identity: email, password }),
+  });
+  if (!auth.ok) {
+    fail('schema fields', `admin auth ${auth.status}`);
+    return;
+  }
+  headers = { Authorization: (await auth.json()).token };
 
   const res = await fetch(`${PB}/api/collections?perPage=200`, { headers });
   if (!res.ok) {
@@ -258,10 +260,11 @@ async function checkContentMarkers() {
 
 async function checkDomain() {
   try {
-    await fetchStatus('https://ecologiasdeljabali.cl/', { followRedirect: false });
-    pass('domain ecologiasdeljabali.cl', 'resolves');
-  } catch {
-    pass('domain ecologiasdeljabali.cl', 'DNS pending (expected until CNAME propagates)');
+    const { res } = await fetchStatus('https://ecologiasdeljabali.cl/', { followRedirect: false });
+    if (res.status >= 200 && res.status < 400) pass('domain ecologiasdeljabali.cl', `HTTP ${res.status}`);
+    else fail('domain ecologiasdeljabali.cl', `HTTP ${res.status}`);
+  } catch (e) {
+    fail('domain ecologiasdeljabali.cl', String(e.message || e));
   }
 }
 

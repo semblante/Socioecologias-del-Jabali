@@ -159,7 +159,7 @@ const collections = [
   {
     name: 'paginas',
     schema: [
-      select('key', ['home', 'proyecto', 'contacto'], true),
+      select('key', ['home', 'proyecto', 'contacto', 'territorio'], true),
       select('locale', ['es', 'en'], true),
       text('translationKey', true),
       select('status', ['draft', 'reviewed', 'published', 'placeholder'], true),

@@ -5,6 +5,7 @@
 @import "@fontsource/instrument-sans/500.css";
 @import "@fontsource/instrument-sans/600.css";
 @import "@fontsource-variable/geist-mono";
+@import "@fontsource-variable/archivo/wdth.css";
 @import "./tokens.css";
 @import "./typography.css";
 @import "./components.css";
@@ -73,43 +74,30 @@ main {
   z-index: 1;
 }
 
+/* Relieve de fondo: variables por capa (lib/surface.ts → topoFromPath). */
 .site-topo {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: var(--texture-topo);
+  background-image: var(--topo-image, var(--texture-topo));
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: var(--topo-size, cover);
   background-position: var(--topo-position);
-  opacity: var(--topo-opacity);
-  mix-blend-mode: var(--topo-blend);
+  opacity: 0;
+  mix-blend-mode: multiply;
   filter: var(--topo-filter);
+  transition: opacity 1400ms var(--ease-organic);
 }
 
-/*
- * Sin invert(): sobre crema, invert vuelve las líneas claras y multiply las
- * disuelve en el fondo. Misma familia que territory: oscurecer + teñir.
- */
-body.surface-editorial {
-  --topo-opacity: 0.08;
-  --topo-blend: multiply;
-  --topo-filter: sepia(0.35) hue-rotate(8deg) saturate(0.55) brightness(0.92);
-  --topo-position: 38% 42%;
+.site-topo.is-active {
+  opacity: var(--topo-opacity);
 }
 
-body.surface-territory {
-  --topo-opacity: 0.09;
-  --topo-blend: multiply;
-  --topo-filter: sepia(0.5) hue-rotate(85deg) saturate(0.6);
-  --topo-position: 72% 28%;
-}
-
-body.surface-archive {
-  --topo-opacity: 0.075;
-  --topo-blend: multiply;
-  --topo-filter: sepia(0.22) hue-rotate(-18deg) saturate(0.42) brightness(0.9);
-  --topo-position: 20% 65%;
+@media (prefers-reduced-motion: reduce) {
+  .site-topo {
+    transition: none;
+  }
 }
 
 img,
@@ -221,11 +209,13 @@ a:hover {
 }
 
 .section__title {
-  font-family: var(--f-display);
-  font-size: var(--t-2xl);
-  font-weight: 500;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+  font-stretch: 62%;
+  font-size: clamp(2.2rem, 4.6vw, 3.6rem);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
   margin: 0 0 var(--s-8);
 }
 
@@ -245,10 +235,52 @@ a:hover {
   flex-wrap: wrap;
 }
 
+/*
+ * Encabezado de página: misma voz que la portada. Hilo espectral corto arriba,
+ * título display en versales, bajada serif y una regla que cierra el bloque.
+ */
 .page-header {
-  padding-top: clamp(2rem, 5vw, 3.5rem);
-  padding-bottom: 2rem;
+  padding-top: clamp(2.5rem, 6vw, 4.5rem);
+  padding-bottom: clamp(1.75rem, 3vw, 2.5rem);
+  margin-bottom: var(--s-8);
+  border-bottom: 1px solid var(--c-rule);
+}
+
+.page-header::before {
+  content: "";
+  display: block;
+  width: 2.75rem;
+  height: 6px;
   margin-bottom: var(--s-6);
+  background: var(--spectrum-x);
+  transform-origin: left center;
+  animation: spectrum-in 900ms 120ms var(--ease-organic) both;
+}
+
+.page-header .kicker {
+  margin-bottom: var(--s-3);
+  letter-spacing: 0.16em;
+}
+
+@keyframes spectrum-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Modo 'flicker' (siteConfig.intro): el hilo se enciende como tubo en vez de barrer. */
+html[data-intro="flicker"] .page-header::before {
+  animation: flick-b 1100ms steps(1, end) 200ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-header::before,
+  html[data-intro="flicker"] .page-header::before {
+    animation: none;
+  }
 }
 
 @media (max-width: 959px) {
@@ -259,13 +291,25 @@ a:hover {
 }
 
 .page-header__title {
-  font-family: var(--font-serif);
-  font-size: clamp(var(--t-xl), 4vw, var(--t-3xl));
-  font-weight: 500;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  margin: 0 0 var(--s-4);
-  max-width: var(--max-prose);
+  font-family: var(--font-display);
+  font-stretch: 62%;
+  font-weight: 800;
+  font-size: clamp(2.75rem, 7.4vw, 6.5rem);
+  line-height: 0.88;
+  letter-spacing: -0.008em;
+  word-spacing: 0.06em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  overflow-wrap: normal;
+  hyphens: none;
+  padding-top: 0.08em;
+  margin: 0 0 var(--s-6);
+}
+
+/* Títulos-frase (proyecto, entradas del cuaderno): misma voz, menor escala. */
+.page-header__title--long {
+  font-size: clamp(2.1rem, 4.6vw, 4.1rem);
+  line-height: 0.92;
 }
 
 .page-header__title:last-child {
@@ -274,7 +318,8 @@ a:hover {
 
 .page-header__lead {
   font-family: var(--font-serif);
-  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  font-style: italic;
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
   color: var(--c-ink-soft);
   max-width: var(--w-text);
   margin: 0;

@@ -30,7 +30,10 @@ const navLinks = [
 <footer class="site-footer" transition:persist="site-footer">
   <div class="container site-footer__grid">
     <div class="site-footer__brand">
-      <SiteLogo locale={locale} size="footer" />
+      <!-- Sello como marca de agua: anclado a la derecha de esta columna, nunca la excede. -->
+      <div class="site-footer__seal" aria-hidden="true">
+        <SiteLogo locale={locale} size="hero" class="site-footer__seal-mark" />
+      </div>
       <p class="site-footer__title">{brand}</p>
       <p class="site-footer__desc">{siteConfig.projectTitle}</p>
       <p class="kicker site-footer__grant">{siteConfig.fondecyt} · {siteConfig.fondecytYear}</p>

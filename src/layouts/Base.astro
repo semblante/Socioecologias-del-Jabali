@@ -7,7 +7,9 @@ import { getUi } from '../i18n/ui';
 import { localizedPath, getLocaleFromUrl } from '../i18n/routing';
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
-import { surfaceFromPath } from '../lib/surface';
+import { surfaceFromPath, topoFromPath, topoStyle } from '../lib/surface';
+import archivoLatin from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
+import newsreaderLatin from '@fontsource/newsreader/files/newsreader-latin-400-normal.woff2?url';
 
 interface Props {
   title?: string;
@@ -30,6 +32,7 @@ const ogImageUrl = new URL(ogImage ?? '/brand/icon-512.png', siteConfig.url).hre
 const pathSansLocale = Astro.url.pathname.replace(/^\/en(?=\/|$)/, '') || '/';
 const isHome = pathSansLocale === '/' || pathSansLocale === '';
 const surface = surfaceFromPath(Astro.url.pathname);
+const topo = topoFromPath(Astro.url.pathname);
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -52,9 +55,45 @@ const jsonLd = {
 ---
 
 <!doctype html>
-<html lang={locale} transition:animate="none">
+<html lang={locale} data-intro={siteConfig.intro} transition:animate="none">
   <head>
     <meta charset="UTF-8" />
+    <link rel="preload" href={archivoLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={newsreaderLatin} as="font" type="font/woff2" crossorigin />
+    <!--
+      Guardián de fuentes: el texto espera a que carguen las tipografías (sin
+      salto de fuente) y entra con transición. Tope de 1,2 s tras el parseo y 8 s
+      absolutos: nunca queda oculto.
+    -->
+    <script is:inline>
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('fonts-pending');
+        var shown = false;
+        function show() {
+          if (shown) return;
+          shown = true;
+          d.classList.remove('fonts-pending');
+          d.classList.add('fonts-ready');
+        }
+        // Seguro absoluto por si algo falla: el texto nunca queda oculto.
+        setTimeout(show, 8000);
+        // Todo lo demás espera al fin del parseo: el cuerpo llega en streaming y
+        // los títulos se dividen en letras (letters.ts) justo antes de este evento.
+        // Mostrar antes dejaba ver el título entero, que luego se ocultaba.
+        document.addEventListener('DOMContentLoaded', function () {
+          setTimeout(show, 1200);
+          if (!document.fonts || !document.fonts.load) return show();
+          Promise.all([
+            '800 1em "Archivo Variable"',
+            '400 1em "Newsreader"',
+            'italic 400 1em "Newsreader"',
+            '500 1em "Instrument Sans"',
+            '400 1em "Geist Mono Variable"',
+          ].map(function (f) { return document.fonts.load(f); })).then(show, show);
+        });
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={pageDescription} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -80,7 +119,9 @@ const jsonLd = {
     <title>{pageTitle}</title>
   </head>
   <body class:list={{ 'is-home': isHome, [`surface-${surface}`]: true }}>
-    <div class="site-topo" aria-hidden="true"></div>
+    <!-- Dos capas: la activa se ve; la otra recibe el relieve siguiente y se funde encima. -->
+    <div class="site-topo is-active" aria-hidden="true" data-topo-layer data-topo-key={topo.key} style={topoStyle(topo)}></div>
+    <div class="site-topo" aria-hidden="true" data-topo-layer></div>
     <a class="skip-link" href="#main">{ui.skipToContent}</a>
     <Header locale={locale} currentPath={Astro.url.pathname} />
     <main id="main">
@@ -90,5 +131,7 @@ const jsonLd = {
     <script src="../scripts/client-nav.ts"></script>
     <script src="../scripts/site-nav.ts"></script>
     <script src="../scripts/pub-filters.ts"></script>
+    <script src="../scripts/reveal.ts"></script>
+    <script src="../scripts/letters.ts"></script>
   </body>
 </html>

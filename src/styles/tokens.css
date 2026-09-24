@@ -13,7 +13,9 @@
   /* Tipografía: serif de archivo (sello) + sans de lectura + mono de metadatos */
   --font-serif: "Newsreader", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --font-sans: "Instrument Sans", system-ui, sans-serif;
-  --font-mono: "Geist Mono", "Courier New", monospace;
+  --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, monospace;
+  /* Display de portada y títulos de sección: grotesca condensada en versales. */
+  --font-display: "Archivo Variable", "Arial Narrow", sans-serif;
 
   --radius-sm: 0;
   --radius-md: 0;
@@ -34,6 +36,19 @@
   --c-accent-muted: var(--color-accent-subtle);
   --c-bosque: #1a1816;
 
+  /*
+   * Banda espectral: la paleta de marca refractada como por un prisma.
+   * Solo como hilo o filo (portada, títulos de sección), nunca como fondo.
+   */
+  --spectrum-1: #b6573e;
+  --spectrum-2: #c98a3b;
+  --spectrum-3: #d6bd72;
+  --spectrum-4: #5d7a4a;
+  --spectrum-5: #2f5a5e;
+  --spectrum-6: #2b3553;
+  --spectrum-x: linear-gradient(90deg, var(--spectrum-1) 0 16.67%, var(--spectrum-2) 0 33.33%, var(--spectrum-3) 0 50%, var(--spectrum-4) 0 66.67%, var(--spectrum-5) 0 83.33%, var(--spectrum-6) 0);
+  --spectrum-y: linear-gradient(180deg, var(--spectrum-1) 0 16.67%, var(--spectrum-2) 0 33.33%, var(--spectrum-3) 0 50%, var(--spectrum-4) 0 66.67%, var(--spectrum-5) 0 83.33%, var(--spectrum-6) 0);
+
   --texture-grain: url("/textures/paper-grain.svg");
   --texture-topo: url("/textures/mapa-topografico-fondo.png");
   --texture-opacity: 0.055;
@@ -45,7 +60,8 @@
   --topo-filter: none;
   --topo-position: 50% 40%;
 
-  --f-display: var(--font-serif);
+  /* Alias heredado: los títulos ya no van en serif; la serif queda para la lectura. */
+  --f-display: var(--font-display);
   --f-body: var(--font-sans);
   --f-mono: var(--font-mono);
 
@@ -82,6 +98,8 @@
   --d-slow: 900ms;
 
   --header-h: 4.5rem;
+  /* Portada: distancia entre el borde del header y la regla blanca del hero. */
+  --hero-rule-gap: 0.75rem;
 
   /*
    * Breakpoints (literales en @media — CSS vars no aplican ahí):

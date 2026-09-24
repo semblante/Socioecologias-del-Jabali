@@ -17,8 +17,8 @@ const shown = entries.slice(0, 3);
 <section class="notes">
   <div class="container">
     <div class="notes__head">
-      <h2 class="notes__title">{ui.latestFieldNotes}</h2>
-      <a class="notes__all" href={localizedPath('/cuaderno', locale)}>{ui.viewAll} →</a>
+      <h2 class="display-title notes__title">{ui.latestFieldNotes}</h2>
+      <a class="link-line notes__all" href={localizedPath('/cuaderno', locale)}>{ui.viewAll} <span class="link-line__arrow" aria-hidden="true">→</span></a>
     </div>
 
     {shown.length === 0 ? (
@@ -48,7 +48,6 @@ const shown = entries.slice(0, 3);
   .notes {
     padding-block: clamp(3.5rem, 9vw, 6rem);
     background: transparent;
-    border-top: 1px solid var(--color-border);
   }
 
   .notes__head {
@@ -63,24 +62,7 @@ const shown = entries.slice(0, 3);
   }
 
   .notes__title {
-    margin: 0;
-    font-family: var(--font-serif);
-    font-size: clamp(1.65rem, 3.2vw, 2.35rem);
-    font-weight: 500;
-    letter-spacing: -0.025em;
-  }
-
-  .notes__all {
-    font-family: var(--font-mono);
-    font-size: var(--t-xs);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    text-decoration: none;
-    color: var(--color-text-muted);
-  }
-
-  .notes__all:hover {
-    color: var(--color-accent);
+    font-size: clamp(2.2rem, 5.6vw, 4.5rem);
   }
 
   .notes__list {
@@ -130,11 +112,12 @@ const shown = entries.slice(0, 3);
   }
 
   .notes__item-title {
-    font-family: var(--font-serif);
-    font-size: clamp(1.15rem, 2vw, 1.4rem);
-    font-weight: 500;
-    line-height: 1.25;
-    letter-spacing: -0.015em;
+    font-family: var(--font-display);
+    font-stretch: 82%;
+    font-weight: 650;
+    letter-spacing: -0.012em;
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    line-height: 1.15;
     transition: color var(--d-fast) var(--ease-organic);
   }
 

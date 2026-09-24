@@ -4,8 +4,9 @@ import Hero from '../components/home/Hero.astro';
 import AboutBlurb from '../components/home/AboutBlurb.astro';
 import TerritoryTeaser from '../components/home/TerritoryTeaser.astro';
 import NewsList from '../components/home/NewsList.astro';
+import FieldStrip from '../components/home/FieldStrip.astro';
 import type { Locale } from '../config/site';
-import { getPage, getBitacora } from '../lib/content';
+import { getPage, getBitacora, getGaleria } from '../lib/content';
 import { getUi } from '../i18n/ui';
 
 interface Props { locale: Locale }
@@ -13,14 +14,20 @@ const { locale } = Astro.props;
 const ui = getUi(locale);
 const home = await getPage('home', locale);
 const bitacora = await getBitacora(locale);
+const galeria = await getGaleria(locale);
+const territorio = await getPage('territorio', locale);
+const title = home?.data.title ?? '';
 const tagline = home?.data.tagline ?? '';
 const intro = home?.data.intro ?? '';
 const heroMedia = home?.data.heroMedia ?? '';
+// El cuerpo de la página home en PocketBase es el texto de «Sobre el proyecto».
+const summary = home?.content.trim() || ui.homeSummary;
 ---
 
 <Base locale={locale}>
-  <Hero locale={locale} tagline={tagline} intro={intro} heroMedia={heroMedia} />
-  <AboutBlurb locale={locale} summary={ui.homeSummary} />
-  <TerritoryTeaser locale={locale} />
+  <Hero locale={locale} title={title} tagline={tagline} intro={intro} heroMedia={heroMedia} />
+  <AboutBlurb locale={locale} summary={summary} />
+  <FieldStrip locale={locale} items={galeria} />
+  <TerritoryTeaser locale={locale} lead={territorio?.data.description} />
   <NewsList locale={locale} entries={bitacora} />
 </Base>

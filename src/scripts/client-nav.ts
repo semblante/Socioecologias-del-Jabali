@@ -1,5 +1,33 @@
 import { swapFunctions } from 'astro:transitions/client';
-import { surfaceFromPath } from '../lib/surface';
+import { surfaceFromPath, topoFromPath, topoStyle } from '../lib/surface';
+
+/** Funde el relieve de fondo hacia el de la vista nueva (dissolve de ~1,4 s). */
+function crossfadeTopo(path: string) {
+  const layers = [...document.querySelectorAll<HTMLElement>('[data-topo-layer]')];
+  const active = layers.find((l) => l.classList.contains('is-active'));
+  const next = layers.find((l) => l !== active);
+  const topo = topoFromPath(path);
+  if (!active || !next || active.dataset.topoKey === topo.key) return;
+
+  next.setAttribute('style', topoStyle(topo));
+  next.dataset.topoKey = topo.key;
+  const swap = () => {
+    next.classList.add('is-active');
+    active.classList.remove('is-active');
+  };
+  // Espera la imagen para no fundir hacia un fondo vacío.
+  const img = new Image();
+  let done = false;
+  const go = () => {
+    if (done) return;
+    done = true;
+    requestAnimationFrame(swap);
+  };
+  img.onload = go;
+  img.onerror = go;
+  window.setTimeout(go, 700);
+  img.src = topo.image;
+}
 
 function localeOf(path: string) {
   return path.startsWith('/en') ? 'en' : 'es';
@@ -47,6 +75,7 @@ export function syncShellState(path = window.location.pathname) {
 
   document.body.classList.remove('surface-editorial', 'surface-territory', 'surface-archive');
   document.body.classList.add(`surface-${surfaceFromPath(path)}`);
+  crossfadeTopo(path);
 
   document.documentElement.lang = isEn ? 'en' : 'es';
 }
@@ -80,6 +109,10 @@ function swapMainOnly(newDoc: Document) {
   const nextPath = pathFromDoc(newDoc);
   const localeChanged = localeOf(window.location.pathname) !== localeOf(nextPath);
 
+  // El CSS propio de cada vista viaja en el <head> del documento nuevo: sin
+  // esto, la página llegaba sin estilos al navegar con el menú. Astro conserva
+  // las hojas que ya están y solo agrega o quita las distintas.
+  swapFunctions.swapHeadElements(newDoc);
   swapRegion('#main', newDoc);
   updateMeta(newDoc);
 

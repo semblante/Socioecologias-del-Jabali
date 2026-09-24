@@ -90,3 +90,34 @@ function initHomeHeader() {
 }
 
 initHomeHeader();
+
+/*
+ * Al tocar fondo el footer ya muestra marca y navegación: el header se
+ * atenúa para no repetir información (ver .site-header en components.css).
+ */
+function syncAtBottom() {
+  const doc = document.documentElement;
+  const atBottom = window.innerHeight + window.scrollY >= doc.scrollHeight - 8;
+  document.body.classList.toggle('at-bottom', atBottom && doc.scrollHeight > window.innerHeight + 40);
+}
+
+function initAtBottom() {
+  syncAtBottom();
+  const w = window as Window & { __atBottomBound?: boolean };
+  if (w.__atBottomBound) return;
+  w.__atBottomBound = true;
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      syncAtBottom();
+    });
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  document.addEventListener('astro:page-load', syncAtBottom);
+}
+
+initAtBottom();

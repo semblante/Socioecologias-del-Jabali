@@ -7,6 +7,8 @@ import { textWithSpecies } from '../../lib/markdown';
 
 interface Props {
   locale: Locale;
+  /** Título de portada (paginas → home → title). */
+  title?: string;
   tagline: string;
   intro: string;
   heroMedia?: string;
@@ -15,6 +17,7 @@ interface Props {
 const { locale, tagline, intro, heroMedia = '' } = Astro.props;
 const ui = getUi(locale);
 const brand = siteConfig.nameShort[locale];
+const title = Astro.props.title?.trim() || brand;
 
 function parseHeroSources(raw: string): string[] {
   return raw
@@ -82,9 +85,18 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
 
   <div class="hero__inner">
     <div class="hero__copy">
-      <p class="hero__kicker">{siteConfig.fondecyt} · {siteConfig.fondecytYear}</p>
-      <h1 class="hero__title">{tagline}</h1>
-      <p class="hero__intro" set:html={textWithSpecies(intro)} />
+      <p class="hero__meta">
+        <span class="hero__kicker">{siteConfig.fondecyt} · {siteConfig.fondecytYear}</span>
+        <span class="hero__coords">Peweñantu · 39°34′S 71°35′W</span>
+      </p>
+      <h1 class="hero__title">{title}</h1>
+      <div class="hero__spectrum" aria-hidden="true">
+        {[1, 2, 3, 4, 5, 6].map((n) => <span style={`--seg: var(--spectrum-${n})`}></span>)}
+      </div>
+      <div class="hero__sub">
+        {tagline && <p class="hero__tagline">{tagline}</p>}
+        <p class="hero__intro" set:html={textWithSpecies(intro)} />
+      </div>
       <div class="hero__actions">
         <a class="hero__cta hero__cta--solid" href={localizedPath('/proyecto', locale)}>{ui.projectCta}</a>
         <a class="hero__cta hero__cta--ghost" href={localizedPath('/cuaderno', locale)}>{ui.fieldNotesCta}</a>
@@ -269,7 +281,7 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
     min-height: min(96vh, 56rem);
     min-height: min(96dvh, 56rem);
     display: flex;
-    align-items: flex-end;
+    align-items: stretch;
     color: var(--hero-cream);
     background: var(--hero-ink);
     overflow: hidden;
@@ -520,56 +532,133 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
     z-index: 2;
     width: min(100% - 2.5rem, var(--w-wide, 1120px));
     margin-inline: auto;
-    padding-block: clamp(5.5rem, 14vh, 8rem) clamp(4rem, 11vh, 6.5rem);
-    padding-block: clamp(5.5rem, 14dvh, 8rem) clamp(4rem, 11dvh, 6.5rem);
+    /* La regla de la fila meta va pegada bajo el header; el título, abajo. */
+    padding-block: calc(var(--header-h, 4.5rem) + var(--hero-rule-gap, 0.75rem)) clamp(4rem, 11vh, 6.5rem);
+    padding-block: calc(var(--header-h, 4.5rem) + var(--hero-rule-gap, 0.75rem)) clamp(4rem, 11dvh, 6.5rem);
     padding-inline: 0.25rem;
     box-sizing: border-box;
-  }
-
-  @media (min-width: 960px) {
-    .hero__inner {
-      /* Empuja el bloque hacia el centro óptico; evita el muro pegado a la izquierda. */
-      padding-inline: clamp(2rem, 10vw, 8rem) 0.25rem;
-    }
+    display: flex;
+    flex-direction: column;
   }
 
   .hero__copy {
-    max-width: 42rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+
+  /*
+   * Portada como carátula: un campo negro, el título a todo el ancho en
+   * grotesca condensada y un único hilo espectral. Rigor de retícula, sin
+   * adornos: la fuerza la ponen la escala y el contraste.
+   */
+  .hero__copy {
     animation: hero-rise 900ms var(--ease-organic, cubic-bezier(0.22, 0.61, 0.36, 1)) both;
   }
 
-  .hero__kicker {
-    margin: 0 0 var(--s-4, 1rem);
-    padding-left: 0.7rem;
-    border-left: 2px solid var(--hero-accent);
+  .hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    /* auto empuja título y bajada al fondo del hero; la regla queda bajo el header. */
+    margin: 0 0 auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(245, 242, 232, 0.34);
     font-family: var(--font-mono, "Geist Mono", monospace);
-    font-size: 0.72rem;
-    letter-spacing: 0.14em;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: rgba(245, 242, 232, 0.92);
-    text-shadow:
-      0 1px 2px rgba(7, 7, 8, 0.85),
-      0 0 18px rgba(7, 7, 8, 0.45);
+    color: rgba(245, 242, 232, 0.86);
+    text-shadow: 0 1px 2px rgba(7, 7, 8, 0.85);
+  }
+
+  .hero__coords {
+    color: rgba(245, 242, 232, 0.56);
   }
 
   .hero__title {
-    margin: 0 0 var(--s-6, 1.5rem);
+    /* Aire mínimo con la fila meta cuando el contenido llena el hero. */
+    margin: clamp(1.5rem, 4vh, 3rem) 0 0;
+    font-family: var(--font-display, "Archivo Variable", "Arial Narrow", sans-serif);
+    font-stretch: 62%;
+    font-weight: 800;
+    font-size: clamp(3rem, 14.2vw, 13rem);
+    line-height: 0.84;
+    letter-spacing: -0.012em;
+    text-transform: uppercase;
+    text-wrap: balance;
+    word-spacing: 0.06em;
+    /* Nunca partir una palabra del título (el body usa overflow-wrap: anywhere). */
+    overflow-wrap: normal;
+    hyphens: none;
+    color: var(--hero-cream);
+    /* Las tildes de Í/Á necesitan aire sobre un interlineado tan cerrado. */
+    padding-top: 0.08em;
+    text-shadow: 0 2px 30px rgba(7, 7, 8, 0.35);
+  }
+
+  /* Seis segmentos: en modo 'flicker' cada uno se enciende por su cuenta. */
+  .hero__spectrum {
+    display: flex;
+    height: clamp(6px, 0.9vw, 12px);
+    margin-block: clamp(1rem, 2.4vw, 1.75rem);
+    transform-origin: left center;
+  }
+
+  .hero__spectrum > span {
+    flex: 1;
+    background: var(--seg);
+  }
+
+  :global(html[data-intro='sweep']) .hero__spectrum {
+    animation: hero-spectrum 1400ms 250ms var(--ease-organic, cubic-bezier(0.22, 0.61, 0.36, 1)) both;
+  }
+
+  :global(html[data-intro='flicker']) .hero__spectrum > span {
+    animation: flick-b 1100ms steps(1, end) both;
+  }
+
+  /* Orden de encendido desparejo, como una fila de tubos. */
+  :global(html[data-intro='flicker']) .hero__spectrum > span:nth-child(1) { animation-delay: 520ms; }
+  :global(html[data-intro='flicker']) .hero__spectrum > span:nth-child(2) { animation-delay: 180ms; animation-name: flick-c; }
+  :global(html[data-intro='flicker']) .hero__spectrum > span:nth-child(3) { animation-delay: 760ms; animation-name: flick-a; }
+  :global(html[data-intro='flicker']) .hero__spectrum > span:nth-child(4) { animation-delay: 340ms; }
+  :global(html[data-intro='flicker']) .hero__spectrum > span:nth-child(5) { animation-delay: 900ms; animation-name: flick-c; }
+  :global(html[data-intro='flicker']) .hero__spectrum > span:nth-child(6) { animation-delay: 60ms; animation-name: flick-a; }
+
+  .hero__sub {
+    display: grid;
+    gap: 0.9rem 3rem;
+    margin-bottom: var(--s-8, 2rem);
+  }
+
+  @media (min-width: 960px) {
+    .hero__sub {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+
+  .hero__tagline {
+    margin: 0;
+    max-width: 24ch;
     font-family: var(--font-serif, "Newsreader", Georgia, serif);
-    font-size: clamp(1.85rem, 4.6vw, 3.05rem);
-    font-weight: 500;
-    line-height: 1.08;
-    letter-spacing: -0.03em;
-    max-width: 18ch;
+    font-style: italic;
+    font-size: clamp(1.35rem, 2.4vw, 2rem);
+    line-height: 1.18;
+    letter-spacing: -0.015em;
     color: var(--hero-cream);
   }
 
   .hero__intro {
-    margin: 0 0 var(--s-8, 2rem);
-    max-width: 42ch;
+    margin: 0;
+    max-width: 44ch;
     font-family: var(--font-sans, "Instrument Sans", system-ui, sans-serif);
-    font-size: clamp(1.02rem, 1.55vw, 1.18rem);
-    line-height: 1.65;
-    color: rgba(245, 242, 232, 0.78);
+    font-size: clamp(0.98rem, 1.3vw, 1.08rem);
+    line-height: 1.6;
+    color: rgba(245, 242, 232, 0.8);
   }
 
   .hero__actions {
@@ -590,9 +679,9 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
     text-decoration: none;
     border: 1px solid transparent;
     transition:
-      background 180ms ease,
-      color 180ms ease,
-      border-color 180ms ease;
+      background-color var(--d-medium, 420ms) var(--ease-organic, ease),
+      color var(--d-medium, 420ms) var(--ease-organic, ease),
+      border-color var(--d-medium, 420ms) var(--ease-organic, ease);
   }
 
   .hero__cta--solid {
@@ -601,9 +690,11 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
     border-color: var(--hero-cream);
   }
 
-  .hero__cta--solid:hover {
-    background: #fff8ea;
-    color: var(--hero-ink);
+  .hero__cta--solid:hover,
+  .hero__cta--solid:focus-visible {
+    background: transparent;
+    color: var(--hero-cream);
+    border-color: var(--hero-cream);
   }
 
   .hero__cta--ghost {
@@ -612,10 +703,20 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
     border-color: rgba(245, 242, 232, 0.38);
   }
 
-  .hero__cta--ghost:hover {
+  .hero__cta--ghost:hover,
+  .hero__cta--ghost:focus-visible {
     border-color: var(--hero-cream);
-    background: rgba(245, 242, 232, 0.08);
-    color: var(--hero-cream);
+    background: var(--hero-cream);
+    color: var(--hero-ink);
+  }
+
+  @keyframes hero-spectrum {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
   }
 
   @keyframes hero-rise {
@@ -630,7 +731,9 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .hero__copy {
+    .hero__copy,
+    :global(html[data-intro]) .hero__spectrum,
+    :global(html[data-intro]) .hero__spectrum > span {
       animation: none;
     }
 
@@ -675,25 +778,32 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
 
     .hero__inner {
       width: min(100% - 1.5rem, var(--w-wide, 1120px));
-      padding-block: clamp(4.75rem, 12vh, 6.5rem) clamp(2.25rem, 6vh, 3.25rem);
-      padding-block: clamp(4.75rem, 12dvh, 6.5rem) clamp(2.25rem, 6dvh, 3.25rem);
+      padding-block: calc(var(--header-h, 4.5rem) + var(--hero-rule-gap, 0.75rem)) clamp(2.25rem, 6vh, 3.25rem);
+      padding-block: calc(var(--header-h, 4.5rem) + var(--hero-rule-gap, 0.75rem)) clamp(2.25rem, 6dvh, 3.25rem);
     }
 
-    .hero__kicker {
-      margin-bottom: 0.75rem;
-      font-size: 0.68rem;
+    .hero__meta {
+      font-size: 0.62rem;
+    }
+
+    .hero__coords {
+      display: none;
     }
 
     .hero__title {
-      max-width: none;
-      margin-bottom: 1rem;
-      font-size: clamp(1.7rem, 7.2vw, 2.15rem);
-      line-height: 1.12;
+      font-size: clamp(2.4rem, 13.4vw, 4.6rem);
+    }
+
+    .hero__sub {
+      margin-bottom: 1.25rem;
+    }
+
+    .hero__tagline {
+      font-size: 1.2rem;
     }
 
     .hero__intro {
-      margin-bottom: 1.25rem;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       line-height: 1.55;
       max-width: none;
     }

@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import MarkdownBody from '../components/MarkdownBody.astro';
 import type { Locale } from '../config/site';
-import { getEquipo } from '../lib/content';
+import { getEquipo, getEntrySlug } from '../lib/content';
 import { getUi } from '../i18n/ui';
 
 interface Props { locale: Locale }
@@ -12,6 +12,13 @@ const team = await getEquipo(locale);
 const investigators = team.filter((m) => m.data.group === 'investigator');
 const collaborators = team.filter((m) => m.data.group === 'collaborator');
 const students = team.filter((m) => m.data.group === 'tesista');
+// Índice arriba: da visibilidad a quienes quedan más abajo en la página.
+const roster = [
+  { label: ui.equipo.investigators, members: investigators },
+  { label: ui.equipo.students, members: students },
+  { label: ui.equipo.collaborators, members: collaborators },
+].filter((g) => g.members.length > 0);
+const anchor = (m: (typeof team)[number]) => `p-${getEntrySlug(m)}`;
 ---
 
 <Base title={ui.nav.equipo} locale={locale}>
@@ -26,12 +33,30 @@ const students = team.filter((m) => m.data.group === 'tesista');
         </p>
       </header>
 
+      <nav class="roster" aria-label={locale === 'es' ? 'Integrantes del equipo' : 'Team members'}>
+        {roster.map((group) => (
+          <div class="roster__group">
+            <p class="roster__label">{group.label}</p>
+            <ul class="roster__list">
+              {group.members.map((m) => (
+                <li>
+                  <a class="roster__link" href={`#${anchor(m)}`}>
+                    <span class="roster__name">{m.data.name}</span>
+                    <span class="roster__role">{m.data.role}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </nav>
+
       {investigators.length > 0 && (
         <>
           <h2 class="team-heading">{ui.equipo.investigators}</h2>
           <ul class="team-list">
             {investigators.map((member) => (
-              <li class:list={['team-row', { 'team-row--lead': member.data.order === 1 }]}>
+              <li id={anchor(member)} class:list={['team-row', { 'team-row--lead': member.data.order === 1 }]}>
                 <h3 class="team-row__name">
                   {member.data.externalUrl ? (
                     <a href={member.data.externalUrl} target="_blank" rel="noopener noreferrer" class="external-link">
@@ -56,7 +81,7 @@ const students = team.filter((m) => m.data.group === 'tesista');
           <h2 class="team-heading">{ui.equipo.students}</h2>
           <ul class="team-list">
             {students.map((member) => (
-              <li class="team-row">
+              <li id={anchor(member)} class="team-row">
                 <h3 class="team-row__name">
                   {member.data.externalUrl ? (
                     <a href={member.data.externalUrl} target="_blank" rel="noopener noreferrer" class="external-link">
@@ -81,7 +106,7 @@ const students = team.filter((m) => m.data.group === 'tesista');
           <h2 class="team-heading">{ui.equipo.collaborators}</h2>
           <ul class="team-list">
             {collaborators.map((member) => (
-              <li class="team-row">
+              <li id={anchor(member)} class="team-row">
                 <h3 class="team-row__name">
                   {member.data.externalUrl ? (
                     <a href={member.data.externalUrl} target="_blank" rel="noopener noreferrer" class="external-link">
@@ -105,16 +130,151 @@ const students = team.filter((m) => m.data.group === 'tesista');
 </Base>
 
 <style>
-  .team-heading {
-    margin: var(--s-12) 0 var(--s-4);
-    padding-bottom: var(--s-3);
-    border-bottom: 1px solid var(--color-border);
+  .roster {
+    display: grid;
+    gap: var(--s-8);
+    margin-bottom: var(--s-16);
+  }
+
+  @media (min-width: 768px) {
+    .roster {
+      grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+      gap: var(--s-8) var(--s-12);
+    }
+  }
+
+  .roster__label {
+    margin: 0 0 var(--s-3);
     font-family: var(--font-mono);
     font-size: var(--t-xs);
-    font-weight: 500;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--color-accent);
+  }
+
+  .roster__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .roster__list li {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .roster__link {
+    position: relative;
+    display: grid;
+    gap: 0.15rem;
+    padding: var(--s-3) 0 var(--s-3);
+    color: var(--color-text);
+    text-decoration: none;
+    transition: padding-left var(--d-medium) var(--ease-organic);
+  }
+
+  /* El hilo espectral recorre la regla inferior, como en el menú. */
+  .roster__link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--spectrum-x);
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 560ms var(--ease-organic);
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  .roster__link:hover,
+  .roster__link:focus-visible {
+    color: var(--color-text);
+    padding-left: var(--s-2);
+  }
+
+  .roster__link:hover::after,
+  .roster__link:focus-visible::after {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+
+  .roster__name {
+    font-family: var(--font-display);
+    font-stretch: 82%;
+    font-weight: 650;
+    font-size: 1.12rem;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+  }
+
+  .roster__role {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  /* Al llegar desde el índice, el perfil se marca con un filo espectral que se apaga. */
+  .team-row {
+    position: relative;
+    scroll-margin-top: calc(var(--header-h) + var(--s-6));
+  }
+
+  .team-row::before {
+    content: "";
+    position: absolute;
+    left: calc(var(--s-6) * -1);
+    top: var(--s-8);
+    bottom: var(--s-8);
+    width: 4px;
+    background: var(--spectrum-y);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .team-row:target::before {
+    animation: roster-target 2.4s var(--ease-organic) both;
+  }
+
+  @keyframes roster-target {
+    0%,
+    55% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .team-row::before {
+      left: calc(var(--s-3) * -1);
+      width: 3px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .roster__link,
+    .roster__link::after {
+      transition: none;
+    }
+  }
+
+  .team-heading {
+    margin: var(--s-16) 0 var(--s-2);
+    padding-bottom: var(--s-4);
+    border-bottom: 1px solid var(--color-border);
+    font-family: var(--font-display);
+    font-stretch: 62%;
+    font-size: clamp(2rem, 4.4vw, 3.4rem);
+    font-weight: 800;
+    line-height: 0.9;
+    text-transform: uppercase;
+    color: var(--color-text);
   }
 
   .team-heading:first-of-type {
@@ -133,15 +293,17 @@ const students = team.filter((m) => m.data.group === 'tesista');
   }
 
   .team-row--lead .team-row__name {
-    font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
   }
 
   .team-row__name {
     margin: 0 0 var(--s-2);
-    font-family: var(--font-serif);
-    font-size: clamp(1.2rem, 2vw, 1.45rem);
-    font-weight: 500;
-    letter-spacing: -0.015em;
+    font-family: var(--font-display);
+    font-stretch: 82%;
+    font-weight: 650;
+    letter-spacing: -0.012em;
+    font-size: clamp(1.35rem, 2.2vw, 1.7rem);
+    line-height: 1.1;
   }
 
   .team-row__name a {

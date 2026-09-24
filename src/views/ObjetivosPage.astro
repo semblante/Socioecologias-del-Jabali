@@ -76,9 +76,12 @@ const lead =
   }
   .obj-item__title {
     margin: 0 0 var(--s-3);
-    font-family: var(--font-serif);
-    font-size: var(--t-lg);
-    font-weight: 500;
+    font-family: var(--font-display);
+    font-stretch: 82%;
+    font-weight: 650;
+    letter-spacing: -0.012em;
+    font-size: clamp(1.3rem, 2.2vw, 1.6rem);
+    line-height: 1.15;
   }
   .obj-item__resumen {
     margin: 0 0 var(--s-4);
@@ -90,7 +93,11 @@ const lead =
     border-top: 1px solid var(--color-border);
   }
   .hypotheses h2 {
-    font-family: var(--font-serif);
-    font-weight: 500;
+    font-family: var(--font-display);
+    font-stretch: 62%;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 0.92;
   }
 </style>

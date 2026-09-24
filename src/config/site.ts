@@ -13,6 +13,12 @@ export const siteConfig = {
   url: 'https://ecologiasdeljabali.cl',
   projectTitle:
     'Wild boar socioecologies: invasive species as contact zones in the Peweñantu, Southern Chile',
+  /**
+   * Entrada de títulos e hilos espectrales:
+   *   'flicker' → las letras se encienden como tubo fluorescente, cada una a su tiempo.
+   *   'sweep'   → barrido de izquierda a derecha (versión anterior).
+   */
+  intro: 'flicker' as 'flicker' | 'sweep',
   fondecyt: 'Fondecyt Regular 1260739',
   fondecytYear: '2026',
   sections: {

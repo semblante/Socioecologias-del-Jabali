@@ -20,63 +20,122 @@ const frameworks =
 ---
 
 <section class="about">
+  <!--
+    Acento del relieve: el mismo mapa y encuadre que el fondo fijo de la
+    portada (lib/surface.ts → home), así las líneas coinciden y se oscurecen.
+    La máscara lo apaga detrás del texto.
+  -->
+  <div class="about__topo" aria-hidden="true"></div>
+  <!-- El sello va como marca de agua: el texto se lee encima, no al lado. -->
+  <div class="about__watermark" aria-hidden="true">
+    <SiteLogo locale={locale} size="hero" class="about__seal" />
+  </div>
   <div class="about__inner container">
-    <div class="about__brand">
-      <SiteLogo locale={locale} size="hero" class="about__seal" />
-    </div>
-    <p class="about__label">{ui.aboutProject}</p>
+    <p class="section-mark">{ui.aboutProject}</p>
     <p class="about__statement" set:html={textWithSpecies(summary)} />
     <ul class="about__lenses">
       {frameworks.map((fw) => (
         <li>{fw}</li>
       ))}
     </ul>
-    <a class="about__link" href={localizedPath('/proyecto', locale)}>{ui.readMore} →</a>
+    <a class="link-line about__link" href={localizedPath('/proyecto', locale)}>{ui.readMore} <span class="link-line__arrow" aria-hidden="true">→</span></a>
   </div>
 </section>
 
+<script>
+  function initAboutTopo() {
+    const w = window as Window & { __aboutTopoIO?: IntersectionObserver };
+    w.__aboutTopoIO?.disconnect();
+    const about = document.querySelector('.about');
+    const layer = about?.querySelector('.about__topo');
+    if (!about || !layer) return;
+    // Encendido mientras la sección ocupa la franja central de la pantalla.
+    w.__aboutTopoIO = new IntersectionObserver(
+      ([entry]) => layer.classList.toggle('is-live', entry.isIntersecting),
+      { rootMargin: '-30% 0px -30% 0px' },
+    );
+    w.__aboutTopoIO.observe(about);
+  }
+
+  document.addEventListener('astro:page-load', initAboutTopo);
+  initAboutTopo();
+</script>
+
 <style>
+  .about__topo {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: var(--texture-topo);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 38% 42%;
+    mix-blend-mode: multiply;
+    filter: sepia(0.35) hue-rotate(8deg) saturate(0.6) brightness(0.55) contrast(1.5);
+    opacity: 0;
+    transition: opacity 1400ms var(--ease-organic);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0 44%, rgba(0, 0, 0, 0.55) 60%, #000 78%);
+    mask-image: linear-gradient(90deg, transparent 0 44%, rgba(0, 0, 0, 0.55) 60%, #000 78%);
+  }
+
+  .about__topo.is-live {
+    opacity: 0.34;
+  }
+
+  @media (max-width: 767px) {
+    /* En móvil el texto ocupa todo el ancho: el acento queda en los bordes. */
+    .about__topo {
+      -webkit-mask-image: radial-gradient(ellipse 75% 55% at 50% 50%, transparent 45%, #000 100%);
+      mask-image: radial-gradient(ellipse 75% 55% at 50% 50%, transparent 45%, #000 100%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about__topo {
+      transition: none;
+    }
+  }
+
   .about {
     position: relative;
-    padding-block: clamp(3.5rem, 10vw, 6.5rem);
+    overflow: hidden;
+    padding-block: clamp(4.5rem, 12vw, 9rem);
     border-bottom: 1px solid var(--color-border);
     /* transparente: un fondo sólido tapa site-topo (z-index bajo main) */
     background: transparent;
   }
 
+  .about__watermark {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center end;
+    pointer-events: none;
+  }
+
+  .about__watermark :global(.about__seal) {
+    width: clamp(22rem, 62vw, 46rem);
+    max-width: none;
+    margin-right: clamp(-10rem, -8vw, -2rem);
+    color: var(--color-text);
+    opacity: 0.075;
+  }
+
   .about__inner {
+    position: relative;
     display: grid;
     gap: var(--s-6);
-    max-width: 52rem;
-  }
-
-  .about__brand {
-    margin-bottom: var(--s-2);
-  }
-
-  .about__seal {
-    width: min(7.5rem, 36vw);
-    max-width: 7.5rem;
-    opacity: 1;
-    color: var(--color-text);
-  }
-
-  .about__label {
-    margin: 0;
-    font-family: var(--font-mono);
-    font-size: var(--t-xs);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--color-accent);
   }
 
   .about__statement {
     margin: 0;
+    max-width: 30ch;
     font-family: var(--font-serif);
-    font-size: clamp(1.35rem, 3vw, 2rem);
+    font-size: clamp(1.5rem, 3.4vw, 2.6rem);
     font-weight: 500;
-    line-height: 1.35;
-    letter-spacing: -0.02em;
+    line-height: 1.24;
+    letter-spacing: -0.022em;
     color: var(--color-text);
   }
 
@@ -110,15 +169,17 @@ const frameworks =
 
   .about__link {
     justify-self: start;
-    font-size: var(--t-sm);
-    font-weight: 500;
-    text-decoration: none;
-    color: var(--color-text);
-    border-bottom: 1px solid var(--color-accent);
-    padding-bottom: 0.15em;
   }
 
-  .about__link:hover {
-    color: var(--color-accent);
+  @media (max-width: 639px) {
+    .about__watermark {
+      place-items: start center;
+    }
+
+    .about__watermark :global(.about__seal) {
+      width: 118vw;
+      margin: -10vw 0 0;
+      opacity: 0.06;
+    }
   }
 </style>

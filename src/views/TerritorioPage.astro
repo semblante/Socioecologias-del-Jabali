@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import MarkdownBody from '../components/MarkdownBody.astro';
 import SiteMap from '../components/territorio/SiteMap.astro';
 import type { Locale } from '../config/site';
-import { getSitios, getEntrySlug } from '../lib/content';
+import { getSitios, getEntrySlug, getPage } from '../lib/content';
 import { localizedPath } from '../i18n/routing';
 import { parseCoords } from '../lib/geo';
 import { textWithSpecies } from '../lib/markdown';
@@ -11,21 +11,26 @@ import { textWithSpecies } from '../lib/markdown';
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const sitios = await getSitios(locale);
+// Textos editables en paginas → territorio; los literales son respaldo si el registro falta.
+const page = await getPage('territorio', locale);
 const principal = sitios.find((s) => s.data.tipo === 'principal');
 const secundarios = sitios.filter((s) => s.data.tipo === 'secundario');
-const title = locale === 'es' ? 'Territorio' : 'Territory';
+const title = page?.data.title || (locale === 'es' ? 'Territorio' : 'Territory');
 const lead =
-  locale === 'es'
+  page?.data.tagline ||
+  (locale === 'es'
     ? 'Winkulmapu: territorio winkulche-pewenche. El sector Puesco-Lanín y el peweñantu de Kurarewe como territorio principal de acción e investigación.'
-    : 'Winkulmapu: winkulche-pewenche territory. The Puesco-Lanín sector and the peweñantu of Kurarewe as the main territory of action and research.';
+    : 'Winkulmapu: winkulche-pewenche territory. The Puesco-Lanín sector and the peweñantu of Kurarewe as the main territory of action and research.');
 const intro =
-  locale === 'es'
+  page?.data.intro ||
+  (locale === 'es'
     ? 'El proyecto tiene como territorio principal de acción e investigación el sector Puesco-Lanín del Parque Nacional Villarrica, específicamente el área de 17.000 hectáreas que bajo el Acuerdo de Gobernanza entre la Asociación Indígena Winkulmapu, CONAF y Bienes Nacionales queda bajo la gestión de las comunidades mapuche de Kurarewe.'
-    : 'The project’s main territory of action and research is the Puesco-Lanín sector of Villarrica National Park —specifically the 17,000 hectares that, under the Governance Agreement among the Winkulmapu Indigenous Association, CONAF, and the Ministry of National Assets, are managed by the Mapuche communities of Kurarewe.';
+    : 'The project’s main territory of action and research is the Puesco-Lanín sector of Villarrica National Park —specifically the 17,000 hectares that, under the Governance Agreement among the Winkulmapu Indigenous Association, CONAF, and the Ministry of National Assets, are managed by the Mapuche communities of Kurarewe.');
 const secondaryLead =
-  locale === 'es'
+  page?.content.trim() ||
+  (locale === 'es'
     ? 'Para complementar la información recolectada en este territorio, el proyecto incluye como casos secundarios a Quiñenahuin, Panqui y Palguín Alto. Estos sectores conforman el amplio peweñantu (bosque de pewen) de la zona cordillerana de Kurarewe, un territorio ecológico y político donde el Sus scrofa se ha asentado hace más de un siglo.'
-    : 'To complement information gathered in this territory, the project includes Quiñenahuin, Panqui, and Palguín Alto as secondary cases. These sectors make up the broader peweñantu (pewen forest) of the Kurarewe cordillera —an ecological and political territory where Sus scrofa has been established for more than a century.';
+    : 'To complement information gathered in this territory, the project includes Quiñenahuin, Panqui, and Palguín Alto as secondary cases. These sectors make up the broader peweñantu (pewen forest) of the Kurarewe cordillera —an ecological and political territory where Sus scrofa has been established for more than a century.');
 
 const markers = sitios
   .map((s) => {
@@ -57,7 +62,7 @@ const markers = sitios
 
     {markers.length > 0 && (
       <div class="territorio__map container">
-        <SiteMap markers={markers} locale={locale} height="min(42vh, 24rem)" />
+        <SiteMap markers={markers} locale={locale} height="min(56vh, 32rem)" showZone />
       </div>
     )}
 
@@ -71,8 +76,8 @@ const markers = sitios
           <p class="sitio__aporte">{principal.data.aporte}</p>
           <MarkdownBody content={principal.content} />
           <p class="sitio__cta">
-            <a href={localizedPath('/territorio/winkulmapu', locale)}>
-              {locale === 'es' ? 'Acuerdo de Gobernanza Winkulmapu →' : 'Winkulmapu Governance Agreement →'}
+            <a class="link-line" href={localizedPath('/territorio/winkulmapu', locale)}>
+              {locale === 'es' ? 'Acuerdo de Gobernanza Winkulmapu' : 'Winkulmapu Governance Agreement'} <span class="link-line__arrow" aria-hidden="true">→</span>
             </a>
           </p>
         </article>
@@ -143,10 +148,12 @@ const markers = sitios
   .sitio h2,
   .sitio-list h3 {
     margin: 0 0 var(--s-3);
-    font-family: var(--font-serif);
-    font-weight: 500;
-    font-size: var(--t-xl);
-    letter-spacing: -0.02em;
+    font-family: var(--font-display);
+    font-stretch: 82%;
+    font-weight: 650;
+    letter-spacing: -0.012em;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    line-height: 1.08;
   }
 
   .sitio-list h3 {
@@ -172,23 +179,14 @@ const markers = sitios
     font-style: italic;
   }
 
-  .sitio__cta a {
-    font-weight: 500;
-    color: var(--color-accent);
-    text-decoration: none;
-    border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
-  }
-
-  .sitio__cta a:hover {
-    border-color: var(--color-accent);
-  }
-
   .territorio__sub {
-    margin: 0 0 var(--s-6);
-    font-family: var(--font-serif);
-    font-size: var(--t-xl);
-    font-weight: 500;
-    letter-spacing: -0.02em;
+    margin: var(--s-8) 0 var(--s-6);
+    font-family: var(--font-display);
+    font-stretch: 62%;
+    font-weight: 800;
+    font-size: clamp(2.2rem, 4.6vw, 3.6rem);
+    line-height: 0.9;
+    text-transform: uppercase;
   }
 
   .sitio-list {

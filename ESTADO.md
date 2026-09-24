@@ -1,8 +1,8 @@
 # Socioecologías del jabalí — estado
 
 **Qué es:** Sitio bilingüe del proyecto Fondecyt Regular 1260739 «Socioecologías del jabalí», liderado por Manuel Tironi (PUC), sobre el jabalí como zona de contacto socioecológica en el peweñantu de la Araucanía andina, en colaboración con la Asociación Indígena Winkulmapu. Astro 5 con SSR y PocketBase como CMS.
-**Etapa:** piloto (estructura, diseño y contenido semilla en Railway; dominio registrado en Railway pendiente de DNS; cliente aún no valida contenido).
-**Actualizado:** 2026-08-27
+**Etapa:** producción (sitio live en `https://ecologiasdeljabali.cl`; cliente aún no valida contenido y `heroMedia`).
+**Actualizado:** 2026-09-24
 
 > Este repo **ya no usa Keystatic ni Cloudflare**. Migró a PocketBase en julio de 2026 y el
 > deploy es Railway. El legacy se borró el 2026-08-03.
@@ -23,24 +23,26 @@
 - PocketBase prod con schema, seed y admin editor (`editor@ecologiasdeljabali.cl`); entrypoint sincroniza credenciales al boot.
 - Validación automatizada: `pnpm validate:prod`.
 - Assets OG: `/brand/icon-512.png` y `/brand/icon-180.png`.
-- Dominio `ecologiasdeljabali.cl` registrado en Railway (CNAME → `zve7g4f6.up.railway.app`).
+- Dominio `ecologiasdeljabali.cl` operativo en producción; HTTPS verificado con HTTP 200 el 2026-09-17. Railway queda como origen de despliegue.
+- Ajustes Tironi (2026-09-24, en repo, sin deploy): portada con título display (Archivo condensada) y banda espectral; sello como marca de agua en «Sobre el proyecto»; «Territorio de trabajo» a todo el ancho con polígono aproximado de zona (`public/geo/zona-trabajo.geojson`); franja de imágenes desde `galeria` (5 fotos de relleno de Wikimedia Commons con crédito); marca CEDEL recortada de `jabali2.mp4` y franja Bushnell de `jabali1.mp4`; textos de portada y territorio movidos a PocketBase (`paginas` home `content`, nueva key `territorio`); `pb:seed -- --create-only`; tutorial en `docs/cliente.md`. Pasada transversal: encabezados de página con voz display, sistema de movimiento (menú, enlaces, filas, botones, cambio de página, entrada al scroll) y arreglo del espaciado de párrafos en `.prose`. Segunda pasada: sistema tipográfico cerrado (Archivo para títulos, Newsreader solo lectura), índice de integrantes en Equipo, relieve propio por vista con fundido, filtros y etiquetas sin pastilla. Bugs corregidos: al navegar con el menú las vistas llegaban sin su CSS (`client-nav.ts` no sincronizaba el `<head>`) y el footer quedaba invisible tras navegar (`reveal.ts`). Tercera pasada: carga sin salto de fuente con títulos letra a letra, header que se atenúa al tocar fondo, entrada fluorescente de títulos (interruptor `siteConfig.intro`: `flicker` | `sweep`), sello como marca de agua en el pie, acento del mapa en «Sobre el proyecto». Bug corregido: la mono nunca cargaba (el token pedía "Geist Mono" y la fuente se registra como "Geist Mono Variable"), todo el meta salía en Courier New.
 
 ## Por hacer (en orden)
 
-- **[stopper]** Configurar DNS del dominio `ecologiasdeljabali.cl` (CNAME → `zve7g4f6.up.railway.app`). Railway ya lo tiene registrado; falta propagación.
+- **Deploy de los ajustes Tironi:** `pnpm pb:schema` (agrega key `territorio`), `pnpm pb:seed -- --create-only` (crea páginas territorio y galería sin pisar lo editado), push. Ojo: `home` ya existe, así que su `content` («Sobre el proyecto») hay que pegarlo a mano en el panel o se usa el texto de respaldo del código.
+- **Coordenadas de sitios:** Puesco-Lanín en prod sigue en `-39.42, -71.75`, fuera de la zona; cambiar a `-39.57, -71.57` en el panel (ES y EN). Revisar las de los casos secundarios con el KMZ.
+- **KMZ de Tironi:** convertir a GeoJSON, reemplazar `public/geo/zona-trabajo.geojson` y poner `WORK_ZONE.approximate = false` en `src/lib/geo.ts`.
 - **Media de portada:** Tironi debe entregar video o imagen de terreno; pegar URL/ruta en `paginas` → home → `heroMedia`.
-- **Mapa territorio:** opcional imagen/KMZ del peweñantu (hoy hay mapa OSM Leaflet).
 - Validación de contenido por el cliente: pasar registros de `reviewed` a `published`.
-- Poblar `galeria` (`/archivo`) con imágenes de terreno.
+- Reemplazar las fotos de relleno de `galeria` por imágenes de terreno del equipo.
 - Flujo de imágenes para el cliente (hoy `imagen`/`cover`/`heroMedia` son texto URL/ruta).
 - Partir `src/styles/components.css` si molesta el monolito.
 - Decidir si se quitan `@astrojs/react`, `react` y `react-dom`.
 
 ## Riesgos y bloqueos
 
-- Sin dominio operativo la entrega queda incompleta aunque Railway responda.
 - Si `PUBLIC_POCKETBASE_URL` no está configurado en producción, todas las páginas fallan al consultar la API.
 - Hipótesis detalladas ya no viven en una página propia; el texto canónico de proyecto está en `paginas` key `proyecto`.
+- `pnpm pb:seed` sin `--create-only` pisa lo que el cliente editó en el panel. En prod usar siempre `--create-only`.
 - Sin backups documentados del volumen de PocketBase, un redeploy mal hecho puede perder contenido editado por el cliente.
 - Falta cerrar el nombre público vs dominio.
 
@@ -56,4 +58,4 @@
 - cliente: Manuel Tironi, Fondecyt Regular 1260739 (PUC)
 - una línea: Sitio bilingüe de investigación con CMS propio y diseño editorial de campo, para un proyecto Fondecyt en la Araucanía.
 - logo: `public/brand/logo-mark.svg`
-- url publicada: `https://web-production-57fa0.up.railway.app` (dominio propio pendiente de DNS al 2026-08-26)
+- url publicada: `https://ecologiasdeljabali.cl` (verificada 2026-09-17; Railway es el origen de despliegue)
