@@ -11,6 +11,14 @@
   box-shadow: 0 1px 0 color-mix(in srgb, var(--c-rule) 50%, transparent);
   padding-top: env(safe-area-inset-top, 0px);
   overflow: hidden;
+  transition: opacity var(--d-medium) var(--ease-organic);
+}
+
+/* Móvil: al bajar leyendo, el header completo baja al 20 % (site-nav.ts). */
+@media (max-width: 959px) {
+  body.scroll-dim:not(.nav-open) .site-header {
+    opacity: 0.2;
+  }
 }
 
 /*
@@ -80,7 +88,8 @@ body.is-home .site-header {
     background-color var(--d-medium) var(--ease-organic),
     border-color var(--d-medium) var(--ease-organic),
     color var(--d-medium) var(--ease-organic),
-    box-shadow var(--d-medium) var(--ease-organic);
+    box-shadow var(--d-medium) var(--ease-organic),
+    opacity var(--d-medium) var(--ease-organic);
 }
 
 body.is-home .site-header::before {

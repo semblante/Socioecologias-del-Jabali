@@ -121,3 +121,49 @@ function initAtBottom() {
 }
 
 initAtBottom();
+
+/*
+ * Móvil: al bajar leyendo, el header se atenúa al 20 % para liberar pantalla;
+ * al subir, cerca del inicio o con el menú abierto, vuelve entero.
+ */
+const MOBILE_MQ = '(max-width: 959px)';
+
+function initScrollDim() {
+  const w = window as Window & { __scrollDimBound?: boolean };
+  if (w.__scrollDimBound) return;
+  w.__scrollDimBound = true;
+  const mq = window.matchMedia(MOBILE_MQ);
+  let lastY = window.scrollY;
+  let ticking = false;
+
+  const update = () => {
+    ticking = false;
+    const y = window.scrollY;
+    const body = document.body;
+    if (!mq.matches || y < 120) {
+      body.classList.remove('scroll-dim');
+    } else if (y > lastY + 4) {
+      body.classList.add('scroll-dim');
+    } else if (y < lastY - 4) {
+      body.classList.remove('scroll-dim');
+    }
+    lastY = y;
+  };
+
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    },
+    { passive: true },
+  );
+  mq.addEventListener('change', update);
+  document.addEventListener('astro:page-load', () => {
+    lastY = window.scrollY;
+    document.body.classList.remove('scroll-dim');
+  });
+}
+
+initScrollDim();

@@ -68,6 +68,10 @@ const jsonLd = {
     <script is:inline>
       (function () {
         var d = document.documentElement;
+        // Al navegar, client-nav trae el <head> nuevo y este script vuelve a
+        // correr. Si las fuentes ya están, no hay nada que esperar: sin este
+        // corte ocultaba el contenido hasta el seguro de 8 s.
+        if (d.classList.contains('fonts-ready')) return;
         d.classList.add('fonts-pending');
         var shown = false;
         function show() {

@@ -135,18 +135,23 @@ function isCurrent(href: string) {
     .site-brand__text {
       display: flex;
       min-width: 0;
-    }
-
-    .site-brand__text {
       height: auto;
+      padding-block: 0;
     }
 
+    /*
+     * Dos líneas en móvil: en una sola se cortaba con puntos suspensivos.
+     * min-content toma el ancho de la palabra más larga, así «Del jabalí»
+     * (o «Wild boar» en inglés) cae completo a su propia línea.
+     */
     .site-brand__name {
+      width: min-content;
       max-width: none;
-      font-size: 1.2rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size: 1.22rem;
+      line-height: 0.88;
+      white-space: normal;
+      /* El body usa overflow-wrap: anywhere; con eso min-content sería una letra. */
+      overflow-wrap: normal;
     }
 
     /* Solo el nombre; el place ocupa demasiado en 375px. */
