@@ -8,7 +8,10 @@ publicar ni esperar un deploy.
 
 1. Abre el enlace **Editar contenido** que está al final de cualquier página del sitio, o entra
    directo a `https://pocketbase-production-6f98.up.railway.app/_/`.
-2. Inicia sesión con el correo y la contraseña que te entregó el equipo técnico.
+2. Inicia sesión con el correo y la contraseña que te entregó el equipo técnico. No la cambies desde el panel:
+   el servidor la restablece desde su configuración en cada reinicio. Si hay que cambiarla, pídeselo a Pablo.
+
+> Versión con un botón «Editar» por cada texto: https://claude.ai/artifact/3TuUyRiJMzRKVjACGg3zgo
 3. A la izquierda verás la lista de **colecciones** (`paginas`, `cuaderno`, `equipo`…). Cada una
    es una tabla de registros.
 
