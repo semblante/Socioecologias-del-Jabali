@@ -2,7 +2,7 @@
 
 **Qué es:** Sitio bilingüe del proyecto Fondecyt Regular 1260739 «Socioecologías del jabalí», liderado por Manuel Tironi (PUC), sobre el jabalí como zona de contacto socioecológica en el peweñantu de la Araucanía andina, en colaboración con la Asociación Indígena Winkulmapu. Astro 5 con SSR y PocketBase como CMS.
 **Etapa:** producción (sitio live en `https://ecologiasdeljabali.cl`; cliente aún no valida contenido y `heroMedia`).
-**Actualizado:** 2026-09-24
+**Actualizado:** 2026-09-25
 
 > Este repo **ya no usa Keystatic ni Cloudflare**. Migró a PocketBase en julio de 2026 y el
 > deploy es Railway. El legacy se borró el 2026-08-03.
@@ -25,6 +25,10 @@
 - Assets OG: `/brand/icon-512.png` y `/brand/icon-180.png`.
 - Dominio `ecologiasdeljabali.cl` operativo en producción; HTTPS verificado con HTTP 200 el 2026-09-17. Railway queda como origen de despliegue.
 - Ajustes Tironi (desplegados 2026-09-24, commit `766176d`; PocketBase prod con `pb:schema` y `pb:seed --create-only`): portada con título display (Archivo condensada) y banda espectral; sello como marca de agua en «Sobre el proyecto»; «Territorio de trabajo» a todo el ancho con polígono aproximado de zona (`public/geo/zona-trabajo.geojson`); franja de imágenes desde `galeria` (5 fotos de relleno de Wikimedia Commons con crédito); marca CEDEL recortada de `jabali2.mp4` y franja Bushnell de `jabali1.mp4`; textos de portada y territorio movidos a PocketBase (`paginas` home `content`, nueva key `territorio`); `pb:seed -- --create-only`; tutorial en `docs/cliente.md`. Pasada transversal: encabezados de página con voz display, sistema de movimiento (menú, enlaces, filas, botones, cambio de página, entrada al scroll) y arreglo del espaciado de párrafos en `.prose`. Segunda pasada: sistema tipográfico cerrado (Archivo para títulos, Newsreader solo lectura), índice de integrantes en Equipo, relieve propio por vista con fundido, filtros y etiquetas sin pastilla. Bugs corregidos: al navegar con el menú las vistas llegaban sin su CSS (`client-nav.ts` no sincronizaba el `<head>`) y el footer quedaba invisible tras navegar (`reveal.ts`). Tercera pasada: carga sin salto de fuente con títulos letra a letra, header que se atenúa al tocar fondo, móvil con marca en dos líneas y header al 20 % al bajar, entrada fluorescente de títulos (interruptor `siteConfig.intro`: `flicker` | `sweep`), sello como marca de agua en el pie, acento del mapa en «Sobre el proyecto». Bug corregido: la mono nunca cargaba (el token pedía "Geist Mono" y la fuente se registra como "Geist Mono Variable"), todo el meta salía en Courier New.
+
+## JABALI-003 (local, sin publicar)
+
+2026-09-25, rama `jabali-003-idioma`. El selector de idioma del Cuaderno usa el slug real del `translationKey`. Un alias `/en/<slug-es>` redirige al slug inglés. Sin contraparte visible, el otro idioma va al índice del Cuaderno y no se anuncia como traducción. Verificación: `node --test src/lib/cuaderno-locale.test.ts` y `pnpm build`. No es un deploy.
 
 ## Por hacer (en orden)
 
