@@ -14,14 +14,16 @@ interface Props {
   tags?: string[];
   isFallback?: boolean;
   slug?: string;
+  langPaths?: { es: string; en: string };
+  seo?: { canonical: string; es: string | null; en: string | null };
 }
 
-const { title, description, locale, pubDate, tags = [], isFallback = false, slug } = Astro.props;
+const { title, description, locale, pubDate, tags = [], isFallback = false, slug, langPaths, seo } = Astro.props;
 const ui = getUi(locale);
 const homeLabel = locale === 'es' ? 'Inicio' : 'Home';
 ---
 
-<Base title={title} description={description} locale={locale}>
+<Base title={title} description={description} locale={locale} langPaths={langPaths} seo={seo}>
   <article class="section">
     <div class="container container--narrow">
       <Breadcrumbs

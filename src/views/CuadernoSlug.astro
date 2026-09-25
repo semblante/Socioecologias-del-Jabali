@@ -2,13 +2,17 @@
 import Article from '../layouts/Article.astro';
 import MarkdownBody from '../components/MarkdownBody.astro';
 import type { Locale } from '../config/site';
+import { siteConfig } from '../config/site';
 import { getBitacoraBySlug } from '../lib/content';
 import { localizedPath } from '../i18n/routing';
 
 interface Props { locale: Locale; slug: string }
 const { locale, slug } = Astro.props;
-const { entry, isFallback } = await getBitacoraBySlug(slug, locale);
-if (!entry) return Astro.redirect(localizedPath('/cuaderno', locale));
+const resolved = await getBitacoraBySlug(slug, locale);
+if (resolved.redirectTo) return Astro.redirect(resolved.redirectTo);
+if (!resolved.entry) return Astro.redirect(localizedPath('/cuaderno', locale));
+const { entry, isFallback, langPaths: paths, seo } = resolved;
+const abs = (path: string | null) => (path ? new URL(path, siteConfig.url).href : null);
 ---
 
 <Article
@@ -19,6 +23,12 @@ if (!entry) return Astro.redirect(localizedPath('/cuaderno', locale));
   tags={entry.data.tags}
   isFallback={isFallback}
   slug={slug}
+  langPaths={paths}
+  seo={{
+    canonical: new URL(seo.canonical, siteConfig.url).href,
+    es: abs(seo.es),
+    en: abs(seo.en),
+  }}
 >
   <MarkdownBody content={entry.content} />
 </Article>

@@ -1,4 +1,5 @@
 import { swapFunctions } from 'astro:transitions/client';
+import { metaAfterNavigation, nextLangHrefs } from '../lib/cuaderno-locale';
 import { surfaceFromPath, topoFromPath, topoStyle } from '../lib/surface';
 
 /** Funde el relieve de fondo hacia el de la vista nueva (dissolve de ~1,4 s). */
@@ -62,13 +63,6 @@ export function syncShellState(path = window.location.pathname) {
   });
 
   const without = path.replace(/^\/en(?=\/|$)/, '') || '/';
-  const esPath = without === '/' ? '/' : without;
-  const enPath = without === '/' ? '/en/' : `/en${without}`;
-  document.querySelector('.lang-switch a[hreflang="es"]')?.setAttribute('href', esPath);
-  document.querySelector('.lang-switch a[hreflang="en"]')?.setAttribute('href', enPath);
-
-  // El swap solo reemplaza #main: hay que sincronizar is-home o el header
-  // queda fixed/claro y se monta sobre títulos / menú ilegible.
   const isHome = without === '/' || without === '';
   document.body.classList.toggle('is-home', isHome);
   if (!isHome) document.body.classList.remove('is-scrolled');
@@ -80,7 +74,16 @@ export function syncShellState(path = window.location.pathname) {
   document.documentElement.lang = isEn ? 'en' : 'es';
 }
 
-function updateMeta(newDoc: Document) {
+function updateMeta(
+  newDoc: Document,
+  incoming = metaAfterNavigation({
+    canonical: newDoc.querySelector('link[rel="canonical"]')?.getAttribute('href') ?? null,
+    alternates: [...newDoc.querySelectorAll('link[rel="alternate"]')].map((el) => ({
+      hreflang: el.getAttribute('hreflang') ?? '',
+      href: el.getAttribute('href') ?? '',
+    })),
+  }),
+) {
   document.title = newDoc.title;
 
   const pairs: Array<[string, string]> = [
@@ -88,7 +91,6 @@ function updateMeta(newDoc: Document) {
     ['meta[property="og:title"]', 'content'],
     ['meta[property="og:description"]', 'content'],
     ['meta[property="og:url"]', 'content'],
-    ['link[rel="canonical"]', 'href'],
   ];
 
   for (const [selector, attr] of pairs) {
@@ -96,6 +98,18 @@ function updateMeta(newDoc: Document) {
     const current = document.querySelector(selector);
     const value = next?.getAttribute(attr);
     if (current && value) current.setAttribute(attr, value);
+  }
+
+  if (incoming.canonical) {
+    document.querySelector('link[rel="canonical"]')?.setAttribute('href', incoming.canonical);
+  }
+  document.head.querySelectorAll('link[rel="alternate"]').forEach((node) => node.remove());
+  for (const alt of incoming.alternates) {
+    const link = document.createElement('link');
+    link.rel = 'alternate';
+    if (alt.hreflang) link.hreflang = alt.hreflang;
+    link.href = alt.href;
+    document.head.appendChild(link);
   }
 }
 
@@ -108,18 +122,31 @@ function swapRegion(selector: string, newDoc: Document) {
 function swapMainOnly(newDoc: Document) {
   const nextPath = pathFromDoc(newDoc);
   const localeChanged = localeOf(window.location.pathname) !== localeOf(nextPath);
+  const es = newDoc.querySelector('.lang-switch a[hreflang="es"]')?.getAttribute('href') ?? '';
+  const en = newDoc.querySelector('.lang-switch a[hreflang="en"]')?.getAttribute('href') ?? '';
+  const incoming = metaAfterNavigation({
+    canonical: newDoc.querySelector('link[rel="canonical"]')?.getAttribute('href') ?? null,
+    alternates: [...newDoc.querySelectorAll('link[rel="alternate"]')].map((el) => ({
+      hreflang: el.getAttribute('hreflang') ?? '',
+      href: el.getAttribute('href') ?? '',
+    })),
+  });
 
   // El CSS propio de cada vista viaja en el <head> del documento nuevo: sin
   // esto, la página llegaba sin estilos al navegar con el menú. Astro conserva
   // las hojas que ya están y solo agrega o quita las distintas.
   swapFunctions.swapHeadElements(newDoc);
   swapRegion('#main', newDoc);
-  updateMeta(newDoc);
+  updateMeta(newDoc, incoming);
 
   if (localeChanged) {
     swapRegion('.site-header', newDoc);
     swapRegion('.site-footer', newDoc);
   }
+
+  const hrefs = nextLangHrefs(es && en ? { es, en } : null, nextPath);
+  document.querySelector('.lang-switch a[hreflang="es"]')?.setAttribute('href', hrefs.es);
+  document.querySelector('.lang-switch a[hreflang="en"]')?.setAttribute('href', hrefs.en);
 
   syncShellState(nextPath);
 }
