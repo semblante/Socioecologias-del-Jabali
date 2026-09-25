@@ -16,9 +16,11 @@ interface Props {
   description?: string;
   locale?: Locale;
   ogImage?: string;
+  langPaths?: { es: string; en: string };
+  seo?: { canonical: string; es: string | null; en: string | null };
 }
 
-const { title, description, locale: propLocale, ogImage } = Astro.props;
+const { title, description, locale: propLocale, ogImage, langPaths, seo } = Astro.props;
 const locale = propLocale ?? getLocaleFromUrl(Astro.url);
 const ui = getUi(locale);
 const pageTitle = title ? `${title} · ${siteConfig.name}` : siteConfig.name;
@@ -27,9 +29,12 @@ const pageDescription =
   (locale === 'es'
     ? 'Investigación Fondecyt sobre socioecologías del jabalí en la Araucanía Andina como zona de contacto entre mundos humanos y no humanos.'
     : 'Fondecyt research on wild boar socioecologies in the Andean Araucanía as a contact zone between human and nonhuman worlds.');
-const canonical = new URL(Astro.url.pathname, siteConfig.url).href;
-const ogImageUrl = new URL(ogImage ?? '/brand/icon-512.png', siteConfig.url).href;
 const pathSansLocale = Astro.url.pathname.replace(/^\/en(?=\/|$)/, '') || '/';
+const canonical = new URL(Astro.url.pathname, siteConfig.url).href;
+const canonicalHref = seo?.canonical ?? canonical;
+const altEs = seo ? seo.es : new URL(localizedPath(pathSansLocale, 'es'), siteConfig.url).href;
+const altEn = seo ? seo.en : new URL(localizedPath(pathSansLocale, 'en'), siteConfig.url).href;
+const ogImageUrl = new URL(ogImage ?? '/brand/icon-512.png', siteConfig.url).href;
 const isHome = pathSansLocale === '/' || pathSansLocale === '';
 const surface = surfaceFromPath(Astro.url.pathname);
 const topo = topoFromPath(Astro.url.pathname);
@@ -101,17 +106,17 @@ const jsonLd = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={pageDescription} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="es" href={new URL(localizedPath(pathSansLocale, 'es'), siteConfig.url).href} />
-    <link rel="alternate" hreflang="en" href={new URL(localizedPath(pathSansLocale, 'en'), siteConfig.url).href} />
-    <link rel="alternate" hreflang="x-default" href={new URL(localizedPath(pathSansLocale, 'es'), siteConfig.url).href} />
+    <link rel="canonical" href={canonicalHref} />
+    {altEs && <link rel="alternate" hreflang="es" href={altEs} />}
+    {altEn && <link rel="alternate" hreflang="en" href={altEn} />}
+    <link rel="alternate" hreflang="x-default" href={altEs || canonicalHref} />
     <link rel="apple-touch-icon" href="/brand/icon-180.png" />
     <meta property="og:locale" content={locale === 'es' ? 'es_CL' : 'en_US'} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
     <meta property="og:site_name" content={siteConfig.name} />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonical} />
+    <meta property="og:url" content={canonicalHref} />
     <meta property="og:image" content={ogImageUrl} />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content={pageTitle} />
@@ -127,7 +132,7 @@ const jsonLd = {
     <div class="site-topo is-active" aria-hidden="true" data-topo-layer data-topo-key={topo.key} style={topoStyle(topo)}></div>
     <div class="site-topo" aria-hidden="true" data-topo-layer></div>
     <a class="skip-link" href="#main">{ui.skipToContent}</a>
-    <Header locale={locale} currentPath={Astro.url.pathname} />
+    <Header locale={locale} currentPath={Astro.url.pathname} langPaths={langPaths} />
     <main id="main">
       <slot />
     </main>

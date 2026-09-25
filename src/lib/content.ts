@@ -1,5 +1,6 @@
 import type { Locale } from '../config/site';
 import { fileUrl, getPb } from './pb';
+import { langPaths, resolveCuaderno, seoPaths, type CuadernoRef } from './cuaderno-locale';
 
 export type ContentRecord<T extends Record<string, unknown> = Record<string, unknown>> = {
   id: string;
@@ -79,21 +80,23 @@ export async function getBitacoraBySlug(slug: string, locale: Locale) {
   const pb = getPb();
   const rows = await listAll('cuaderno');
   const all = rows.map((r) => mapCuaderno(pb, r));
-
-  const entry = all.find((e) => e.data.locale === locale && e.slug === slug && isVisible(e.data.status));
-  if (entry) return { entry, isFallback: false };
-
-  if (locale === 'en') {
-    const esEntry = all.find((e) => e.data.locale === 'es' && e.slug === slug && isVisible(e.data.status));
-    if (!esEntry) return { entry: null, isFallback: false };
-    const enEntry = all.find(
-      (e) => e.data.locale === 'en' && e.data.translationKey === esEntry.data.translationKey && isVisible(e.data.status),
-    );
-    if (enEntry) return { entry: enEntry, isFallback: false };
-    return { entry: esEntry, isFallback: true };
-  }
-
-  return { entry: null, isFallback: false };
+  const refs: CuadernoRef[] = all.map((entry) => ({
+    id: entry.id,
+    slug: entry.slug,
+    locale: entry.data.locale,
+    translationKey: entry.data.translationKey,
+    status: entry.data.status,
+  }));
+  const resolved = resolveCuaderno(refs, slug, locale);
+  const entry = resolved.entry ? all.find((item) => item.id === resolved.entry?.id) ?? null : null;
+  return {
+    entry,
+    isFallback: resolved.isFallback,
+    redirectTo: resolved.redirectTo,
+    ambiguous: resolved.ambiguous,
+    langPaths: langPaths(resolved),
+    seo: seoPaths(resolved),
+  };
 }
 
 export async function getEquipo(locale: Locale) {

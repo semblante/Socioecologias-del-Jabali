@@ -4,9 +4,11 @@ import type { Locale } from '../../config/site';
 interface Props {
   locale: Locale;
   currentPath: string;
+  esPath?: string;
+  enPath?: string;
 }
 
-const { locale, currentPath } = Astro.props;
+const { locale, currentPath, esPath: esOverride, enPath: enOverride } = Astro.props;
 
 function pathFor(target: 'es' | 'en') {
   const without = currentPath.replace(/^\/en(?=\/|$)/, '') || '/';
@@ -15,8 +17,8 @@ function pathFor(target: 'es' | 'en') {
   return `/en${without}`;
 }
 
-const esPath = pathFor('es');
-const enPath = pathFor('en');
+const esPath = esOverride ?? pathFor('es');
+const enPath = enOverride ?? pathFor('en');
 ---
 
 <div class="lang-switch" role="navigation" aria-label={locale === 'es' ? 'Idioma' : 'Language'}>

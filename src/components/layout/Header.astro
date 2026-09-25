@@ -9,9 +9,10 @@ import LangSwitch from './LangSwitch.astro';
 interface Props {
   locale: Locale;
   currentPath: string;
+  langPaths?: { es: string; en: string };
 }
 
-const { locale, currentPath } = Astro.props;
+const { locale, currentPath, langPaths } = Astro.props;
 const ui = getUi(locale);
 const menuLabel = locale === 'es' ? 'Abrir menú de navegación' : 'Open navigation menu';
 const brand = siteConfig.nameShort[locale];
@@ -55,7 +56,7 @@ function isCurrent(href: string) {
     </nav>
 
     <div class="site-header__end">
-      <LangSwitch locale={locale} currentPath={currentPath} />
+      <LangSwitch locale={locale} currentPath={currentPath} esPath={langPaths?.es} enPath={langPaths?.en} />
       <button
         type="button"
         class="menu-toggle"
