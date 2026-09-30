@@ -1,0 +1,30 @@
+---
+export const prerender = true;
+
+import guia from '../../docs/cliente.md?raw';
+import Base from '../layouts/Base.astro';
+import MarkdownBody from '../components/MarkdownBody.astro';
+import { siteConfig } from '../config/site';
+
+const title = 'Guía para editar el sitio';
+const body = guia.replace(/^# .+\r?\n+/, '');
+const url = new URL('/guia', siteConfig.url).href;
+---
+
+<Base
+  title={title}
+  description="Cómo editar los textos del sitio desde el panel, sin programar."
+  locale="es"
+  noindex
+  langPaths={{ es: '/guia', en: '/guia' }}
+  seo={{ canonical: url, es: url, en: null }}
+>
+  <div class="section">
+    <div class="container container--narrow">
+      <header class="page-header">
+        <h1 class="page-header__title">{title}</h1>
+      </header>
+      <MarkdownBody content={body} />
+    </div>
+  </div>
+</Base>

@@ -9,7 +9,13 @@ import react from '@astrojs/react';
 export default defineConfig({
   site: 'https://ecologiasdeljabali.cl',
   adapter: node({ mode: 'standalone' }),
-  integrations: [mdx(), sitemap(), react()],
+  integrations: [
+    mdx(),
+    sitemap({
+      filter: (page) => !page.includes('/guia'),
+    }),
+    react(),
+  ],
   i18n: {
     defaultLocale: 'es',
     locales: ['es', 'en'],

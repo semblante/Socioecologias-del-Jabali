@@ -36,6 +36,7 @@ const ui = {
     footer: {
       institutions: 'Instituciones',
       editContent: 'Editar contenido',
+      editGuide: 'Cómo editar',
       navigation: 'Navegación',
     },
     equipo: {
@@ -93,6 +94,7 @@ const ui = {
     footer: {
       institutions: 'Institutions',
       editContent: 'Edit content',
+      editGuide: 'How to edit',
       navigation: 'Navigation',
     },
     equipo: {

@@ -63,6 +63,8 @@ const navLinks = [
   {showCmsLink && (
     <div class="container site-footer__meta">
       <hr class="rule-line" />
+      <a href="/guia" class="site-footer__edit">{ui.footer.editGuide}</a>
+      <span aria-hidden="true"> · </span>
       <a href={`${cmsUrl}/_/`} class="site-footer__edit" rel="nofollow">{ui.footer.editContent}</a>
     </div>
   )}

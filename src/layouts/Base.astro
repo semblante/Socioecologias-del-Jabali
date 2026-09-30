@@ -18,9 +18,10 @@ interface Props {
   ogImage?: string;
   langPaths?: { es: string; en: string };
   seo?: { canonical: string; es: string | null; en: string | null };
+  noindex?: boolean;
 }
 
-const { title, description, locale: propLocale, ogImage, langPaths, seo } = Astro.props;
+const { title, description, locale: propLocale, ogImage, langPaths, seo, noindex } = Astro.props;
 const locale = propLocale ?? getLocaleFromUrl(Astro.url);
 const ui = getUi(locale);
 const pageTitle = title ? `${title} · ${siteConfig.name}` : siteConfig.name;
@@ -105,6 +106,7 @@ const jsonLd = {
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={pageDescription} />
+    {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="canonical" href={canonicalHref} />
     {altEs && <link rel="alternate" hreflang="es" href={altEs} />}
