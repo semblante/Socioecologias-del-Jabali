@@ -90,9 +90,6 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
         <span class="hero__coords">Peweñantu · 39°34′S 71°35′W</span>
       </p>
       <h1 class="hero__title">{title}</h1>
-      <div class="hero__spectrum" aria-hidden="true">
-        {[1, 2, 3, 4, 5, 6].map((n) => <span style={`--seg: var(--spectrum-${n})`}></span>)}
-      </div>
       <div class="hero__sub">
         {tagline && <p class="hero__tagline">{tagline}</p>}
         <p class="hero__intro" set:html={textWithSpecies(intro)} />
@@ -549,14 +546,9 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
 
 
   /*
-   * Portada como carátula: un campo negro, el título a todo el ancho en
-   * grotesca condensada y un único hilo espectral. Rigor de retícula, sin
-   * adornos: la fuerza la ponen la escala y el contraste.
+   * Portada como carátula: un campo negro y el título a todo el ancho en
+   * grotesca condensada. La fuerza la ponen la escala y el contraste.
    */
-  .hero__copy {
-    animation: hero-rise 900ms var(--ease-organic, cubic-bezier(0.22, 0.61, 0.36, 1)) both;
-  }
-
   .hero__meta {
     display: flex;
     flex-wrap: wrap;
@@ -580,12 +572,12 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
 
   .hero__title {
     /* Aire mínimo con la fila meta cuando el contenido llena el hero. */
-    margin: clamp(1.5rem, 4vh, 3rem) 0 0;
+    margin: clamp(1.5rem, 4vh, 3rem) 0 clamp(1.5rem, 2.4vw, 2rem);
     font-family: var(--font-display, "Archivo Variable", "Arial Narrow", sans-serif);
     font-stretch: 62%;
-    font-weight: 800;
-    font-size: clamp(3rem, 14.2vw, 13rem);
-    line-height: 0.84;
+    font-weight: 600;
+    font-size: clamp(3rem, 10.65vw, 9.75rem);
+    line-height: 0.94;
     letter-spacing: -0.012em;
     text-transform: uppercase;
     text-wrap: balance;
@@ -598,35 +590,6 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
     padding-top: 0.08em;
     text-shadow: 0 2px 30px rgba(7, 7, 8, 0.35);
   }
-
-  /* Seis segmentos: en modo 'flicker' cada uno se enciende por su cuenta. */
-  .hero__spectrum {
-    display: flex;
-    height: clamp(6px, 0.9vw, 12px);
-    margin-block: clamp(1rem, 2.4vw, 1.75rem);
-    transform-origin: left center;
-  }
-
-  .hero__spectrum > span {
-    flex: 1;
-    background: var(--seg);
-  }
-
-  :global(html[data-intro='sweep']) .hero__spectrum {
-    animation: hero-spectrum 1400ms 250ms var(--ease-organic, cubic-bezier(0.22, 0.61, 0.36, 1)) both;
-  }
-
-  :global(html[data-intro='flicker']) .hero__spectrum > span {
-    animation: flick-b 1100ms steps(1, end) both;
-  }
-
-  /* Orden de encendido desparejo, como una fila de tubos. */
-  :global(html[data-intro='flicker']) .hero__spectrum > span:nth-child(1) { animation-delay: 520ms; }
-  :global(html[data-intro='flicker']) .hero__spectrum > span:nth-child(2) { animation-delay: 180ms; animation-name: flick-c; }
-  :global(html[data-intro='flicker']) .hero__spectrum > span:nth-child(3) { animation-delay: 760ms; animation-name: flick-a; }
-  :global(html[data-intro='flicker']) .hero__spectrum > span:nth-child(4) { animation-delay: 340ms; }
-  :global(html[data-intro='flicker']) .hero__spectrum > span:nth-child(5) { animation-delay: 900ms; animation-name: flick-c; }
-  :global(html[data-intro='flicker']) .hero__spectrum > span:nth-child(6) { animation-delay: 60ms; animation-name: flick-a; }
 
   .hero__sub {
     display: grid;
@@ -710,33 +673,7 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
     color: var(--hero-ink);
   }
 
-  @keyframes hero-spectrum {
-    from {
-      transform: scaleX(0);
-    }
-    to {
-      transform: scaleX(1);
-    }
-  }
-
-  @keyframes hero-rise {
-    from {
-      opacity: 0;
-      transform: translateY(1.15rem);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .hero__copy,
-    :global(html[data-intro]) .hero__spectrum,
-    :global(html[data-intro]) .hero__spectrum > span {
-      animation: none;
-    }
-
     .hero__media-stack,
     .hero__media--video,
     .hero__wash {
@@ -791,7 +728,7 @@ const hasPlaylist = mediaKind === 'video' && heroSources.length > 1;
     }
 
     .hero__title {
-      font-size: clamp(2.4rem, 13.4vw, 4.6rem);
+      font-size: clamp(2.4rem, 12vw, 4.3rem);
     }
 
     .hero__sub {

@@ -1286,8 +1286,7 @@ main {
 .pub-filter-btn::after,
 .journal__item::before,
 .notes__item::before,
-.page-header::before,
-.hero__spectrum {
+.page-header::before {
   will-change: transform;
   backface-visibility: hidden;
 }
@@ -1314,7 +1313,7 @@ html.fonts-pending :is(.site-header__inner, main > :not(.hero), .hero__inner, .s
  * segmentos terminaban de parpadear mientras el texto seguía oculto.
  * Sin pseudo-elementos dentro de :is(): invalidarían toda la regla.
  */
-html.fonts-pending :is(.hero__copy, .hero__spectrum, .hero__spectrum > span, .split-ch) {
+html.fonts-pending .split-ch {
   animation-play-state: paused !important;
 }
 

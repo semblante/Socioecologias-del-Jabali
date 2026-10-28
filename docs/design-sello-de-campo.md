@@ -38,15 +38,14 @@ resuelto y «Territorio de trabajo» se veía chico y corrido. La referencia pas
 de carátula de fines de los 70 (Hipgnosis, *Dark Side of the Moon*): campo negro, escala enorme,
 retícula estricta y un solo gesto de color. No es psicodelia redondeada sesentera.
 
-- **Display:** Archivo Variable a `font-stretch: 62%`, peso 800, versales (`--font-display`).
-  Solo para el título del hero y los títulos de sección de portada (`.display-title`). Newsreader
-  sigue siendo la voz de lectura; Instrument Sans y Geist Mono no cambian.
-- **Banda espectral:** la paleta de marca refractada en 6 franjas (`--spectrum-x`). Aparece como
-  hilo bajo el título del hero y como marca corta de sección (`.section-mark`). Nunca como fondo
-  ni como degradado.
+- **Display:** Archivo Variable a `font-stretch: 62%`, versales (`--font-display`). El título del
+  hero usa peso 600; títulos interiores y de sección mantienen peso 800. Newsreader sigue siendo
+  la voz de lectura; Instrument Sans y Geist Mono no cambian.
+- **Marca espectral:** la paleta de marca (`--spectrum-x`) aparece en marcas cortas de sección
+  (`.section-mark`) y en los hilos del sitio. La portada ya no tiene banda bajo el título.
 - **Sello:** en «Sobre el proyecto» funciona como marca de agua (opacidad ~7 %) detrás del texto.
 - **Territorio:** título display a todo el ancho y mapa a todo el ancho con el polígono de la zona
-  de trabajo (`public/geo/zona-trabajo.geojson`, hoy aproximado hasta que llegue el KMZ).
+  de trabajo del KMZ de Manuel (`public/geo/zona-trabajo.geojson`), sin simplificar y con el hueco.
 - **Imagen:** franja «Registro de campo» en portada, alimentada por `galeria`.
 
 ### Interiores y movimiento (2026-09-24)
@@ -84,10 +83,10 @@ Territorio usan el mapa real; el resto, curvas de nivel generadas con `node scri
 ### Carga y detalles (2026-09-24)
 
 - **Carga inicial:** las fuentes críticas se precargan y un guardián (`Base.astro`) oculta el texto
-  hasta que cargan, sin salto de fuente (tope de 1,2 s tras el parseo). Entrada de títulos e hilos
-  espectrales según `siteConfig.intro` (`src/config/site.ts`): `flicker` (vigente) enciende cada letra y
-  cada segmento del espectro como tubo fluorescente, a tiempos y ritmos distintos; `sweep` es el barrido
-  anterior, de izquierda a derecha. Volver es cambiar esa palabra (`src/scripts/letters.ts`).
+  hasta que cargan, sin salto de fuente (tope de 1,2 s tras el parseo). Los encabezados
+  interiores conservan su entrada según `siteConfig.intro` (`src/config/site.ts`): `flicker` los
+  enciende letra a letra y `sweep` los barre de izquierda a derecha. El título del hero aparece
+  completo, sin entrada letra a letra.
 - **Header:** 4,5 rem. En portada, la regla de la fila Fondecyt/coordenadas va pegada bajo el header. Marca en bloque a la altura del sello: nombre en display y «Andes del Sur» en
   mono, alineado a la izquierda. Al tocar fondo, su contenido baja al 20 % (el footer ya repite la marca).
 - **Footer:** sello como marca de agua a la derecha del título, contenido en su columna.

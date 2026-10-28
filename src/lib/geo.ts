@@ -7,11 +7,11 @@ export function parseCoords(raw?: string): { lat: number; lng: number } | null {
 }
 
 /**
- * Zona de trabajo dibujada sobre el mapa. Cuando llegue el KMZ oficial:
- * convertirlo a GeoJSON (p. ej. en geojson.io), reemplazar el archivo y
- * poner `approximate: false` para quitar el «aprox.» de la leyenda.
+ * Zona de trabajo dibujada sobre el mapa. Polígono del KMZ de Tironi
+ * (gobernanza, Parque Nacional Villarrica), convertido sin simplificar y con
+ * su anillo interior conservado. `approximate: false` quita el «aprox.» de la leyenda.
  */
 export const WORK_ZONE = {
   url: '/geo/zona-trabajo.geojson',
-  approximate: true,
+  approximate: false,
 } as const;

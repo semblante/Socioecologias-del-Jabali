@@ -1,6 +1,8 @@
 /**
- * Entrada letra por letra de los títulos display. Dos modos, según
- * siteConfig.intro (queda en <html data-intro>):
+ * Entrada letra por letra de los títulos display interiores
+ * (`.page-header__title`). El título de portada (`.hero__title`) queda fuera
+ * y se muestra completo. Dos modos, según siteConfig.intro (queda en
+ * <html data-intro>):
  *
  * - 'flicker': cada letra se enciende como tubo fluorescente, con retraso,
  *   ritmo (flick-a/b/c) y duración propios, al azar.
@@ -10,7 +12,7 @@
  *
  * Mientras las fuentes cargan, la animación queda en pausa (html.fonts-pending).
  */
-const SELECTOR = '.hero__title, .page-header__title';
+const SELECTOR = '.page-header__title';
 // Pausa inicial: deja terminar el fundido del bloque antes del barrido.
 const LEAD_MS = 240;
 // Duración total del barrido de derecha a izquierda.
