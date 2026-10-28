@@ -61,6 +61,6 @@ function initReveal() {
   });
 }
 
-// Igual que letters.ts: el evento puede llegar antes que este módulo.
+// El evento puede llegar antes que este módulo.
 document.addEventListener('astro:page-load', initReveal);
 initReveal();

@@ -1306,91 +1306,23 @@ html.fonts-pending :is(.site-header__inner, main > :not(.hero), .hero__inner, .s
   opacity: 0;
 }
 
-/* Las animaciones de entrada esperan a que el texto sea visible. */
-/*
- * La pausa debe ganarle a cualquier regla de animación: el shorthand
- * `animation:` reinicia play-state a running y, con más especificidad, los
- * segmentos terminaban de parpadear mientras el texto seguía oculto.
- * Sin pseudo-elementos dentro de :is(): invalidarían toda la regla.
- */
-html.fonts-pending .split-ch {
-  animation-play-state: paused !important;
-}
-
+/* El hilo de color espera junto al título a que terminen de cargar las fuentes. */
 html.fonts-pending .page-header::before {
   animation-play-state: paused !important;
 }
 
-.split-word {
-  display: inline-block;
-  white-space: nowrap;
+/* El encabezado interior aparece completo en un solo fundido. */
+.page-header__title--entering {
+  animation: page-header-title-in 650ms ease-out both;
 }
 
-.split-ch {
-  display: inline-block;
-}
-
-/* Modo 'sweep' (config: siteConfig.intro): barrido de izquierda a derecha. */
-html[data-intro="sweep"] .split-ch {
-  animation: split-ch-in 760ms var(--ease-organic) both;
-  animation-delay: var(--ch-delay, 0ms);
-}
-
-@keyframes split-ch-in {
+@keyframes page-header-title-in {
   from {
     opacity: 0;
-    transform: translate3d(-0.42em, 0, 0);
   }
-}
-
-/*
- * Modo 'flicker': cada letra se enciende como tubo fluorescente, con su
- * propio retraso, ritmo y duración (letters.ts). steps(1) da cortes secos:
- * el tubo no se desvanece, parpadea.
- */
-html[data-intro="flicker"] .split-ch {
-  animation-name: var(--ch-flick, flick-a);
-  animation-duration: var(--ch-dur, 900ms);
-  animation-delay: var(--ch-delay, 0ms);
-  animation-timing-function: steps(1, end);
-  animation-fill-mode: both;
-}
-
-/* A: un destello, se apaga, zumba dos veces y queda. */
-@keyframes flick-a {
-  0% { opacity: 0; }
-  7% { opacity: 0.85; }
-  10% { opacity: 0.05; }
-  26% { opacity: 0.6; }
-  29% { opacity: 0; }
-  52% { opacity: 1; }
-  56% { opacity: 0.3; }
-  61% { opacity: 1; }
-  100% { opacity: 1; }
-}
-
-/* B: arranque lento de tubo frío, con un tartamudeo al final. */
-@keyframes flick-b {
-  0% { opacity: 0; }
-  18% { opacity: 0.35; }
-  21% { opacity: 0; }
-  40% { opacity: 0.7; }
-  43% { opacity: 0.1; }
-  70% { opacity: 1; }
-  74% { opacity: 0.45; }
-  78% { opacity: 1; }
-  100% { opacity: 1; }
-}
-
-/* C: doble chispazo rápido y enciende. */
-@keyframes flick-c {
-  0% { opacity: 0; }
-  12% { opacity: 1; }
-  15% { opacity: 0; }
-  20% { opacity: 1; }
-  23% { opacity: 0; }
-  46% { opacity: 1; }
-  100% { opacity: 1; }
+  to {
+    opacity: 1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1398,7 +1330,7 @@ html[data-intro="flicker"] .split-ch {
     opacity: 1;
   }
 
-  html[data-intro] .split-ch {
+  .page-header__title--entering {
     animation: none;
   }
 }

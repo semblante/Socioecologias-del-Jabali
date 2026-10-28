@@ -83,10 +83,9 @@ Territorio usan el mapa real; el resto, curvas de nivel generadas con `node scri
 ### Carga y detalles (2026-09-24)
 
 - **Carga inicial:** las fuentes críticas se precargan y un guardián (`Base.astro`) oculta el texto
-  hasta que cargan, sin salto de fuente (tope de 1,2 s tras el parseo). Los encabezados
-  interiores conservan su entrada según `siteConfig.intro` (`src/config/site.ts`): `flicker` los
-  enciende letra a letra y `sweep` los barre de izquierda a derecha. El título del hero aparece
-  completo, sin entrada letra a letra.
+  hasta que cargan, sin salto de fuente (tope de 1,2 s tras el parseo). Los títulos interiores
+  aparecen completos con un fundido de opacidad de 650 ms, sin movimiento ni retrasos por letra;
+  el fundido comienza cuando terminan de cargar las fuentes. La portada también aparece completa.
 - **Header:** 4,5 rem. En portada, la regla de la fila Fondecyt/coordenadas va pegada bajo el header. Marca en bloque a la altura del sello: nombre en display y «Andes del Sur» en
   mono, alineado a la izquierda. Al tocar fondo, su contenido baja al 20 % (el footer ya repite la marca).
 - **Footer:** sello como marca de agua a la derecha del título, contenido en su columna.

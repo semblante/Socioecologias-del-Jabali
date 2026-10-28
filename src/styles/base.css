@@ -271,14 +271,8 @@ a:hover {
   }
 }
 
-/* Modo 'flicker' (siteConfig.intro): el hilo se enciende como tubo en vez de barrer. */
-html[data-intro="flicker"] .page-header::before {
-  animation: flick-b 1100ms steps(1, end) 200ms both;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .page-header::before,
-  html[data-intro="flicker"] .page-header::before {
+  .page-header::before {
     animation: none;
   }
 }

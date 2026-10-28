@@ -61,7 +61,7 @@ const jsonLd = {
 ---
 
 <!doctype html>
-<html lang={locale} data-intro={siteConfig.intro} transition:animate="none">
+<html lang={locale} transition:animate="none">
   <head>
     <meta charset="UTF-8" />
     <link rel="preload" href={archivoLatin} as="font" type="font/woff2" crossorigin />
@@ -85,12 +85,12 @@ const jsonLd = {
           shown = true;
           d.classList.remove('fonts-pending');
           d.classList.add('fonts-ready');
+          document.dispatchEvent(new Event('site:fonts-ready'));
         }
         // Seguro absoluto por si algo falla: el texto nunca queda oculto.
         setTimeout(show, 8000);
-        // Todo lo demás espera al fin del parseo: el cuerpo llega en streaming y
-        // los títulos se dividen en letras (letters.ts) justo antes de este evento.
-        // Mostrar antes dejaba ver el título entero, que luego se ocultaba.
+        // Todo lo demás espera al fin del parseo para evitar mostrar la fuente
+        // fallback. Los títulos completos se animan cuando se resuelve este guardián.
         document.addEventListener('DOMContentLoaded', function () {
           setTimeout(show, 1200);
           if (!document.fonts || !document.fonts.load) return show();
@@ -143,6 +143,6 @@ const jsonLd = {
     <script src="../scripts/site-nav.ts"></script>
     <script src="../scripts/pub-filters.ts"></script>
     <script src="../scripts/reveal.ts"></script>
-    <script src="../scripts/letters.ts"></script>
+    <script src="../scripts/title-fade.ts"></script>
   </body>
 </html>
