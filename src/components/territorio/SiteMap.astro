@@ -95,6 +95,7 @@ const hint =
         var coarse = window.matchMedia('(pointer: coarse)').matches;
         var map = L.map(frame, {
           scrollWheelZoom: false,
+          zoomSnap: 0.25,
           attributionControl: false,
           zoomControl: true,
           dragging: !coarse,
@@ -171,8 +172,24 @@ const hint =
                 },
               }).addTo(map);
               zone.bringToBack();
-              // Encuadre centrado en el polígono del KMZ.
-              map.fitBounds(zone.getBounds(), { padding: [32, 32], maxZoom: 12 });
+              // Encuadre centrado en el polígono del KMZ; se recalcula si el
+              // marco cambia de tamaño (entrada al scroll, resize, rotación).
+              var zoneBounds = zone.getBounds();
+              var fitZone = function () {
+                map.invalidateSize(false);
+                map.fitBounds(zoneBounds, { padding: [24, 24], maxZoom: 12, animate: false });
+              };
+              fitZone();
+              if (window.ResizeObserver) {
+                var lastW = frame.clientWidth;
+                var lastH = frame.clientHeight;
+                new ResizeObserver(function () {
+                  if (frame.clientWidth === lastW && frame.clientHeight === lastH) return;
+                  lastW = frame.clientWidth;
+                  lastH = frame.clientHeight;
+                  fitZone();
+                }).observe(frame);
+              }
             })
             .catch(function () {});
         }
