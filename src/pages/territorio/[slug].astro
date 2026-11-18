@@ -6,14 +6,14 @@ import MarkdownBody from '../../components/MarkdownBody.astro';
 import SiteMap from '../../components/territorio/SiteMap.astro';
 import { getSitioBySlug, getEntrySlug } from '../../lib/content';
 import { localizedPath } from '../../i18n/routing';
-import { parseCoords } from '../../lib/geo';
+import { parseCoords, SITE_MARKERS_VERIFIED } from '../../lib/geo';
 
 const locale = 'es' as const;
 const { slug } = Astro.params;
 const sitio = await getSitioBySlug(slug!, locale);
 if (!sitio) return Astro.redirect('/territorio');
 const coords = parseCoords(sitio.data.coordenadas);
-const markers = coords
+const markers = coords && SITE_MARKERS_VERIFIED
   ? [
       {
         id: getEntrySlug(sitio),
@@ -25,6 +25,8 @@ const markers = coords
       },
     ]
   : [];
+// Sin puntos verificados, el caso principal muestra la zona del KMZ; los secundarios, sin mapa.
+const showZoneOnly = !markers.length && sitio.data.tipo === 'principal';
 ---
 
 <Base title={sitio.data.nombre} description={sitio.data.aporte} locale={locale}>
@@ -37,9 +39,9 @@ const markers = coords
       </header>
     </div>
 
-    {markers.length > 0 && (
+    {(markers.length > 0 || showZoneOnly) && (
       <div class="container sitio-map">
-        <SiteMap markers={markers} locale={locale} zoom={11} height="min(36vh, 18rem)" />
+        <SiteMap markers={markers} locale={locale} zoom={11} height="min(36vh, 18rem)" showZone={showZoneOnly} />
       </div>
     )}
 

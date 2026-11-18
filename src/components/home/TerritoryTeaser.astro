@@ -3,7 +3,7 @@ import type { Locale } from '../../config/site';
 import SiteMap from '../territorio/SiteMap.astro';
 import { getSitios, getEntrySlug } from '../../lib/content';
 import { localizedPath } from '../../i18n/routing';
-import { parseCoords } from '../../lib/geo';
+import { parseCoords, SITE_MARKERS_VERIFIED } from '../../lib/geo';
 
 interface Props {
   locale: Locale;
@@ -14,7 +14,7 @@ interface Props {
 const { locale } = Astro.props;
 const sitios = await getSitios(locale);
 
-const markers = sitios
+const markers = (SITE_MARKERS_VERIFIED ? sitios : [])
   .map((s) => {
     const coords = parseCoords(s.data.coordenadas);
     if (!coords) return null;
@@ -38,8 +38,7 @@ const lead =
     : 'Four sites along the Andean Araucanía volcanic corridor, with Puesco-Lanín at the core and the Winkulmapu Agreement covering 17,000 hectares.');
 ---
 
-{markers.length > 0 && (
-  <section class="terra">
+<section class="terra">
     <div class="container">
       <header class="terra__head">
         <p class="section-mark">Peweñantu · Kurarewe</p>
@@ -54,7 +53,6 @@ const lead =
       <SiteMap markers={markers} locale={locale} height="min(62vh, 36rem)" showZone />
     </div>
   </section>
-)}
 
 <style>
   .terra {

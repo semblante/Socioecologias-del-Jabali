@@ -5,7 +5,7 @@ import SiteMap from '../components/territorio/SiteMap.astro';
 import type { Locale } from '../config/site';
 import { getSitios, getEntrySlug, getPage } from '../lib/content';
 import { localizedPath } from '../i18n/routing';
-import { parseCoords } from '../lib/geo';
+import { parseCoords, SITE_MARKERS_VERIFIED } from '../lib/geo';
 import { textWithSpecies } from '../lib/markdown';
 
 interface Props { locale: Locale }
@@ -32,7 +32,7 @@ const secondaryLead =
     ? 'Para complementar la información recolectada en este territorio, el proyecto incluye como casos secundarios a Quiñenahuin, Panqui y Palguín Alto. Estos sectores conforman el amplio peweñantu (bosque de pewen) de la zona cordillerana de Kurarewe, un territorio ecológico y político donde el Sus scrofa se ha asentado hace más de un siglo.'
     : 'To complement information gathered in this territory, the project includes Quiñenahuin, Panqui, and Palguín Alto as secondary cases. These sectors make up the broader peweñantu (pewen forest) of the Kurarewe cordillera —an ecological and political territory where Sus scrofa has been established for more than a century.');
 
-const markers = sitios
+const markers = (SITE_MARKERS_VERIFIED ? sitios : [])
   .map((s) => {
     const coords = parseCoords(s.data.coordenadas);
     if (!coords) return null;
@@ -60,11 +60,9 @@ const markers = sitios
       <p class="territorio__intro-body" set:html={textWithSpecies(intro)} />
     </div>
 
-    {markers.length > 0 && (
-      <div class="territorio__map container">
-        <SiteMap markers={markers} locale={locale} height="min(56vh, 32rem)" showZone />
-      </div>
-    )}
+    <div class="territorio__map container">
+      <SiteMap markers={markers} locale={locale} height="min(56vh, 32rem)" showZone />
+    </div>
 
     <div class="territorio__body container container--reading">
       {principal && (

@@ -41,7 +41,7 @@ publicar ni esperar un deploy.
 | Texto «Sobre el proyecto» | `paginas` → key `home` | `content` |
 | Texto del bloque «Territorio de trabajo» en portada | `paginas` → key `territorio` | `description` |
 | Página Territorio: bajada, introducción y casos secundarios | `paginas` → key `territorio` | `tagline`, `intro`, `content` |
-| Cada sitio (Puesco-Lanín, Panqui…), incluido su punto en el mapa | `sitios` | `nombre`, `aporte`, `coordenadas` («lat, lng»), `content` |
+| Cada sitio (Puesco-Lanín, Panqui…) | `sitios` | `nombre`, `aporte`, `coordenadas` («lat, lng»; hoy no se dibujan en el mapa hasta verificarlas), `content` |
 | Página El proyecto | `paginas` → key `proyecto` | `title`, `description`, `content` |
 | Contacto | `paginas` → key `contacto` | `content` |
 | Fotos de «Registro de campo» (portada) y Archivo | `galeria` | `titulo`, `imagen`, `pie`, `autoria`, `fecha` |

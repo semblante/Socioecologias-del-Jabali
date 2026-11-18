@@ -11,6 +11,14 @@ export function parseCoords(raw?: string): { lat: number; lng: number } | null {
  * (gobernanza, Parque Nacional Villarrica), convertido sin simplificar y con
  * su anillo interior conservado. `approximate: false` quita el «aprox.» de la leyenda.
  */
+/**
+ * Los puntos de sitios (`sitios.coordenadas`) no son dato entregado por Manuel
+ * Tironi: eran estimaciones y el KMZ de gobernanza solo trae el polígono. Mientras
+ * esté en `false`, los mapas muestran solo la zona. Pasar a `true` cuando las
+ * coordenadas del panel estén verificadas por el equipo.
+ */
+export const SITE_MARKERS_VERIFIED = false;
+
 export const WORK_ZONE = {
   url: '/geo/zona-trabajo.geojson',
   approximate: false,

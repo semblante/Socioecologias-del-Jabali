@@ -25,7 +25,7 @@ interface Props {
 }
 
 const { markers, locale = 'es', height = 'min(52vh, 28rem)', zoom, showZone = false } = Astro.props;
-const mapId = `osm-${markers.map((m) => m.id).join('-') || 'empty'}`;
+const mapId = `osm-${markers.map((m) => m.id).join('-') || 'zona'}`;
 const zoneUrl = showZone ? WORK_ZONE.url : null;
 const payload = JSON.stringify({ markers, zoom: zoom ?? null, locale, mapId, zoneUrl });
 const zoneLabel =
@@ -40,10 +40,18 @@ const hint =
   <div class="site-map__frame" id={mapId} style={`height: ${height}`} role="application" aria-label={label}></div>
   <figcaption class="site-map__caption">
     <span class="site-map__legend">
-      <span class="site-map__dot site-map__dot--principal"></span>
-      {locale === 'es' ? 'Caso principal' : 'Core case'}
-      <span class="site-map__dot site-map__dot--secundario"></span>
-      {locale === 'es' ? 'Casos secundarios' : 'Secondary cases'}
+      {markers.some((m) => m.tipo === 'principal') && (
+        <>
+          <span class="site-map__dot site-map__dot--principal"></span>
+          {locale === 'es' ? 'Caso principal' : 'Core case'}
+        </>
+      )}
+      {markers.some((m) => m.tipo === 'secundario') && (
+        <>
+          <span class="site-map__dot site-map__dot--secundario"></span>
+          {locale === 'es' ? 'Casos secundarios' : 'Secondary cases'}
+        </>
+      )}
       {zoneUrl && (
         <>
           <span class="site-map__swatch"></span>
@@ -80,7 +88,7 @@ const hint =
         var frame = document.getElementById(data.mapId);
         if (!frame) return;
         var markers = data.markers || [];
-        if (!markers.length) return;
+        if (!markers.length && !data.zoneUrl) return;
 
         if (frame._leaflet_id) return;
 
@@ -134,7 +142,10 @@ const hint =
           bounds.push([m.lat, m.lng]);
         });
 
-        if (data.zoom && markers.length === 1) {
+        if (!bounds.length) {
+          // Solo zona: vista provisoria sobre el polígono hasta que cargue el GeoJSON.
+          map.setView([-39.55, -71.57], 11);
+        } else if (data.zoom && markers.length === 1) {
           map.setView([markers[0].lat, markers[0].lng], data.zoom);
         } else if (bounds.length === 1) {
           map.setView(bounds[0], 11);
@@ -160,12 +171,8 @@ const hint =
                 },
               }).addTo(map);
               zone.bringToBack();
-              // Encuadre: sitios + zona completa.
-              var all = zone.getBounds();
-              bounds.forEach(function (b) {
-                all.extend(b);
-              });
-              map.fitBounds(all, { padding: [32, 32], maxZoom: 11 });
+              // Encuadre centrado en el polígono del KMZ.
+              map.fitBounds(zone.getBounds(), { padding: [32, 32], maxZoom: 12 });
             })
             .catch(function () {});
         }

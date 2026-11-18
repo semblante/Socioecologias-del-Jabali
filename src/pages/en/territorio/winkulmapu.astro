@@ -6,16 +6,6 @@ import SiteMap from '../../../components/territorio/SiteMap.astro';
 import { localizedPath } from '../../../i18n/routing';
 
 const locale = 'en' as const;
-const markers = [
-  {
-    id: 'puesco',
-    nombre: 'Puesco-Lanín / Winkulmapu',
-    lat: -39.42,
-    lng: -71.75,
-    tipo: 'principal' as const,
-    aporte: '17,000 ha under Governance Agreement (2024)',
-  },
-];
 ---
 
 <Base
@@ -36,7 +26,7 @@ const markers = [
     </div>
 
     <div class="container wink-map">
-      <SiteMap markers={markers} locale={locale} zoom={11} height="min(40vh, 22rem)" />
+      <SiteMap markers={[]} locale={locale} height="min(40vh, 22rem)" showZone />
     </div>
 
     <div class="container container--reading">
